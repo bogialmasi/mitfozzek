@@ -2,7 +2,7 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Mit főzzek?",
-  description: "Make beautiful websites regardless of your design experience.",
+  description: "Alkoss listát az otthoni összetevőidből, és keress recepteket ezek alapján!",
   navItems: [
     {
       label: "Főoldal",
@@ -19,35 +19,23 @@ export const siteConfig = {
   ],
   navMenuItems: [
     {
-      label: "Profile",
+      label: "Főoldal",
+      href: "/",
+    },
+    {
+      label: "Profil",
       href: "/profile",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "Keresés",
+      href: "/search",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "Rólunk",
+      href: "/about",
     },
     {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
+      label: "Kijelentkezés",
       href: "/logout",
     },
   ],
