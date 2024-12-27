@@ -43,5 +43,9 @@ export const siteConfig = {
     register: "/register",
     login: "/login",
     search: "/search",
+    about: "/about",
+    pantry: "/pantry",
+    profile: "/profile",
+    recipe: "/recipe",
   },
 };
