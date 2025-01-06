@@ -1,6 +1,6 @@
 import { title, subtitle } from "@/components/primitives";
 
-export default function PantryPage() {
+export default function RecipePage() {
   return (
     <div>
       <h1 className={title()}>Recept</h1>

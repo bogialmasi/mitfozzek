@@ -1,4 +1,4 @@
-export default function PantryLayout({
+export default function RecipeLayout({
     children,
   }: {
     children: React.ReactNode;
