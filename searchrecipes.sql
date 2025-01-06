@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Dec 27. 14:41
+-- Létrehozás ideje: 2025. Jan 06. 12:18
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.0.28
 
@@ -1609,10 +1609,16 @@ CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `username` varchar(40) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `birthdate` date NOT NULL,
   `user_desc` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`) VALUES
+(2, 'testing1', '$argon2id$v=19$m=65536,t=3,p=4$q91l86TEPo6e50s6QPigpA$xejaAV9CjSk/iPCm0gBRqLrUf4m3+VBXmpT6ASmcQAo', NULL, 'testing1@email.com');
 
 -- --------------------------------------------------------
 
@@ -1757,7 +1763,7 @@ ALTER TABLE `con_user_shopping_list`
 -- AUTO_INCREMENT a táblához `ingredients`
 --
 ALTER TABLE `ingredients`
-  MODIFY `ingredient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2048;
+  MODIFY `ingredient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1457;
 
 --
 -- AUTO_INCREMENT a táblához `ingredients_list`
@@ -1775,7 +1781,7 @@ ALTER TABLE `pantry`
 -- AUTO_INCREMENT a táblához `recipes`
 --
 ALTER TABLE `recipes`
-  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT a táblához `recipe_steps`
@@ -1793,7 +1799,7 @@ ALTER TABLE `shopping_lists`
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT a táblához `user_fav_recipes`
