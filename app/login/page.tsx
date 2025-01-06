@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    
     const [error, setError] = useState('');
     const router = useRouter();
 
@@ -15,7 +16,7 @@ export default function LoginPage() {
         e.preventDefault();
         setError('');
 
-        const response = await fetch('/api/auth', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -26,26 +27,13 @@ export default function LoginPage() {
         const data = await response.json();  // Only parse the response once
 
         if (data.success) {
-            // Redirect to the dashboard or another page after successful login
-            router.push('/search');  // Change this URL as needed
-        } else {
+            // Redirect to /search after successful login
+            localStorage.setItem('token', data.token);
+            router.push('/search');
+          } else {
             setError(data.message || 'Login failed.');
-        }
+          }
     };
-
-    /*
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      // Prevent default browser page refresh.
-      e.preventDefault();
-  
-      // Get form data as an object.
-      const data = Object.fromEntries(new FormData(e.currentTarget));
-  
-      // Submit data to your backend API.
-      setSubmitted(data);
-    };
-    
-    <Form onSubmit={onSubmit} validationBehavior="native">*/
 
     return (
         <section className="flex flex-col items-center justify-center gap-6 py-8 md:py-10">
