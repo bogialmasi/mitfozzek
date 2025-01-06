@@ -48,9 +48,9 @@ export const siteConfig = {
     recipe: "/recipe",
   },
   profileMenuItems: {
-    modifyProfile: "/modifyprofile",
-    addRecipe: "/addrecipe",
-    favRecipes: "/favrecipes",
-    myRecipes: "/myrecipes"
+    modifyProfile: "profile/edit",
+    favRecipes: "/profile/favorites",
+    addRecipe: "/recipe/add",
+    myRecipes: "/recipe/myrecipes"
   }
 };
