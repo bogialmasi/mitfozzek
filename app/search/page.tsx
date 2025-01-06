@@ -15,7 +15,7 @@ export default function SearchPage() {
 
   return (
     <Form className="">
-      <div className="inline-block max-w-xl text-center justify-center py-45 md:py-8">
+      <div className="inline-block max-w-xl text-center justify-center">
         <h1 className={title()}>Receptek keresése</h1>
       </div>
       <Input
