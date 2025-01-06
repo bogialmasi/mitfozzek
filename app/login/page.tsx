@@ -4,6 +4,7 @@ import { title } from "@/components/primitives";
 import { Button, Form, Input } from "@nextui-org/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Link } from "@nextui-org/link";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -40,7 +41,7 @@ export default function LoginPage() {
             <Form onSubmit={handleLogin} validationBehavior="native"
                 className="w-full max-w-xs flex flex-col gap-6">
                 <div className="inline-block max-w-xl text-center justify-center">
-                    <h1 className={title()}>Belépés</h1>
+                    <h1 className={title()}>Bejelentkezés</h1>
                 </div>
                 <Input
                     value={username} onChange={(e) => setUsername(e.target.value)}
@@ -66,6 +67,9 @@ export default function LoginPage() {
                 />
                 <Button type="submit">Belépés</Button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div>
+                    <h3>Nincs fiókja? <Link href="/register">Regisztráció</Link></h3>
+                </div>
             </Form>
         </section>
     );
