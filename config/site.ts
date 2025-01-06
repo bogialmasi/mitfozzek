@@ -44,8 +44,13 @@ export const siteConfig = {
     login: "/login",
     search: "/search",
     about: "/about",
-    pantry: "/pantry",
     profile: "/profile",
     recipe: "/recipe",
   },
+  profileMenuItems: {
+    modifyProfile: "/modifyprofile",
+    addRecipe: "/addrecipe",
+    favRecipes: "/favrecipes",
+    myRecipes: "/myrecipes"
+  }
 };
