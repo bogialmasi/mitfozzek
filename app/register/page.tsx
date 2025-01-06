@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { title } from "@/components/primitives";
 import { Button, Form, Input } from "@nextui-org/react";
+import { Link } from "@nextui-org/link";
 import { DateInput } from "@nextui-org/react";
 import { CalendarDate } from "@internationalized/date";
 
@@ -52,7 +53,7 @@ export default function RegisterPage() {
     <Form onSubmit={onSubmit} validationBehavior="native">*/
 
     return (
-        <section className="flex flex-col items-center justify-center gap-6 py-8 md:py-10">
+        <section className="flex flex-col items-center justify-center py-7 md:py-10">
             <Form className="w-full max-w-xs flex flex-col gap-6"
                 onSubmit={handleRegister}>
                 <div className="inline-block max-w-xl text-center justify-center">
@@ -93,6 +94,9 @@ export default function RegisterPage() {
                 />
                 <Button type="submit">Regisztráció</Button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div>
+                    <h3>Van már fiókja? <Link href="/login">Bejelentkezés</Link></h3>
+                </div>
             </Form>
         </section>
     );
