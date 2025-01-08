@@ -4,7 +4,7 @@ import pool from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, password, email, birthdate } = await req.json();
+    const { username, password, email } = await req.json();
 
     console.log("Front end-től kapott adatok: ", {username: username, password: password, email: email})
 
