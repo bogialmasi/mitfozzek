@@ -33,7 +33,7 @@ export default function ProfilePage() {
             Kedvenc receptjeim
           </Link>
           <div className={subtitle({ class: "mt-4" })}>
-            <h3>Hát Izsák vagyok, hobbiszakács, szeretek új és izgalmas recepteket kipróbálni, szeretem a keleti ízeket, és érdekel a vegán életmód is</h3>
+            <h3>Itt jelenik meg a felhasználó által írt bemutatkozás</h3>
           </div>
           <Link
             isExternal

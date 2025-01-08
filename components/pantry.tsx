@@ -16,16 +16,13 @@ export const Pantry = () => {
         <div className="flex items-center justify-center h-screen">
             <div className="bg-gray-200 rounded-lg shadow-lg w-full max-w-lg h-[90vh] flex flex-col">
                 <div className="p-4 border-b border-gray-300 justify-center">
-                    <div className={subtitle({ class: "mt-4" })}>
-                        Spájzom
-                    </div>
+                    <div className={subtitle({ class: "mt-4" })}>Spájzom</div>
                     <input
                         type="text"
                         placeholder="Keresés a hozzávalók között..."
                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
-
                 <div className="flex-1 overflow-y-auto p-4">
                     <ul className="space-y-2">
                         {Array.from({ length: 26 }, (_, i) => (
