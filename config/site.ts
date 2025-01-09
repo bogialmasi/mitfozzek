@@ -9,6 +9,14 @@ export const siteConfig = {
       href: "/",
     },
     {
+      label: "Profil",
+      href: "/profile",
+    },
+    {
+      label: "Kijelentkezés",
+      href: "/logout",
+    },
+    {
       label: "Keresés",
       href: "/search",
     },
@@ -46,6 +54,7 @@ export const siteConfig = {
     about: "/about",
     profile: "/profile",
     recipe: "/recipe",
+    github: "https://github.com/bogialmasi/mitfozzek"
   },
   profileMenuItems: {
     modifyProfile: "profile/edit",
