@@ -1,7 +1,9 @@
 'use client'
-import { Button, Input } from '@nextui-org/react';
+
 /* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
+import { Button, Input } from '@nextui-org/react';
+import { CancelIcon } from './icons';
 
 interface MySearchBarProps {
     list: { key: number; value: string }[];
@@ -49,7 +51,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                             <li
                                 key={item.key}
                                 onClick={() => handleSelectItem(item.key)}
-                                className="p-2 cursor-pointer hover:bg-gray-200"
+                                className="p-2 cursor-pointer bg-white dark:bg-black"
                             >
                                 {item.value}
                             </li>
@@ -62,8 +64,12 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     const item = list.find((item) => item.key === key);
                     return (
                         item && (
-                            <Button className="mt-4" onPress={() => handleRemoveItem(key)} key={key}>
+                            <Button className="mt-4 flex items-center overflow-visible whitespace-nowrap px-4 min-w-[100px]"
+                                onPress={() => handleRemoveItem(key)} key={key}>
                                 {item.value}
+                                <span className="flex-shrink-0">
+                                    <CancelIcon style={{ width: '12px', height: '12px' }} />
+                                </span>
                             </Button>
                         )
                     );
