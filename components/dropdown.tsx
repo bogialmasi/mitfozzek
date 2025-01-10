@@ -48,7 +48,7 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
           {list.map((item) => (
             <DropdownItem key={item.key} value={item.key} 
             onPress={() => handleSelectChange(item.key)}
-            className={`flex items-center ${selectedKeys.has(item.key) ? 'bg-gray-200' : ''}`}>
+            className={`flex items-center ${selectedKeys.has(item.key) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
               {item.value}
             </DropdownItem>
           ))}
