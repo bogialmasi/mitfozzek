@@ -100,6 +100,19 @@ export const Examples = {
             recipe_id: 2,
             category_id: 1
         }
+    ],
+
+    con_recipe_dishtype: [
+        {
+            // Előétel kategória id-je db-ben: 1
+            recipe_id: 1,
+            dishtype_id: 1
+        }, 
+        {
+            // Előétel kategória id-je db-ben: 1
+            recipe_id: 2,
+            dishtype_id: 1
+        }
     ]
 
 }
