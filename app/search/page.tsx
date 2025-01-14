@@ -27,7 +27,6 @@ export default function SearchPage() {
   return (
     <section className="flex flex-col items-center justify-center">
       <div className="w-full max-w-xl text-center justify-center overflow-visible ">
-        <h1 className={title()}>Receptek keresése</h1>
         <MySearch onSearch={handleSearch} />
       </div>
     </section>
