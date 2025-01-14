@@ -35,10 +35,10 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
     };
 
     return (
-        <div className="w-full max-w-md">
+        <div className="w-full">
             <div className="relative mb-4">
                 <Input
-                    className="form-control input w-64"
+                    className="form-control input max-w-md"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -46,7 +46,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     variant="bordered"
                 />
                 {filteredList.length > 0 && (
-                    <ul className="absolute z-10 border rounded shadow-md w-full max-h-48 overflow-y-auto">
+                    <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
                             <li
                                 key={item.key}
