@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { title } from '@/components/primitives';
+import { MyListItem } from '@/components/listitem';
 
 // This is what a recipe looks like in my example.ts file
 interface Recipe {
@@ -11,6 +12,12 @@ interface Recipe {
     recipe_time: string;
     recipe_headcount: number;
     source_user_id: number;
+    ingredients: Ingredient[]; // Assuming `ingredients` is an array of `Ingredient` objects
+}
+
+interface Ingredient {
+    id: number;
+    name: string;
 }
 
 export default function SearchResultsPage() {
@@ -21,38 +28,41 @@ export default function SearchResultsPage() {
 
     useEffect(() => {
         const fetchResults = async () => {
-          setLoading(true);
-          setError(null);
-    
-          try {
-            const params = new URLSearchParams(searchParams.toString());
-            const response = await fetch(`/api/search?${params}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch results');
+            setLoading(true);
+            setError(null);
+
+            try {
+                const params = new URLSearchParams(searchParams.toString());
+                const response = await fetch(`/api/search?${params}`);
+                if (!response.ok) {
+                    throw new Error('Hiba a receptek betöltése során');
+                }
+                const data = await response.json();
+                setResults(data);  // Assuming `data` is an array of `Recipe` objects
+            } catch (error) {
+                setError((error as Error).message);
+            } finally {
+                setLoading(false);
             }
-            const data = await response.json();
-            setResults(data);  // Assuming `data` is an array of `Recipe` objects
-          } catch (error) {
-            setError((error as Error).message);
-          } finally {
-            setLoading(false);
-          }
         };
-    
+
         fetchResults();
-      }, [searchParams]);
-    
-      if (loading) return <p>Loading...</p>;
-      if (error) return <p>Error: {error}</p>;
-    
-      return (
-        <div>
-          <h2>Search Results</h2>
-          <ul>
-            {results.map((result, idx) => (
-              <li key={idx}>{result.recipe_name}</li>  // Access recipe_name correctly now
-            ))}
-          </ul>
-        </div>
-      );
+    }, [searchParams]);
+
+    if (loading) return <p>Betöltés...</p>;
+    if (error) return <p>Hiba: {error}</p>;
+    if (results.length === 0) {
+        return <p>Nincs a keresési feltételeknek megfelelő recept :(</p>;
     }
+
+    return (
+        <section className="flex flex-col items-center justify-center">
+            <div className="w-full max-w-xl text-center justify-center overflow-visible">
+                <h1 className={title()}>Keresési találatok</h1>
+                {results.map((recipe, index) => (
+                    <MyListItem key={index} recipe={recipe} />
+                ))}
+            </div>
+        </section>
+    );
+}
