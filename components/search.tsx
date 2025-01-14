@@ -88,8 +88,9 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
 
+        /* NOT needed, this woult redirect me to the api, which gives back json, which is not what i want
         const paramsUrl = `/api/search?${params.toString()}`; // This calls the back end, without the /api part it gives back HTML
-        router.push(paramsUrl);
+        router.push(paramsUrl);*/
     };
 
     return (
