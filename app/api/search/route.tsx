@@ -52,8 +52,27 @@ export async function GET(req: NextRequest) {
             relation.dishtype_id === categoryId))
         : true;
 
+
       // If all conditions match, include the recipe
       return matchesSearchQuery && matchesIngredients && matchesCategories && matchesDishType;
+
+
+    }).map((recipe) => {
+      // Attach related ingredients to each recipe
+      const ingredientIds = Examples.con_recipe_ingredients
+        .filter((relation) => relation.recipe_id === recipe.recipe_id)
+        .map((relation) => relation.ingredient_id);
+
+      const recipeIngredients = Examples.ingredients.filter((ingredient) =>
+        ingredientIds.includes(ingredient.ingredient_id)
+      );
+      return {
+        ...recipe,
+        ingredients: recipeIngredients.map((ingredient) => ({
+          id: ingredient.ingredient_id,
+          name: ingredient.ingredient_name,
+        })),
+      };
     });
     return NextResponse.json(searchResults);
   } catch (error) {
