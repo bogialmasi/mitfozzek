@@ -56,21 +56,21 @@ export const Examples = {
             dishtype_name: 'Főétel'
         }
     ],
-
+*/
     ingredients: [
         {
             ingredient_id: 1,
-            ingredient_name: 'Víz'
+            ingredient_name: 'Alma'
         },
         {
             ingredient_id: 2,
-            ingredient_name: 'Tea'
+            ingredient_name: 'Cukor'
         },
         {
             ingredient_id: 3,
-            ingredient_name: 'Tojás'
+            ingredient_name: 'Avokádó'
         }
-    ],*/
+    ],
 
 
 
