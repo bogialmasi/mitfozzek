@@ -23,19 +23,20 @@ export async function GET(req: NextRequest) {
 
 
     const searchResults = Examples.recipes.filter((recipe) => {
-      // Search by recipe name (case-insensitive)
+
+      // Recipe name
       const matchesSearchQuery = searchQuery
         ? recipe.recipe_name.toLowerCase().includes(searchQuery.toLowerCase())
         : true;
 
-      // Check if the recipe contains all selected ingredients
+      // Every selected ingredient
       const matchesIngredients = selectedIngredients?.length
         ? selectedIngredients.every((ingredientId: number) =>
           Examples.con_recipe_ingredients.some((relation) =>
             relation.recipe_id === recipe.recipe_id &&
             relation.ingredient_id === ingredientId))
         : true;
-      // Check if the recipe belongs to any of the selected categories
+      // Any of the selected categories
       const matchesCategories = selectedDishCategory?.length
         ? selectedDishCategory.some((categoryId: number) =>
           Examples.con_recipe_category.some((relation) =>
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
             relation.category_id === categoryId))
         : true;
 
-      // Check if the recipe belongs to any of the selected categories
+      // Any of the selected categories
       const matchesDishType = selectedDishType?.length
         ? selectedDishType.some((categoryId: number) =>
           Examples.con_recipe_dishtype.some((relation) =>
@@ -57,18 +58,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(searchResults);
   } catch (error) {
     console.error('Hiba a keresés során:', error);
-    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Szerver oldali hiba' }, { status: 500 });
   }
 }
-
-/*
-POSTMAN test JSON BODY:
-leave out any, but body can't be empty
-{
-  "ingredients": [1],
-  "dishType": [1],
-  "dishCategory": [1],
-  "searchQuery": "Szeletelt alma"
-}
-
-*/
