@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { title } from '@/components/primitives';
-import { MyListItem } from '@/components/listitem';
+import { MyListItem } from '@/components/searchresult_listitem';
 
 // This is what a recipe looks like in my example.ts file
 interface Recipe {
@@ -12,7 +12,7 @@ interface Recipe {
     recipe_time: string;
     recipe_headcount: number;
     source_user_id: number;
-    ingredients: Ingredient[]; // Assuming `ingredients` is an array of `Ingredient` objects
+    ingredients: Ingredient[];
 }
 
 interface Ingredient {
@@ -38,7 +38,7 @@ export default function SearchResultsPage() {
                     throw new Error('Hiba a receptek betöltése során');
                 }
                 const data = await response.json();
-                setResults(data);  // Assuming `data` is an array of `Recipe` objects
+                setResults(data); 
             } catch (error) {
                 setError((error as Error).message);
             } finally {
@@ -52,7 +52,7 @@ export default function SearchResultsPage() {
     if (loading) return <p>Betöltés...</p>;
     if (error) return <p>Hiba: {error}</p>;
     if (results.length === 0) {
-        return <p>Nincs a keresési feltételeknek megfelelő recept :(</p>;
+        return <p>Nincs a keresési feltételeknek megfelelő recept</p>;
     }
 
     return (

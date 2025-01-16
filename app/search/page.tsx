@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { MySearch } from '@/components/search';
+import { MySearch } from '@/components/search_filters';
 import { Button, Form, Input } from '@nextui-org/react';
 import { title } from '@/components/primitives';
 import { useRouter } from 'next/navigation';
@@ -27,6 +27,7 @@ export default function SearchPage() {
   return (
     <section className="flex flex-col items-center justify-center">
       <div className="w-full max-w-xl text-center justify-center overflow-visible ">
+        <h1 className={title()}>Keresés a receptek között...</h1>
         <MySearch onSearch={handleSearch} />
       </div>
     </section>

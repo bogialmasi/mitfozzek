@@ -4,7 +4,7 @@ import { MyDropdown } from './dropdown';
 import { Button, Form, Input } from '@nextui-org/react';
 import { MySearchBar } from './searchbar';
 import { SearchIcon } from './icons';
-import { button as buttonStyles } from "@nextui-org/theme";
+import { button as buttonStyles } from '@nextui-org/theme';
 import { useRouter } from 'next/navigation';
 
 interface MySearchData {
