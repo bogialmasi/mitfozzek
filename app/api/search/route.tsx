@@ -16,12 +16,44 @@ export async function GET(req: NextRequest) {
     const selectedDishType: number[] = searchParams.getAll('dishType').map((value) => Number(value)) || null;
     const selectedDishCategory: number[] = searchParams.getAll('dishCategory').map((value) => Number(value)) || null;
 
+    // Gives back only one recipe that matches the id
+    const id = searchParams.get('id') || null;
+
+
+    if (id) {
+      const recipeId = Number(id);
+      const recipe = Examples.recipes.find((r) => r.recipe_id === recipeId);
+
+      if (!recipe) {
+        return NextResponse.json({ success: false, message: 'Recipe not found' }, { status: 404 });
+      }
+
+      // Attach related ingredients to the recipe
+      const ingredientIds = Examples.con_recipe_ingredients
+        .filter((relation) => relation.recipe_id === recipe.recipe_id)
+        .map((relation) => relation.ingredient_id);
+
+      const recipeIngredients = Examples.ingredients.filter((ingredient) =>
+        ingredientIds.includes(ingredient.ingredient_id)
+      );
+
+      const fullRecipe = {
+        ...recipe,
+        ingredients: recipeIngredients.map((ingredient) => ({
+          id: ingredient.ingredient_id,
+          name: ingredient.ingredient_name,
+        })),
+      };
+
+      return NextResponse.json(fullRecipe);
+    }
+
     // If there are no filters, return all recipes (if filters are empty)
     if (!selectedIngredients && !selectedDishType && !selectedDishCategory && !searchQuery) {
       return NextResponse.json(Examples.recipes);
     }
 
-
+    // Gives back multiple results based on filters
     const searchResults = Examples.recipes.filter((recipe) => {
 
       // Recipe name
@@ -55,8 +87,6 @@ export async function GET(req: NextRequest) {
 
       // If all conditions match, include the recipe
       return matchesSearchQuery && matchesIngredients && matchesCategories && matchesDishType;
-
-
     }).map((recipe) => {
       // Attach related ingredients to each recipe
       const ingredientIds = Examples.con_recipe_ingredients
