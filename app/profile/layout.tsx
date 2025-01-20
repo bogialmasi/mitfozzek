@@ -1,5 +1,5 @@
 'use client'
-import { Pantry } from "@/components/pantry";
+import { Pantry } from "@/components/profile/pantry";
 import { usePathname } from "next/navigation";
 
 export default function ProfileLayout({
