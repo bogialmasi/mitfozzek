@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { MySearch } from '@/components/search/search_filters';
-import { Button, Form, Input } from '@nextui-org/react';
+import { Button, Form, Input, Spinner } from "@heroui/react";
 import { title } from '@/components/primitives';
 import { useRouter } from 'next/navigation';
 import { MyListItem } from '@/components/search/searchresult_listitem';
@@ -27,10 +27,12 @@ export default function SearchPage() {
 
   // search filters, grouped
   const [filters, setFilters] = useState<{
+    searchQuery: string;
     ingredients: number[];
     dishType: number[];
     dishCategory: number[];
   }>({
+    searchQuery: '',
     ingredients: [],
     dishType: [],
     dishCategory: []
@@ -43,6 +45,7 @@ export default function SearchPage() {
 
   // Update filters when searching
   const handleSearch = (filters: {
+    searchQuery: string,
     ingredients: number[];
     dishType: number[];
     dishCategory: number[];
@@ -51,13 +54,16 @@ export default function SearchPage() {
   // Fetch results
   useEffect(() => {
     const fetchResults = async () => {
+      setLoading(true);
       if (
+        filters.searchQuery.trim().length === 0 &&
         !filters.ingredients.length && !filters.dishCategory.length && !filters.dishType.length
       )
         return;
 
       try {
         const params = new URLSearchParams();
+        filters.searchQuery && params.append('searchQuery', filters.searchQuery);
         filters.ingredients.forEach((id) => params.append('ingredients', id.toString()));
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
@@ -66,7 +72,6 @@ export default function SearchPage() {
         if (!response.ok) {
           throw new Error('Hiba a receptek betöltése során');
         }
-
         const data = await response.json();
         setResults(data);
       } catch (error) {
@@ -85,7 +90,6 @@ export default function SearchPage() {
         <MySearch onSearch={handleSearch} />
       </div>
       <div className="w-full max-w-xl mt-6 text-center">
-        {loading && <p>Receptek betöltése...</p>}
         {error && <p>Hiba: {error}</p>}
         {!loading && !error && results.length === 0 && filters.ingredients.length > 0 && (
           <p>Nincs a keresési feltételeknek megfelelő recept</p>
@@ -93,6 +97,10 @@ export default function SearchPage() {
         {!loading && !error && results.length > 0 && (
           <div className="w-full max-w-xl text-center justify-center overflow-visible">
             <h1 className={title()}>Keresési találatok</h1>
+            {loading &&
+              <div>
+                <Spinner color="primary" label="Betöltés..." />
+              </div>}
             {results.map((recipe, index) => (
               <MyListItem key={index} recipe={recipe} />
             ))}

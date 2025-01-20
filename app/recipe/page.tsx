@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { subtitle, title } from '@/components/primitives';
-import { Link } from '@nextui-org/link';
-import { button as buttonStyles } from "@nextui-org/theme";
+import { Link } from "@heroui/link";
+import { button as buttonStyles } from "@heroui/theme";
 import { HeartFilledIcon, SearchIcon } from '@/components/icons';
 import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/ingredients_table';
+import { Button } from '@heroui/react';
 
 // Recipe interface
 interface Recipe {
@@ -92,27 +93,24 @@ export default function RecipePage() {
       {/* Right Side: 60% */}
       <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
         <div className="flex gap-2 justify-center">
-          <Link
-            isExternal
+          <Button
             className={buttonStyles({ variant: "bordered", radius: "full" })}
             href={`/`}
           >
             Recept elmentése a kedvencek közé <HeartFilledIcon />
-          </Link>
-          <Link
-            isExternal
+          </Button>
+          <Button
             className={buttonStyles({ variant: "bordered", radius: "full" })}
             href={`/`}
           >
             Bevásárlólista készítése
-          </Link>
+          </Button>
         </div>
         <div className="justify-center py-8">
           <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
         </div>
         <div className="justify-center py-8">
           <Link
-            isExternal
             className={buttonStyles({ variant: "bordered", radius: "full" })}
             href={`/search`}
           >

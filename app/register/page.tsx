@@ -3,8 +3,8 @@ import * as React from "react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { title } from "@/components/primitives";
-import { Button, Form, Input } from "@nextui-org/react";
-import { Link } from "@nextui-org/link";
+import { Button, Form, Input } from "@heroui/react";
+import { Link } from "@heroui/link";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');

@@ -1,8 +1,8 @@
 'use client';
-import { Button } from "@nextui-org/button"
+import { Button } from "@heroui/button"
 import { SearchIcon } from "../icons";
-import { button as buttonStyles } from '@nextui-org/theme';
-import { Link } from "@nextui-org/link";
+import { button as buttonStyles } from "@heroui/theme";
+import { Link } from "@heroui/link";
 
 export default function MySidebar() {
     return (

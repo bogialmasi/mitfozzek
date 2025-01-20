@@ -8,7 +8,7 @@ the DELETE and CHANGE QUANTITY should work as an options menu when clicking on t
 */
 
 import { subtitle } from "@/components/primitives";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React from "react";
 
 export const Pantry = () => {

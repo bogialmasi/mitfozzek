@@ -2,7 +2,7 @@
 
 /* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input } from "@heroui/react";
 import { CancelIcon } from '../icons';
 
 interface MySearchBarProps {

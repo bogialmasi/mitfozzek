@@ -1,10 +1,10 @@
 'use client'
 import * as React from "react";
 import { title } from "@/components/primitives";
-import { Button, Form, Input } from "@nextui-org/react";
+import { Button, Form, Input } from "@heroui/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
