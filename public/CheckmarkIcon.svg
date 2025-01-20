@@ -1,0 +1,18 @@
+<svg id="es7DwMHzdYI1" 
+xmlns="http://www.w3.org/2000/svg" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+viewBox="0 0 32 32" 
+shape-rendering="geometricPrecision" 
+text-rendering="geometricPrecision" 
+project-id="2517982b118d47fd82983ca5b32bce25" 
+export-id="47a723ed619b42cf8d53e50161c883bc" 
+cached="false">
+    <line 
+    x1="-10" y1="-10" x2="-5" y2="-5" 
+    transform="translate(15.999999 28.5)" 
+    fill="none" stroke="#000" stroke-width="4" stroke-linecap="round"/>
+    <line 
+    x1="-10" y1="-10" x2="5" y2="5" 
+    transform="matrix(-1 0 0 1 15.999999 18.5)" 
+    fill="none" stroke="#000" stroke-width="4" stroke-linecap="round"/>
+</svg>

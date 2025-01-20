@@ -252,3 +252,44 @@ export const CancelIcon: React.FC<IconSvgProps> = (props) => {
     </svg>
   )
 };
+
+export const CheckmarkIcon: React.FC<IconSvgProps> = (props) => {
+  const { width = 40, height = 40, ...rest } = props;
+
+  return (
+    <svg
+      id="es7DwMHzdYI1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 32 32"
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      width={width}
+      height={height}
+      {...rest}
+    >
+      <line
+        x1="-10"
+        y1="-10"
+        x2="-5"
+        y2="-5"
+        transform="translate(16 28.5)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <line
+        x1="-10"
+        y1="-10"
+        x2="5"
+        y2="5"
+        transform="matrix(-1 0 0 1 16 18.5)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
