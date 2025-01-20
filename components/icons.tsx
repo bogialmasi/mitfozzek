@@ -293,3 +293,47 @@ export const CheckmarkIcon: React.FC<IconSvgProps> = (props) => {
     </svg>
   );
 };
+
+export const ArrowUpIcon: React.FC<IconSvgProps> = (props) => {
+  const { width = 40, height = 40, ...rest } = props;
+  return (
+    <svg
+      id="eU8jdk6qmhz1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 32 32"
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      width={width}
+      height={height}
+      {...rest}>
+      <line
+        x1="-10"
+        y1="-10"
+        x2="-4"
+        y2="-4"
+        transform="translate(26 17.514719)"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round" />
+      <line
+        x1="-10"
+        y1="-10"
+        x2="2"
+        y2="2"
+        transform="matrix(.707107-.707107-.707107-.707107 16 10.343146)"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round" />
+      <line
+        x1="-10"
+        y1="-10"
+        x2="-4"
+        y2="-4"
+        transform="matrix(0 1-1 0 6 17.514719)"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round" />
+    </svg>
+  )
+}
