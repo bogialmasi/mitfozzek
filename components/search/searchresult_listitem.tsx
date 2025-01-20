@@ -27,7 +27,6 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
             <Link
-              isExternal
               href={`/recipe/?id=${recipe.recipe_id}`}
               className="text-md font-semibold"
             >
@@ -67,7 +66,6 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
         <Divider />
         <CardFooter>
           <Link
-            isExternal
             href={`/recipe/?id=${recipe.recipe_id}`}
           >
             Tovább a teljes receptre

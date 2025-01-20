@@ -3,24 +3,33 @@
 /* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
 import { Button, Input } from '@nextui-org/react';
-import { CancelIcon } from './icons';
+import { CancelIcon } from '../icons';
 
 interface MySearchBarProps {
     list: { key: number; value: string }[];
     selectedKeys: number[];
     onSelectionChange: (keys: number[]) => void;
+    isOpen: boolean;
+    setIsOpen: (value: boolean) => void;
 }
 
 
-export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, onSelectionChange }) => {
+export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, onSelectionChange, isOpen, setIsOpen }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Filter the list based on the search query
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        setIsOpen(!!value); // Open when typing, close when cleared
+    };
+
+    // Filter the list based on the search query (Ingredient)
     const filteredList = useMemo(() => {
         if (!searchQuery.trim()) return [];
         return list.filter((item) =>
             item.value.toLowerCase().startsWith(searchQuery.toLowerCase())
-        );
+        )
+            .slice(0, 6); // Limit to the first 6 items
     }, [searchQuery, list]);
 
 
@@ -29,6 +38,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
             onSelectionChange([...selectedKeys, key]);
         }
         setSearchQuery(''); // Clear the search bar after selection
+        setIsOpen(false);  // Close the dropdown
     };
     const handleRemoveItem = (key: number) => {
         onSelectionChange(selectedKeys.filter((selectedKey) => selectedKey !== key));
@@ -41,11 +51,11 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     className="form-control input max-w-md"
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleInputChange}
                     placeholder="Keressen a hozávalók között..."
                     variant="bordered"
                 />
-                {filteredList.length > 0 && (
+                {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
                             <li

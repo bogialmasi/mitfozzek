@@ -1,9 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { MyDropdown } from './dropdown';
+import { MyDropdown } from '../dropdown';
 import { Button, Form, Input } from '@nextui-org/react';
 import { MySearchBar } from './searchbar';
-import { SearchIcon } from './icons';
+import { SearchIcon } from '../icons';
 import { button as buttonStyles } from '@nextui-org/theme';
 import { useRouter } from 'next/navigation';
 
@@ -21,6 +21,7 @@ interface MySearchProps {
 }
 
 export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
+    const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
 
     // States for dropdown data
@@ -112,23 +113,27 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
                     list={ingredients}
                     selectedKeys={Array.from(selectedFilters.ingredients)}
                     onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
                 />
+
                 <br />
-
-                <p className="text-sm py-2">Étel típusa:</p>
-                <MyDropdown
-                    list={dishType}
-                    selectedKeys={selectedFilters.dishType}
-                    onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
-                />
-
-                <p className="text-sm py-2">Ételérzékenységek, diéta:</p>
-                <MyDropdown
-                    list={dishCategory}
-                    selectedKeys={selectedFilters.dishCategory}
-                    onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
-                />
-
+                {!isOpen && (
+                    <div>
+                        <p className="text-sm py-2">Étel típusa:</p>
+                        <MyDropdown
+                            list={dishType}
+                            selectedKeys={selectedFilters.dishType}
+                            onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
+                        />
+                        <p className="text-sm py-2">Ételérzékenységek, diéta:</p>
+                        <MyDropdown
+                            list={dishCategory}
+                            selectedKeys={selectedFilters.dishCategory}
+                            onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
+                        />
+                    </div>
+                )}
                 <br />
                 <Button className={buttonStyles({
                     color: "primary",
