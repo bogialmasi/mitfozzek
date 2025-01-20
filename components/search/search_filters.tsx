@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { MyDropdown } from '../dropdown';
+import { MyDropdown } from './dropdown';
 import { Button, Form, Input } from '@nextui-org/react';
 import { MySearchBar } from './searchbar';
 import { SearchIcon } from '../icons';

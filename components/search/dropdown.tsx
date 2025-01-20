@@ -1,7 +1,7 @@
 'use client'
 /* MyDropdown is for MySearch, choose from DishCategory or DishType */
 import React, { useMemo } from 'react';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Select, SelectItem } from "@nextui-org/react";
 
 interface MyDropdownProps {
   list: { key: number; value: string }[]; // List passed as props
@@ -29,6 +29,25 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
   };
 
   return (
+    <Select
+      className="max-w-xl"
+      selectionMode="multiple"
+      placeholder="Nincs kiválasztva"
+    >
+      {list.map((item) => (
+        <SelectItem key={item.key} value={item.key}
+          onPress={() => handleSelectChange(item.key)}
+          className={`flex items-center ${selectedKeys.has(item.key) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
+          {item.value}
+        </SelectItem>
+      ))}
+    </Select>
+  );
+};
+
+
+/*
+
     <div>
       <Dropdown>
         <DropdownTrigger>
@@ -43,7 +62,6 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
           selectedKeys={selectedKeys}
           selectionMode="multiple"
           variant="bordered"
-        /* TODO When selecting the items, NextUI puts a checkmark to it by default, where is it? bg-gray-200 should have a different tone for when in dark mode */
         >
           {list.map((item) => (
             <DropdownItem key={item.key} value={item.key} 
@@ -55,5 +73,4 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
         </DropdownMenu>
       </Dropdown>
     </div>
-  );
-};
+    */
