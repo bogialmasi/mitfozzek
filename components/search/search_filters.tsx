@@ -1,10 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { MyDropdown } from './dropdown';
-import { Button, Form, Input } from '@nextui-org/react';
+import { Button, Form, Input } from "@heroui/react";
 import { MySearchBar } from './searchbar';
 import { SearchIcon } from '../icons';
-import { button as buttonStyles } from '@nextui-org/theme';
+import { button as buttonStyles } from "@heroui/theme";
 import { useRouter } from 'next/navigation';
 
 interface MySearchData {
@@ -14,6 +14,7 @@ interface MySearchData {
 
 interface MySearchProps {
     onSearch: (filters: {
+        searchQuery: string;
         ingredients: number[];
         dishType: number[];
         dishCategory: number[];
@@ -28,6 +29,8 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
     const [ingredients, setIngredients] = useState<MySearchData[]>([]);
     const [dishType, setDishType] = useState<MySearchData[]>([]);
     const [dishCategory, setDishCategory] = useState<MySearchData[]>([]);
+
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [selectedFilters, setSelectedFilters] = useState({
         ingredients: new Set<number>(),
@@ -70,9 +73,8 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
     // Handle search button click
     const handleSearch = (event: React.FormEvent) => {
         event.preventDefault();
-        console.log("Gomb lenyomva: handleSearch", "color: yellow;");
-
         const filters = {
+            searchQuery,
             ingredients: Array.from(selectedFilters.ingredients),
             dishType: Array.from(selectedFilters.dishType),
             dishCategory: Array.from(selectedFilters.dishCategory),
@@ -82,16 +84,12 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
         if (onSearch) {
             onSearch(filters);
         }
-
-        // Navigate to results page with filters as query params
         const params = new URLSearchParams();
+        if (searchQuery) params.set('searchQuery', searchQuery);
         filters.ingredients.forEach((id) => params.append('ingredients', id.toString()));
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
-
-        /* NOT needed, this woult redirect me to the api, which gives back json, which is not what i want
-        const paramsUrl = `/api/search?${params.toString()}`; // This calls the back end, without the /api part it gives back HTML
-        router.push(paramsUrl);*/
+        console.log(params);
     };
 
     return (
@@ -106,6 +104,8 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
                     placeholder="Keressen rá receptek címére..."
                     type="text"
                     variant="bordered"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
 
                 <p className="text-sm py-2">Hozzávalók:</p>
