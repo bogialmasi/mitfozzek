@@ -9,6 +9,14 @@ export const Examples = {
             password: 'password1',
             user_desc: 'user1 vagyok, ez a bemutatkozó szövegem',
             email: 'user1@email.com'
+        },
+        {
+            user_id: 2,
+            username: 'thisisuser2username',
+            password: 'password2',
+            user_desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+            email: 'user2@email.com'
+        
         }
     ],
 
@@ -29,6 +37,14 @@ export const Examples = {
             recipe_description: 'Hámozzunk meg egy avokádót, távolítsuk el a magot, és törjük össze az avokádó húsát egy villával. Ízlés szerint sózzuk, borsozzuk',
             recipe_time: '1 perc',
             recipe_headcount: 1,
+            source_user_id: 2
+        },
+        {
+            recipe_id: 3,
+            recipe_name: 'Alma és avokádó',
+            recipe_description: 'Alma és avokádó recept leírása. Lorem ipsum dolor lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lore lore lore lore lore lore lore lore lore lore lore lore lore lore lore lore lore lore lore',
+            recipe_time: '25 perc',
+            recipe_headcount: 3,
             source_user_id: 2
         }
     ],
@@ -85,6 +101,15 @@ export const Examples = {
         {
             // Avokádó krém. Recept id: 2, Avokádó id a db-ben: 3
             recipe_id: 2,
+            ingredient_id: 3
+        },
+            // Ha egy receptben több összetevő van, azok nem lehetnek tömbben pl [1,3]
+        {
+            recipe_id: 3,
+            ingredient_id: 1
+        },
+        {
+            recipe_id: 3,
             ingredient_id: 3
         }
     ],
