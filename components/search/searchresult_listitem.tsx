@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@nextui-org/react";
+import React, { useState } from 'react';
+import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@heroui/react";
 
 interface Ingredient {
   id: number;
@@ -21,6 +21,8 @@ interface MyListItemProps {
 }
 
 export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  
   return (
     <div className='py-4'>
       <Card className="max-w-xl overflow-visible">
@@ -49,16 +51,17 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
             <Divider className="my-3" />
             {/* Description */}
             <p className="text-sm">
-              {recipe.recipe_description.length > 100
-                ? `${recipe.recipe_description.slice(0, 100)}...`
-                : recipe.recipe_description}
+              {showFullDescription
+                ? recipe.recipe_description
+                : `${recipe.recipe_description.slice(0, 100)}...`}
               {recipe.recipe_description.length > 100 && (
-                <Link 
-                href={`/recipe/?id=${recipe.recipe_id}`}
-                  className="text-primary text-sm">
-                  Mutass többet...
-                </Link>
-              )}
+                 <button
+                 onClick={() => setShowFullDescription(!showFullDescription)}
+                 className="text-primary text-sm ml-1 underline"
+               >
+                 {showFullDescription ? 'Mutass kevesebbet' : 'Mutass többet'}
+               </button>
+             )}
             </p>
             <p className="text-sm">Recept elkészítési ideje: {recipe.recipe_time}</p>
           </div>
