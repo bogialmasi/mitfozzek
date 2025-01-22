@@ -13,16 +13,15 @@ import { Link } from "@heroui/link";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
   GithubIcon,
   Logo,
 } from "@/components/icons";
+import { MyUserLoginLogout } from "./user_login_logout";
 
 export const Navbar = () => {
-
   // Check if user is logged in by checking if JWT token exists
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -33,39 +32,15 @@ export const Navbar = () => {
 
   const navItems = isLoggedIn
     ? [
-        { label: "Profil", href: "/profile" },
-        { label: "Keresés", href: "/search" },
-        { label: "Kijelentkezés", href: "/logout" },
-      ]
+      { label: "Profil", href: "/profile" },
+      { label: "Keresés", href: "/search" },
+      { label: "Kijelentkezés", href: "/logout" },
+    ]
     : [
-        { label: "Főoldal", href: "/" },
-        { label: "Keresés", href: "/search" },
-        { label: "Rólunk", href: "/about" },
-      ];
-  /*
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          Keresés
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-
-    <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-  );*/
-
+      { label: "Főoldal", href: "/" },
+      { label: "Keresés", href: "/search" },
+      { label: "Rólunk", href: "/about" },
+    ];
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -98,14 +73,15 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
+          <MyUserLoginLogout />
+        </NavbarItem>
+        <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
+        <MyUserLoginLogout />
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
