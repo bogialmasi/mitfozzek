@@ -1,3 +1,4 @@
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/table";
 import { CancelIcon, CheckmarkIcon } from "../icons";
 
 interface Ingredient {
@@ -21,6 +22,28 @@ interface MyIngredientsTableProps {
 
 export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe }) => {
     return (
+        <Table aria-label="Example table with dynamic content">
+      <TableHeader>
+        <TableColumn>Összetevők</TableColumn>
+        <TableColumn>Mennyiség</TableColumn>
+        <TableColumn>Spájzom</TableColumn>
+      </TableHeader>
+      <TableBody items={recipe.ingredients}>
+        {(ingredient) => (
+          <TableRow key={ingredient.id}>
+            <TableCell>{ingredient.name}</TableCell>
+            <TableCell>200</TableCell>
+            <TableCell>g</TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+    )
+}
+
+/**
+ * 
+ * 
         <table className="table-fixed md:table-fixed border border-collapse w-full">
             <thead>
                 <tr>
@@ -43,5 +66,4 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe }
                 ))}
             </tbody>
         </table>
-    )
-}
+ */
