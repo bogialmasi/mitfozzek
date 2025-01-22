@@ -71,54 +71,55 @@ export default function RecipePage() {
   }
 
 
-  return (<div className="h-screen">
-    <div className="justify-end gap-4 mx-6 my:mx-4 py-4">
-      <h1 className={title()}>{resultRecipe.recipe_name}</h1>
-    </div>
-    <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
-      {/* Left Side: 40% */}
-      <div className="col-span-12 md:col-span-5 flex flex-col gap-4 py-6">
-        <div className={subtitle({ class: "mt-2" })}>
-          <h3>Hány főre?:</h3>
-          <div className="flex justify-center">
-            <MyHeadcountCounter />
+  return (
+    <div className="h-screen">
+      <div className="justify-end gap-4 mx-6 my:mx-4 py-4">
+        <h1 className={title()}>{resultRecipe.recipe_name}</h1>
+      </div>
+      <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
+        {/* Left Side: 40% */}
+        <div className="col-span-12 md:col-span-5 flex flex-col gap-4 py-6">
+          <div className={subtitle({ class: "mt-2" })}>
+            <h3>Hány főre?:</h3>
+            <div className="flex justify-center">
+              <MyHeadcountCounter />
+            </div>
+          </div>
+          <div className={subtitle({ class: "mt-2" })}>
+            <h3>Hozzávalók:</h3>
+            <MyIngredientsTable recipe={resultRecipe} />
           </div>
         </div>
-        <div className={subtitle({ class: "mt-2" })}>
-          <h3>Hozzávalók:</h3>
-          <MyIngredientsTable recipe={resultRecipe} />
-        </div>
-      </div>
 
-      {/* Right Side: 60% */}
-      <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
-        <div className="flex gap-2 justify-center">
-          <Button
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={`/`}
-          >
-            Recept elmentése a kedvencek közé <HeartFilledIcon />
-          </Button>
-          <Button
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={`/`}
-          >
-            Bevásárlólista készítése
-          </Button>
+        {/* Right Side: 60% */}
+        <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
+          <div className="flex gap-2 justify-center">
+            <Button
+              className={buttonStyles({ variant: "bordered", radius: "full" })}
+              href={`/`}
+            >
+              Recept elmentése a kedvencek közé <HeartFilledIcon />
+            </Button>
+            <Button
+              className={buttonStyles({ variant: "bordered", radius: "full" })}
+              href={`/`}
+            >
+              Bevásárlólista készítése
+            </Button>
+          </div>
+          <div className="justify-center py-8">
+            <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
+          </div>
+          <div className="justify-center py-8">
+            <Link
+              className={buttonStyles({ variant: "bordered", radius: "full" })}
+              href={`/search`}
+            >
+              Új recept keresése <SearchIcon />
+            </Link>
+          </div>
         </div>
-        <div className="justify-center py-8">
-          <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
-        </div>
-        <div className="justify-center py-8">
-          <Link
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={`/search`}
-          >
-            Új recept keresése <SearchIcon />
-          </Link>
-        </div>
-      </div>
-    </section>
-  </div>
+      </section>
+    </div>
   )
 };
