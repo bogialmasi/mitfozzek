@@ -2,7 +2,7 @@
 
 /* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
-import { Button, Input } from "@heroui/react";
+import { Button, Checkbox, Input } from "@heroui/react";
 import { CancelIcon } from '../icons';
 
 interface MySearchBarProps {
@@ -55,6 +55,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     placeholder="Keressen a hozávalók között..."
                     variant="bordered"
                 />
+                <Checkbox size='sm' className='py-6'>Csak a spájzom összetevői</Checkbox>
                 {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
