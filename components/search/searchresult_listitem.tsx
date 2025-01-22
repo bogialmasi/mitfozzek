@@ -22,7 +22,7 @@ interface MyListItemProps {
 
 export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
-  
+
   return (
     <div className='py-4'>
       <Card className="max-w-xl overflow-visible">
@@ -41,10 +41,11 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
           <div>
             {/* Ingredients List */}
             <p className="text-sm font-semibold">Hozzávalók:</p>
-            <ul className="flex space-x-4">
-              {recipe.ingredients.map((ingredient) => (
+            <ul className="flex space-x-1">
+              {recipe.ingredients.map((ingredient, index) => (
                 <li key={ingredient.id} className="text-sm text-default-500">
                   {ingredient.name}
+                  {index < recipe.ingredients.length - 1 && ','}
                 </li>
               ))}
             </ul>
@@ -55,13 +56,13 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
                 ? recipe.recipe_description
                 : `${recipe.recipe_description.slice(0, 100)}...`}
               {recipe.recipe_description.length > 100 && (
-                 <button
-                 onClick={() => setShowFullDescription(!showFullDescription)}
-                 className="text-primary text-sm ml-1 underline"
-               >
-                 {showFullDescription ? 'Mutass kevesebbet' : 'Mutass többet'}
-               </button>
-             )}
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-primary text-sm ml-1 underline"
+                >
+                  {showFullDescription ? 'Mutass kevesebbet' : 'Mutass többet'}
+                </button>
+              )}
             </p>
             <p className="text-sm">Recept elkészítési ideje: {recipe.recipe_time}</p>
           </div>
