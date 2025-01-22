@@ -16,7 +16,7 @@ export const Examples = {
             password: 'password2',
             user_desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
             email: 'user2@email.com'
-        
+
         }
     ],
 
@@ -30,7 +30,7 @@ export const Examples = {
             recipe_time: '1 perc',
             recipe_headcount: 1,
             source_user_id: 2
-        }, 
+        },
         {
             recipe_id: 2,
             recipe_name: 'Avokádó krém',
@@ -85,6 +85,14 @@ export const Examples = {
         {
             ingredient_id: 3,
             ingredient_name: 'Avokádó'
+        },
+        {
+            ingredient_id: 51,
+            ingredient_name: 'Brokkoli'
+        },
+        {
+            ingredient_id: 1261,
+            ingredient_name: 'Tej'
         }
     ],
 
@@ -103,7 +111,7 @@ export const Examples = {
             recipe_id: 2,
             ingredient_id: 3
         },
-            // Ha egy receptben több összetevő van, azok nem lehetnek tömbben pl [1,3]
+        // Ha egy receptben több összetevő van, azok nem lehetnek tömbben pl [1,3]
         {
             recipe_id: 3,
             ingredient_id: 1
@@ -119,7 +127,7 @@ export const Examples = {
             // Vegán kategória id-je db-ben: 1
             recipe_id: 1,
             category_id: 1
-        }, 
+        },
         {
             // Vegán kategória id-je db-ben: 1
             recipe_id: 2,
@@ -132,12 +140,60 @@ export const Examples = {
             // Előétel kategória id-je db-ben: 1
             recipe_id: 1,
             dishtype_id: 1
-        }, 
+        },
         {
             // Előétel kategória id-je db-ben: 1
             recipe_id: 2,
             dishtype_id: 1
         }
-    ]
+    ],
 
+    measurements: [
+        {
+            measurement_id: 1,
+            measurement_name: 'g',
+        },
+        {
+            measurement_id: 2,
+            measurement_name: 'ml'
+        }
+    ],
+
+    con_user_pantry: [
+        {
+            user_id: 1,
+            pantry_id: 1
+        },
+        {
+            user_id: 2,
+            pantry_id: 2
+        }
+    ],
+
+    pantry: [
+        {
+            pantry_id: 1,
+            ingredient_id: 3, // Avokádó
+            ingredient_quantity: 300,
+            measurement_id: 1 // g
+        },
+        {
+            pantry_id: 1,
+            ingredient_id: 1, // Alma
+            ingredient_quantity: 300,
+            measurement_id: 1 // g
+        },
+        {
+            pantry_id: 1,
+            ingredient_id: 51, // Brokkoli
+            ingredient_quantity: 300,
+            measurement_id: 1 // g
+        },
+        {
+            pantry_id: 1,
+            ingredient_id: 1261, // Tej
+            ingredient_quantity: 1000,
+            measurement_id: 2 // ml
+        }
+    ]
 }
