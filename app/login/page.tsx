@@ -5,11 +5,12 @@ import { Button, Form, Input } from "@heroui/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from "@heroui/link";
+import { useAuthentication } from "../context/authenticationContext";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
+    const {login} = useAuthentication(); // from Context
     const [error, setError] = useState('');
     const router = useRouter();
 
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
         if (data.success) {
             // Redirect to /search after successful login
-            localStorage.setItem('token', data.token);
+            login(data.token);
             router.push('/search');
           } else {
             setError(data.message || 'Login failed.');
@@ -57,7 +58,7 @@ export default function LoginPage() {
                 <Input
                     value={password} onChange={(e) => setPassword(e.target.value)}
                     isRequired
-                    errorMessage="!"
+                    errorMessage="Adjon meg jelszót!"
                     label="Jelszó"
                     labelPlacement="outside"
                     name="password"

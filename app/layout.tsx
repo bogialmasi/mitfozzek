@@ -6,9 +6,12 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/navbar/navbar";
 import { Footer } from "@/components/footer";
 import { MyBackToTopButton } from "@/components/backtotop";
+
+import { UserAuthenticationProvider } from "./context/authenticationContext";
+import { MyAlertHandler } from "@/components/alert_handler";
 
 /**
  * <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
@@ -38,6 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+
     <html suppressHydrationWarning lang="en">
       <head />
       <body
@@ -46,18 +50,22 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              {children}
-              <MyBackToTopButton/>
-            </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Footer/>
-            </footer>
-          </div>
-        </Providers>
+        <UserAuthenticationProvider>
+          <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+            <div className="relative flex flex-col min-h-screen">
+            <MyAlertHandler />
+              <Navbar />
+              <main className="flex-grow">
+              
+                {children}
+                <MyBackToTopButton />
+              </main>
+              <footer className="w-full flex items-center justify-center py-3">
+                <Footer />
+              </footer>
+            </div>
+          </Providers>
+        </UserAuthenticationProvider>
       </body>
     </html>
   );

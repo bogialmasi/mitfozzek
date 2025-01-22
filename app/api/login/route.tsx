@@ -22,17 +22,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Hibás adatok' }, { status: 401 });
     }
 
+    // argon2 verification
     const validPassword = await argon2.verify(user.password, password);
+    if(!validPassword){
+      return NextResponse.json({ success: false, message: 'Hibás jelszó' }, { status: 401 });
+    }
 
     if (validPassword) {
       // Generate a JWT and send it to the client
-      const token = generateToken({ id: user.id, username: user.username });
+      // generateToken comes from /lib/jwt's function, is a 'sign'
+      const token = generateToken({ id: user.user_id, username: user.username });
 
       return NextResponse.json({
         success: true,
         token,
-        message: 'Sikeres bejelentkezés'
+        message: 'Sikeres bejelentkezés, token:' + token
       });
+
     } else {
       return NextResponse.json({ success: false, message: 'Hibás adatok' }, { status: 401 });
     }
