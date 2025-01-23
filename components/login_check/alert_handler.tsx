@@ -22,7 +22,7 @@ export const MyAlertHandler = () => {
 
   return (
     <div
-      className={`fixed bottom-5 left-5 z-50 w-auto max-w-xs ${alertClasses}`}
+      className={`fixed bottom-5 left-5 z-50 w-auto max-w-md ${alertClasses}`}
     >
       <MyAlert />
     </div>

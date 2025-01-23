@@ -11,8 +11,7 @@ import { Footer } from "@/components/footer";
 import { MyBackToTopButton } from "@/components/backtotop";
 
 import { UserAuthenticationProvider } from "./context/authenticationContext";
-import { MyAlertHandler } from "@/components/alert_handler";
-
+import { MyAlertHandler } from "@/components/login_check/alert_handler";
 /**
  * <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
  */
