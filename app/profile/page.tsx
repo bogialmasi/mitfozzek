@@ -5,6 +5,7 @@ import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
 import { MyPantry } from "@/components/profile/pantry";
+import { HeroSettings } from "@/components/icons";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -64,10 +65,10 @@ export default function ProfilePage() {
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
                   href={siteConfig.profileMenuItems.modifyProfile}
                 >
-                  Profilom módosítása
+                  <HeroSettings/> Profilom módosítása
                 </Link>
                 <div className={subtitle({ class: "mt-4" })}>
-                  <h3>Keresési feltéteim: <br /> <Link> Módosítás </Link></h3>
+                  <h3>Keresési feltéteim: <br /> <Link><HeroSettings/>Módosítás</Link></h3>
                 </div>
               </div>
             </section>

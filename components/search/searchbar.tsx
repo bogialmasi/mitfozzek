@@ -3,7 +3,7 @@
 /* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
 import { Button, Checkbox, Input } from "@heroui/react";
-import { CancelIcon } from '../icons';
+import { CancelIcon, HeroCancel } from '../icons';
 
 interface MySearchBarProps {
     list: { key: number; value: string }[];
@@ -79,7 +79,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                                 onPress={() => handleRemoveItem(key)} key={key}>
                                 {item.value}
                                 <span className="flex-shrink-0">
-                                    <CancelIcon style={{ width: '12px', height: '12px' }} />
+                                    <HeroCancel/>
                                 </span>
                             </Button>
                         )

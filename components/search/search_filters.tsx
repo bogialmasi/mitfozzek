@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MyDropdown } from './dropdown';
 import { Button, Form, Input } from "@heroui/react";
 import { MySearchBar } from './searchbar';
-import { SearchIcon } from '../icons';
+import { HeroSearch, SearchIcon } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { useRouter } from 'next/navigation';
 
@@ -140,7 +140,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
                     radius: "full",
                     variant: "shadow",
                 })} type="submit">
-                    Keresés <SearchIcon />
+                    Keresés <HeroSearch />
                 </Button>
             </Form>
         </div>

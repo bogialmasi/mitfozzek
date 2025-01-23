@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
-import { ArrowUpIcon } from "./icons";
+import { ArrowUpIcon, HeroArrowUp } from "./icons";
 import { button as buttonStyles } from "@heroui/theme";
 
 export const MyBackToTopButton: React.FC = () => {
@@ -31,7 +31,7 @@ export const MyBackToTopButton: React.FC = () => {
                 })}
                 onPress={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-                <ArrowUpIcon />
+                <HeroArrowUp />
             </Button>
         </div>
     );

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { subtitle, title } from '@/components/primitives';
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
-import { HeartFilledIcon, SearchIcon } from '@/components/icons';
+import { HeartFilledIcon, HeroEmptyHeart, HeroSearch, HeroShoppingCart, SearchIcon } from '@/components/icons';
 import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/ingredients_table';
 import { Button } from '@heroui/react';
@@ -98,13 +98,14 @@ export default function RecipePage() {
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/`}
             >
-              Recept elmentése a kedvencek közé <HeartFilledIcon />
+              <HeroEmptyHeart />Recept elmentése a kedvencek közé 
+              {/* If succesful save -> HeroFilledHeart*/}
             </Button>
             <Button
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/`}
             >
-              Bevásárlólista készítése
+              <HeroShoppingCart/>Bevásárlólista készítése
             </Button>
           </div>
           <div className="justify-center py-8">
@@ -115,7 +116,7 @@ export default function RecipePage() {
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/search`}
             >
-              Új recept keresése <SearchIcon />
+              Új recept keresése <HeroSearch />
             </Link>
           </div>
         </div>

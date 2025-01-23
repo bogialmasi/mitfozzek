@@ -1,5 +1,5 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { CancelIcon, CheckmarkIcon } from "../icons";
+import { CancelIcon, CheckmarkIcon, HeroCheck } from "../icons";
 
 interface Ingredient {
     id: number;
@@ -32,8 +32,8 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe }
         {(ingredient) => (
           <TableRow key={ingredient.id}>
             <TableCell>{ingredient.name}</TableCell>
-            <TableCell>200</TableCell>
-            <TableCell>g</TableCell>
+            <TableCell>200g</TableCell>
+            <TableCell><HeroCheck/></TableCell>
           </TableRow>
         )}
       </TableBody>
