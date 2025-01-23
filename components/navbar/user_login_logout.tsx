@@ -2,6 +2,7 @@
 import { useAuthentication } from "@/app/context/authenticationContext";
 import { Button } from "@heroui/button";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
+import { button as buttonStyles } from "@heroui/theme";
 import Link from "next/link";
 
 export const MyUserLoginLogout = () => {
@@ -11,7 +12,10 @@ export const MyUserLoginLogout = () => {
             {user ? (
                 <Dropdown aria-label="light">
                     <DropdownTrigger>
-                        <Button variant="bordered">{user.username}</Button>
+                        <Button className={buttonStyles({
+                            radius: "full",
+                            variant: "shadow",
+                        })}>{user.username}</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
                         <DropdownItem key="profile" href="/profile">
@@ -25,7 +29,11 @@ export const MyUserLoginLogout = () => {
             ) : (
                 <Dropdown>
                     <DropdownTrigger>
-                        <Button variant="bordered">Bejelentkezés</Button>
+                        <Button className={buttonStyles({
+                            color: "primary",
+                            radius: "full",
+                            variant: "shadow",
+                        })}>Bejelentkezés</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
                         <DropdownItem key="login" href="/login">

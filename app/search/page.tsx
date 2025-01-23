@@ -85,7 +85,7 @@ export default function SearchPage() {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <div className="w-full max-w-xl text-center justify-center overflow-visible ">
+      <div className="w-full max-w-xl text-left justify-center overflow-visible ">
         <h1 className={title()}>Keresés a receptek között</h1>
         <MySearch onSearch={handleSearch} />
       </div>
