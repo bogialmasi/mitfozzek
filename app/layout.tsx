@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer";
 import { MyBackToTopButton } from "@/components/backtotop";
 
 import { UserAuthenticationProvider } from "./context/authenticationContext";
-import { MyAlertHandler } from "@/components/login_check/alert_handler";
+import { MyLogoutAlert } from "@/components/login_check/alert_loggedout";
 /**
  * <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
  */
@@ -52,7 +52,7 @@ export default function RootLayout({
         <UserAuthenticationProvider>
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
             <div className="relative flex flex-col min-h-screen">
-            <MyAlertHandler />
+            <MyLogoutAlert />
               <Navbar />
               <main className="flex-grow">
               
