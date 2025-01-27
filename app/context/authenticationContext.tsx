@@ -43,7 +43,12 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
       } else {
         try {
           const decodedUser = jwtDecode<User>(token);
-          setUser(decodedUser);
+          setUser({
+            userId: decodedUser.userId,
+            username: decodedUser.username,
+          })
+          console.log("Decoded User:", decodedUser, "\n userId:", decodedUser.userId, "\n username:", decodedUser.username);
+          //setUser(decodedUser);
         } catch (error) {
           console.error('Token is invalid', error);
         }
