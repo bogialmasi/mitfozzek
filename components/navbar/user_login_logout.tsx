@@ -22,7 +22,7 @@ export const MyUserLoginLogout = () => {
                             Profilom
                         </DropdownItem>
                         <DropdownItem key="logout" onPress={logout}>
-                            Kijelentkezés
+                            <a href="/">Kijelentkezés</a>
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>

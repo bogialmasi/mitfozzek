@@ -2,7 +2,8 @@
 
 import { useAuthentication } from '@/app/context/authenticationContext';
 import { useEffect, useState } from 'react';
-import { MyAlert } from './logout_alert';
+import { MyAlert } from './alert_loggedout';
+
 
 export const MyAlertHandler = () => {
   const { user } = useAuthentication();

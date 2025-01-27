@@ -7,8 +7,8 @@ export const MyAlert = () => {
             title="A bejelentkezés ideje lejárt"
             description="Jelentkezzen be újra"
             endContent={
-                <Button color="warning" size="sm" variant="flat" href="/login">
-                    Bejelentkezés
+                <Button color="warning" size="sm" variant="flat">
+                    <a href="/login">Bejelentkezés</a>
                 </Button>
             }
             variant="faded"

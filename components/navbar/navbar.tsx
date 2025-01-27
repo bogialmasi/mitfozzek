@@ -20,21 +20,23 @@ import {
   Logo,
 } from "@/components/icons";
 import { MyUserLoginLogout } from "./user_login_logout";
+import { useAuthentication } from "@/app/context/authenticationContext";
+import { useRouter } from "next/router";
 
 export const Navbar = () => {
   // Check if user is logged in by checking if JWT token exists
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, logout } = useAuthentication();
 
   useEffect(() => {
     const token = localStorage.getItem('jwtToken');
     setIsLoggedIn(!!token);  // true if token exists, false otherwise
   }, []);
 
-  const navItems = isLoggedIn
+  const navItems = user
     ? [
       { label: "Profil", href: "/profile" },
       { label: "Keresés", href: "/search" },
-      { label: "Kijelentkezés", href: "/logout" },
     ]
     : [
       { label: "Főoldal", href: "/" },
