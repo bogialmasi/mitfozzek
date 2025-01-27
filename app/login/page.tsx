@@ -1,7 +1,7 @@
 'use client'
 import * as React from "react";
 import { title } from "@/components/primitives";
-import { Button, Form, Input } from "@heroui/react";
+import { Button, Form, Input, Spinner } from "@heroui/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from "@heroui/link";
@@ -10,13 +10,15 @@ import { useAuthentication } from "../context/authenticationContext";
 export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const {login} = useAuthentication(); // from Context
+    const [loading, setLoading] = useState(false);
+    const { login } = useAuthentication();
     const [error, setError] = useState('');
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
         const response = await fetch('/api/login', {
             method: 'POST',
@@ -30,11 +32,13 @@ export default function LoginPage() {
 
         if (data.success) {
             // Redirect to /search after successful login
+            setLoading(false);
             login(data.token);
             router.push('/search');
-          } else {
+        } else {
+            setLoading(false);
             setError(data.message || 'Login failed.');
-          }
+        }
     };
 
     return (
@@ -71,6 +75,7 @@ export default function LoginPage() {
                 <div>
                     <h3>Nincs fiókja? <Link href="/register">Regisztráció</Link></h3>
                 </div>
+                {loading && <Spinner />}
             </Form>
         </section>
     );
