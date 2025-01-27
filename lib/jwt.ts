@@ -4,15 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load the environment variables from .env.local
 
 const JWT_SECRET = process.env.JWT_SECRET!;  // The secret key for JWT signing, The '!' ensures it won't be undefined
-const EXPIRES = '1m';
-console.log("My secret key: " + JWT_SECRET)
+const EXPIRES = '15m';
 // Check if the JWT_SECRET is defined
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET nincs a lokális változók között");
 }
 
 // Generate a JWT
-export function generateToken(payload: object) {
+export function generateToken(payload: { userId: number, username: string }) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: EXPIRES });
 }
 
