@@ -1,14 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { subtitle, title } from '@/components/primitives';
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { HeartFilledIcon, HeroEmptyHeart, HeroSearch, HeroShoppingCart, SearchIcon } from '@/components/icons';
 import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/ingredients_table';
-import { Button } from '@heroui/react';
+import { Button, useDisclosure } from '@heroui/react';
+import { useAuthentication } from '../context/authenticationContext';
+import { MySavedAlert } from '@/components/recipe/alert_recipesaved';
+import { PressEvent } from '@react-types/shared';
+import { MyLoginModal } from '@/components/login_check/modal_login';
 
 // Recipe interface
 interface Recipe {
@@ -31,6 +35,87 @@ export default function RecipePage() {
   const [resultRecipe, setResultRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuthentication();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertContent, setAlertContent] = useState({ title: "", description: "", color: "success" }); // default is success, fail is danger color
+
+  const router = useRouter();
+  const query = router;
+
+  /* TODO handle exception if saving fails, show red alert! */
+  const handlePress = (e: PressEvent) => {
+    const buttonId = e.target.id;
+    if (!user) {
+      onOpen(); // Trigger modal if the user is not logged in
+    } else {
+      // Update alert content based on button id
+      if (buttonId === "shopping") {
+        setAlertContent({
+          title: "Hozzáadva",
+          description: "A recept összetevői bekerültek a bevásárlólistába",
+          color: "success",
+        });
+      }
+      /* exception handling needed! */
+      setAlertVisible(true); // Show the alert
+    }
+  };
+
+  const userId = user?.userId;
+  const recipeId = resultRecipe?.recipe_id
+
+  const handleFavorites = async () => {
+    if (!userId) {
+      console.error('Hiányzó userId');
+      return;
+    }
+    if (!recipeId) {
+      console.error('Hiányzó recipeId');
+      return;
+    }
+    try {
+      const response = await fetch('/api/favrecipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // sending userId in headers
+        },
+        body: JSON.stringify({
+          userId,
+          recipeId,
+        }),
+      });
+      const result = await response.json();
+      console.log('Response:', result);
+      if (response.ok) {
+        // Success
+        setAlertContent({
+          title: "Sikeres mentés",
+          description: "Recept elmentve a kedvencek közé",
+          color: "success",
+        });
+      } else {
+        // Something went wrong
+        setAlertContent({
+          title: "Sikertelen mentés",
+          description: "A recept mentése sikertelen. Próbálja újra",
+          color: "danger",
+        });
+      }
+      setAlertVisible(true); // Show the alert
+    } catch (error) {
+      console.error('Favorites mentés hiba:', error);
+      setAlertContent({
+        title: "Sikertelen mentés",
+        description: "A recept mentése sikertelen. Próbálja újra",
+        color: "danger",
+      });
+      setAlertVisible(true); // Show the alert
+    }
+  }
+
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -67,7 +152,17 @@ export default function RecipePage() {
   if (loading) return <p>Recept betöltése...</p>;
   if (error) return <p>Hiba: {error}</p>;
   if (!resultRecipe) {
-    return <p>No recipe matches the search criteria :(</p>;
+    return (
+      <div>
+        <p>Ez a recept nem létezik.</p>
+        <Link
+          className={buttonStyles({ variant: "bordered", radius: "full" })}
+          href={`/search`}
+        >
+          Új recept keresése <HeroSearch />
+        </Link>
+      </div>
+    )
   }
 
 
@@ -94,19 +189,32 @@ export default function RecipePage() {
         {/* Right Side: 60% */}
         <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
           <div className="flex gap-2 justify-center">
+
             <Button
+              id='favorites'
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/`}
+              onPress={handleFavorites}
             >
-              <HeroEmptyHeart />Recept elmentése a kedvencek közé 
+              <HeroEmptyHeart />Recept elmentése a kedvencek közé
               {/* If succesful save -> HeroFilledHeart*/}
             </Button>
+
             <Button
+              id='shopping'
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/`}
+              onPress={handlePress}
             >
-              <HeroShoppingCart/>Bevásárlólista készítése
+              <HeroShoppingCart />Bevásárlólista készítése
             </Button>
+            {alertVisible && (
+              <MySavedAlert
+                title={alertContent.title}
+                description={alertContent.description}
+                color="success"
+              />
+            )}
           </div>
           <div className="justify-center py-8">
             <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
@@ -118,6 +226,7 @@ export default function RecipePage() {
             >
               Új recept keresése <HeroSearch />
             </Link>
+            <MyLoginModal isOpen={isOpen} onOpenChange={onOpenChange} />
           </div>
         </div>
       </section>
