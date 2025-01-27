@@ -3,6 +3,12 @@ import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
 
+interface User {
+  user_id: number;
+  username: string;
+  password: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
@@ -12,11 +18,11 @@ export async function POST(req: NextRequest) {
     }
 
     const [rows] = await pool.query(
-      'SELECT * FROM users WHERE username = ?',
+      'SELECT user_id, username, password FROM users WHERE username = ?',
       [username]
     );
 
-    const user = (rows as any[])[0];
+    const user = (rows as User[])[0];
 
     if (!user) {
       return NextResponse.json({ success: false, message: 'Hibás adatok' }, { status: 401 });
@@ -31,12 +37,12 @@ export async function POST(req: NextRequest) {
     if (validPassword) {
       // Generate a JWT and send it to the client
       // generateToken comes from /lib/jwt's function, is a 'sign'
-      const token = generateToken({ id: user.user_id, username: user.username });
+      const token = generateToken({ userId: user.user_id, username: user.username });
 
       return NextResponse.json({
         success: true,
         token,
-        message: 'Sikeres bejelentkezés, token:' + token
+        message: 'Sikeres bejelentkezés'
       });
 
     } else {
