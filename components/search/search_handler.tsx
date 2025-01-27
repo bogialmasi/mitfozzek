@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { MyDropdown } from './dropdown';
+import { MyDropdown } from './dropdown_searchfilters';
 import { Button, Form, Input } from "@heroui/react";
-import { MySearchBar } from './searchbar';
+import { MySearchBar } from './searchbar_ingredients';
 import { HeroSearch, SearchIcon } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { useRouter } from 'next/navigation';

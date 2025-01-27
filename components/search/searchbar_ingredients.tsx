@@ -1,9 +1,10 @@
 'use client'
 
-/* Search for ingredients. The chosen items show up in a list. */
 import React, { useState, useMemo } from 'react';
-import { Button, Checkbox, Input } from "@heroui/react";
+import { Button, Checkbox, Input, useDisclosure } from "@heroui/react";
 import { CancelIcon, HeroCancel } from '../icons';
+import { useAuthentication } from '@/app/context/authenticationContext';
+import { MyCheckbox } from './checkbox_search_mypantryitems';
 
 interface MySearchBarProps {
     list: { key: number; value: string }[];
@@ -16,6 +17,7 @@ interface MySearchBarProps {
 
 export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, onSelectionChange, isOpen, setIsOpen }) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [checkBoxSelected, setCheckBoxSelected] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -55,7 +57,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     placeholder="Keressen a hozávalók között..."
                     variant="bordered"
                 />
-                <Checkbox size='sm' className='py-6'>Csak a spájzom összetevői</Checkbox>
+                <MyCheckbox/>
                 {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
@@ -79,7 +81,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                                 onPress={() => handleRemoveItem(key)} key={key}>
                                 {item.value}
                                 <span className="flex-shrink-0">
-                                    <HeroCancel/>
+                                    <HeroCancel />
                                 </span>
                             </Button>
                         )

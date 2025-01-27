@@ -43,7 +43,6 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
           selectedKeys={selectedKeys}
           selectionMode="multiple"
           variant="bordered"
-        /* TODO When selecting the items, NextUI puts a checkmark to it by default, where is it? bg-gray-200 should have a different tone for when in dark mode */
         >
           {list.map((item) => (
             <DropdownItem key={item.key} value={item.key} 
