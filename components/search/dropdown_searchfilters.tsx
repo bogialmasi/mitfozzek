@@ -1,12 +1,11 @@
 'use client'
-/* MyDropdown is for MySearch, choose from DishCategory or DishType */
 import React, { useMemo } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 
 interface MyDropdownProps {
-  list: { key: number; value: string }[]; // List passed as props
-  selectedKeys: Set<number>; // Set of selected keys
-  onSelectionChange: (keys: number[]) => void; // Handler to update selected keys
+  list: { key: number; value: string }[];
+  selectedKeys: Set<number>;
+  onSelectionChange: (keys: number[]) => void;
 }
 
 export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSelectionChange }) => {
