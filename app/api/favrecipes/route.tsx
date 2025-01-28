@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+
+// GET method gives back the FULL favorite recipe of the user including ingredients
 export async function GET(req: NextRequest) {
     try {
         //Get the token from the Authorization header
@@ -20,20 +22,48 @@ export async function GET(req: NextRequest) {
 
         //Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; // Extract userId from the decoded token
         console.log("userId:", userId);
 
         if (!userId) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
-
         }
 
-        // Use the userId to query the database for user-specific data
-        const [result] = await pool.query('SELECT * FROM user_fav_recipes WHERE user_id = ?', [userId]);
+        // Get the user's favorite recipes (user_fav_recipes)
+        const [user_fav_recipes] = await pool.query('SELECT * FROM user_fav_recipes WHERE user_id = ?', [userId]);
+        const favoriteRecipes = (user_fav_recipes as RowDataPacket[]);
 
-        // Return the results
-        console.log('Rows from query:', result);
-        return NextResponse.json(result);
+        // Store detailed recipes with ingredients
+        const fullRecipe = [];
+
+        // Loop through favorite recipes and get detailed data
+        for (const fav of favoriteRecipes) {
+            // Get the recipe details (recipes) for each favorite recipe
+            const [recipes] = await pool.query('SELECT * FROM recipes WHERE recipe_id = ?', [fav.recipe_id]);
+            const recipe = (recipes as RowDataPacket[])[0];  // Assuming only one recipe per query
+
+            // Get the ingredients for this recipe (con_recipe_ingredients)
+            const [con_recipe_ingredients] = await pool.query('SELECT * FROM con_recipe_ingredients WHERE recipe_id = ?', [recipe.recipe_id]);
+            const conIngredients = (con_recipe_ingredients as RowDataPacket[]);
+
+            // Store ingredient details
+            const ingredients = [];
+
+            // Loop through the con_recipe_ingredients table to get the ingredients
+            for (const con of conIngredients) {
+                const [ingredient] = await pool.query('SELECT * FROM ingredients WHERE ingredient_id = ?', [con.ingredient_id]);
+                ingredients.push((ingredient as RowDataPacket[])[0]);  // Assuming only one ingredient per query
+            }
+
+            // Combine recipe data with its ingredients and add to the result
+            fullRecipe.push({
+                ...recipe,  // Recipe data
+                ingredients: ingredients,  // Ingredients for this recipe
+            });
+        }
+
+        // Return the detailed recipe data
+        return NextResponse.json(fullRecipe);
     } catch (error) {
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
