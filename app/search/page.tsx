@@ -4,7 +4,7 @@ import { MySearch } from '@/components/search/search_handler';
 import { Button, Form, Input, Spinner } from "@heroui/react";
 import { title } from '@/components/primitives';
 import { useRouter } from 'next/navigation';
-import { MyListItem } from '@/components/search/searchresult_listitem';
+import { MyListItem } from '@/components/search/card_searchresult_listitem';
 
 // This is what a recipe looks like in my example.ts file
 interface Recipe {

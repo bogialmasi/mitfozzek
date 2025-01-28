@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { title } from '@/components/primitives';
-import { MyListItem } from '@/components/search/searchresult_listitem';
+import { MyListItem } from '@/components/search/card_searchresult_listitem';
 
 // This is what a recipe looks like in my example.ts file
 interface Recipe {

@@ -8,7 +8,7 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar/navbar";
 import { Footer } from "@/components/footer";
-import { MyBackToTopButton } from "@/components/backtotop";
+import { MyBackToTopButton } from "@/components/button_backtotop";
 
 import { UserAuthenticationProvider } from "./context/authenticationContext";
 import { MyLogoutAlert } from "@/components/login_check/alert_loggedout";
