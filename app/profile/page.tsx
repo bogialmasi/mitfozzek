@@ -68,7 +68,7 @@ export default function ProfilePage() {
   if (loading) return (
   <div>
     <div className="flex justify-center items-center h-screen">
-      <p>Loading...</p>
+      <p>Betöltés...</p>
       <Spinner />
     </div>
   </div>);
@@ -83,21 +83,18 @@ export default function ProfilePage() {
             <div className="justify-right gap-6"><h1 className={title()}>{profile?.username}</h1></div>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                isExternal
                 className={buttonStyles({ variant: "bordered", radius: "full" })}
                 href={siteConfig.profileMenuItems.addRecipe}
               >
                 Recept hozzáadása
               </Link>
               <Link
-                isExternal
                 className={buttonStyles({ variant: "bordered", radius: "full" })}
                 href={siteConfig.profileMenuItems.myRecipes}
               >
                 Receptjeim
               </Link>
               <Link
-                isExternal
                 className={buttonStyles({ variant: "bordered", radius: "full" })}
                 href={siteConfig.profileMenuItems.favRecipes}
               >
@@ -107,7 +104,6 @@ export default function ProfilePage() {
                 <h3>{profile?.userDescription}</h3>
               </div>
               <Link
-                isExternal
                 className={buttonStyles({ variant: "bordered", radius: "full" })}
                 href={siteConfig.profileMenuItems.modifyProfile}
               >
