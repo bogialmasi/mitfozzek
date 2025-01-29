@@ -7,13 +7,7 @@ import { useEffect, useState } from "react";
 import { MyPantry } from "@/components/profile/pantry";
 import { HeroFilledHeart, HeroSettings } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
-
-interface User {
-  userId: number;
-  username: string;
-  userDescription: string | null;
-  email: string;
-}
+import { User } from "@/types";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
