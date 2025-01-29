@@ -75,7 +75,11 @@ export default function LoginPage() {
                 <div>
                     <h3>Nincs fiókja? <Link href="/register">Regisztráció</Link></h3>
                 </div>
-                {loading && <Spinner />}
+                {loading &&
+                    <div className="flex justify-center items-center h-screen">
+                        <p>Betöltés...</p>
+                        <Spinner />
+                    </div>}
             </Form>
         </section>
     );
