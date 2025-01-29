@@ -7,28 +7,15 @@ import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { HeartFilledIcon, HeroEmptyHeart, HeroSearch, HeroShoppingCart, SearchIcon } from '@/components/icons';
 import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
-import { MyIngredientsTable } from '@/components/recipe/ingredients_table';
+import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
 import { Button, useDisclosure } from '@heroui/react';
 import { useAuthentication } from '../context/authenticationContext';
-import { MySavedAlert } from '@/components/recipe/alert_recipesaved';
+import { MySuccessAlert } from '@/components/recipe/alert_success';
 import { PressEvent } from '@react-types/shared';
 import { MyLoginModal } from '@/components/login_check/modal_login';
-
-// Recipe interface
-interface Recipe {
-  recipe_id: number;
-  recipe_name: string;
-  recipe_description: string;
-  recipe_time: string;
-  recipe_headcount: number;
-  source_user_id: number;
-  ingredients: Ingredient[];
-}
-
-interface Ingredient {
-  id: number;
-  name: string;
-}
+import { Ingredient, Recipe } from '@/types';
+import { MyDangerAlert } from '@/components/recipe/alert_danger';
+import { MyAddToFavoritesButton } from '@/components/recipe/button_addtofavorites';
 
 export default function RecipePage() {
   const searchParams = useSearchParams();
@@ -38,8 +25,11 @@ export default function RecipePage() {
   const { user } = useAuthentication();
   const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
 
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertContent, setAlertContent] = useState({ title: "", description: "", color: "success" }); // default is success, fail is danger color
+  const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+  const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
+
+  const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
+  const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
 
   const router = useRouter();
   const query = router;
@@ -52,14 +42,13 @@ export default function RecipePage() {
     } else {
       // Update alert content based on button id
       if (buttonId === "shopping") {
-        setAlertContent({
+        setSuccessAlertContent({
           title: "Hozzáadva",
           description: "A recept összetevői bekerültek a bevásárlólistába",
-          color: "success",
         });
       }
       /* exception handling needed! */
-      setAlertVisible(true); // Show the alert
+      setSuccessAlertVisible(true); // Show the alert
     }
   };
 
@@ -91,28 +80,26 @@ export default function RecipePage() {
       console.log('Response:', result);
       if (response.ok) {
         // Success
-        setAlertContent({
+        setSuccessAlertContent({
           title: "Sikeres mentés",
           description: "Recept elmentve a kedvencek közé",
-          color: "success",
         });
+        setSuccessAlertVisible(true); // Show the alert
       } else {
         // Something went wrong
-        setAlertContent({
+        setDangerAlertContent({
           title: "Sikertelen mentés",
           description: "A recept mentése sikertelen. Próbálja újra",
-          color: "danger",
         });
-      }
-      setAlertVisible(true); // Show the alert
+        setDangerAlertVisible(true);// Show the alert
+      } 
     } catch (error) {
       console.error('Favorites mentés hiba:', error);
-      setAlertContent({
+      setDangerAlertContent({
         title: "Sikertelen mentés",
-        description: "A recept mentése sikertelen. Próbálja újra",
-        color: "danger",
+        description: "A recept mentése sikertelen. Próbálja újra"
       });
-      setAlertVisible(true); // Show the alert
+      setDangerAlertVisible(true); // Show the alert
     }
   }
 
@@ -190,15 +177,7 @@ export default function RecipePage() {
         <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
           <div className="flex gap-2 justify-center">
 
-            <Button
-              id='favorites'
-              className={buttonStyles({ variant: "bordered", radius: "full" })}
-              href={`/`}
-              onPress={handleFavorites}
-            >
-              <HeroEmptyHeart />Recept elmentése a kedvencek közé
-              {/* If succesful save -> HeroFilledHeart*/}
-            </Button>
+            <MyAddToFavoritesButton recipeId={resultRecipe.recipe_id}/>
 
             <Button
               id='shopping'
@@ -208,11 +187,16 @@ export default function RecipePage() {
             >
               <HeroShoppingCart />Bevásárlólista készítése
             </Button>
-            {alertVisible && (
-              <MySavedAlert
-                title={alertContent.title}
-                description={alertContent.description}
-                color="success"
+            {successAlertVisible && (
+              <MySuccessAlert
+                title={successAlertContent.title}
+                description={successAlertContent.description}
+              />
+            )}
+            {dangerAlertVisible && (
+              <MyDangerAlert
+                title={dangerAlertContent.title}
+                description={dangerAlertContent.description}
               />
             )}
           </div>
