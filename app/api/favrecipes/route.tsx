@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
             });
         }
 
+        console.log(fullRecipe);
         // Return the detailed recipe data
         return NextResponse.json(fullRecipe);
     } catch (error) {
@@ -134,10 +135,15 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        //Get itemId from the request body
-        const { recipeId } = await req.json();
-        if (!recipeId) {
-            return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
+        //Get recipeId from the request URL
+        const { searchParams } = req.nextUrl;
+        const id = searchParams.get('recipeId') || null;
+        if (!id) {
+            return NextResponse.json({ success: false, message: 'No recipeId provided' }, { status: 400 });
+        }
+        const recipeId = Number(id);
+        if (isNaN(recipeId)) {
+            return NextResponse.json({ success: false, message: 'Invalid recipeId' }, { status: 400 });
         }
 
         /* Delete the recipe from user_fav_recipes
