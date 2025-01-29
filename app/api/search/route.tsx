@@ -1,5 +1,5 @@
-import { Examples } from '@/config/example';
 import pool from '@/lib/db';
+import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -10,36 +10,36 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl;
 
-    // searchParams returns string arrays but i convert them to numbers
     const searchQuery = searchParams.get('searchQuery') || null;
-    const selectedIngredients: number[] = searchParams.getAll('ingredients').map((value) => Number(value)) || null;
-    const selectedDishType: number[] = searchParams.getAll('dishType').map((value) => Number(value)) || null;
-    const selectedDishCategory: number[] = searchParams.getAll('dishCategory').map((value) => Number(value)) || null;
+    const selectedIngredients = searchParams.getAll('ingredients').map(Number);
+    const selectedDishType = searchParams.getAll('dishType').map(Number);
+    const selectedDishCategory = searchParams.getAll('dishCategory').map(Number);
+    const id = searchParams.get('id');
 
-    // Gives back only one recipe that matches the id
-    const id = searchParams.get('id') || null;
-
-
+    // One recipe based on ID
     if (id) {
       const recipeId = Number(id);
-      const recipe = Examples.recipes.find((r) => r.recipe_id === recipeId);
+      const [recipes] = await pool.query('SELECT * FROM recipes WHERE recipe_id = ?', [recipeId]);
+      const recipeResults = recipes as RowDataPacket[];
 
-      if (!recipe) {
-        return NextResponse.json({ success: false, message: 'Recipe not found' }, { status: 404 });
+      if (recipeResults.length === 0) {
+        return NextResponse.json({ success: false, message: 'Nincs találat' }, { status: 404 });
       }
 
-      // Attach related ingredients to the recipe
-      const ingredientIds = Examples.con_recipe_ingredients
-        .filter((relation) => relation.recipe_id === recipe.recipe_id)
-        .map((relation) => relation.ingredient_id);
-
-      const recipeIngredients = Examples.ingredients.filter((ingredient) =>
-        ingredientIds.includes(ingredient.ingredient_id)
+      // Ingredients of the recipe
+      const [ingredientsData] = await pool.query(
+        `SELECT ingredients.ingredient_id, ingredients.ingredient_name
+         FROM ingredients
+         JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+         WHERE con_recipe_ingredients.recipe_id = ?`,
+        [recipeId]
       );
 
+      const ingredientResults = ingredientsData as RowDataPacket[];
+
       const fullRecipe = {
-        ...recipe,
-        ingredients: recipeIngredients.map((ingredient) => ({
+        ...recipeResults[0],
+        ingredients: ingredientResults.map((ingredient) => ({
           id: ingredient.ingredient_id,
           name: ingredient.ingredient_name,
         })),
@@ -48,65 +48,73 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(fullRecipe);
     }
 
-    // If there are no filters, return all recipes (if filters are empty)
-    if (!selectedIngredients && !selectedDishType && !selectedDishCategory && !searchQuery) {
-      return NextResponse.json(Examples.recipes);
+    // Multiple recipes based on filters
+    let query = `
+      SELECT DISTINCT recipes.recipe_id, recipes.recipe_name, recipes.recipe_description, recipes.recipe_time, recipes.recipe_headcount
+      FROM recipes
+      LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
+    `;
+
+    const conditions = [];
+    const params = [];
+
+    // Dynamic adding filters
+    if (searchQuery) {
+      conditions.push('LOWER(recipes.recipe_name) LIKE LOWER(?)');
+      params.push(`%${searchQuery}%`);
+    }
+    if (selectedIngredients.length > 0) {
+      conditions.push(`con_recipe_ingredients.ingredient_id IN (${selectedIngredients.map(() => '?').join(',')})`);
+      params.push(...selectedIngredients);
+    }
+    if (selectedDishType.length > 0) {
+      conditions.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
+      params.push(...selectedDishType);
+    }
+    if (selectedDishCategory.length > 0) {
+      conditions.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
+      params.push(...selectedDishCategory);
     }
 
-    // Gives back multiple results based on filters
-    const searchResults = Examples.recipes.filter((recipe) => {
+    // Append conditions to query
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+    const [recipes] = await pool.query(query, params);
+    const recipeResults = recipes as RowDataPacket[];
 
-      // Recipe name
-      const matchesSearchQuery = searchQuery
-        ? recipe.recipe_name.toLowerCase().includes(searchQuery.toLowerCase())
-        : true;
+    if (recipeResults.length === 0) {
+      return NextResponse.json({ success: false, message: 'Nincs találat' }, { status: 404 });
+    }
 
-      // Every selected ingredient
-      const matchesIngredients = selectedIngredients?.length
-        ? selectedIngredients.every((ingredientId: number) =>
-          Examples.con_recipe_ingredients.some((relation) =>
-            relation.recipe_id === recipe.recipe_id &&
-            relation.ingredient_id === ingredientId))
-        : true;
-      // Any of the selected categories
-      const matchesCategories = selectedDishCategory?.length
-        ? selectedDishCategory.some((categoryId: number) =>
-          Examples.con_recipe_category.some((relation) =>
-            relation.recipe_id === recipe.recipe_id &&
-            relation.category_id === categoryId))
-        : true;
+    // Ingredients of the recipes
+    const recipesWithIngredients = await Promise.all(
+      recipeResults.map(async (recipe) => {
+        const [ingredientsData] = await pool.query(
+          `SELECT ingredients.ingredient_id, ingredients.ingredient_name
+           FROM ingredients
+           JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+           WHERE con_recipe_ingredients.recipe_id = ?`,
+          [recipe.recipe_id]
+        );
 
-      // Any of the selected categories
-      const matchesDishType = selectedDishType?.length
-        ? selectedDishType.some((categoryId: number) =>
-          Examples.con_recipe_dishtype.some((relation) =>
-            relation.recipe_id === recipe.recipe_id &&
-            relation.dishtype_id === categoryId))
-        : true;
+        const ingredientResults = ingredientsData as RowDataPacket[];
 
+        return {
+          ...recipe,
+          ingredients: ingredientResults.map((ingredient) => ({
+            id: ingredient.ingredient_id,
+            name: ingredient.ingredient_name,
+          })),
+        };
+      })
+    );
 
-      // If all conditions match, include the recipe
-      return matchesSearchQuery && matchesIngredients && matchesCategories && matchesDishType;
-    }).map((recipe) => {
-      // Attach related ingredients to each recipe
-      const ingredientIds = Examples.con_recipe_ingredients
-        .filter((relation) => relation.recipe_id === recipe.recipe_id)
-        .map((relation) => relation.ingredient_id);
-
-      const recipeIngredients = Examples.ingredients.filter((ingredient) =>
-        ingredientIds.includes(ingredient.ingredient_id)
-      );
-      return {
-        ...recipe,
-        ingredients: recipeIngredients.map((ingredient) => ({
-          id: ingredient.ingredient_id,
-          name: ingredient.ingredient_name,
-        })),
-      };
-    });
-    return NextResponse.json(searchResults);
+    return NextResponse.json(recipesWithIngredients);
   } catch (error) {
-    console.error('Hiba a keresés során:', error);
-    return NextResponse.json({ success: false, message: 'Szerver oldali hiba' }, { status: 500 });
+    console.error('Adatok lekérése sikertelen:', error);
+    return NextResponse.json({ success: false, message: 'Server oldali hiba' }, { status: 500 });
   }
 }
