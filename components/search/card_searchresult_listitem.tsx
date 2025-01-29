@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@heroui/react";
-
-interface Ingredient {
-  id: number;
-  name: string;
-}
-
-interface Recipe {
-  recipe_id: number;
-  recipe_name: string;
-  recipe_description: string;
-  recipe_time: string;
-  recipe_headcount: number;
-  source_user_id: number;
-  ingredients: Ingredient[]; // array of ingredients
-}
+import { Recipe, Ingredient } from '@/types';
 
 interface MyListItemProps {
   recipe: Recipe;
