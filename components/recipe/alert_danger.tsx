@@ -1,13 +1,12 @@
 import { Alert } from "@heroui/react";
 import { useEffect, useState } from "react";
 
-interface MySavedAlertProps {
+interface MyDangerAlertProps {
     title: string;
     description: string;
-    color?: "success" | "danger" | "default" | "primary" | "secondary" | "warning"
 }
 
-export const MySavedAlert: React.FC<MySavedAlertProps> = ({ title, description, color }) => {
+export const MyDangerAlert: React.FC<MyDangerAlertProps> = ({ title, description}) => {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
@@ -27,7 +26,7 @@ export const MySavedAlert: React.FC<MySavedAlertProps> = ({ title, description, 
     return (
         <div className={`fixed bottom-5 left-5 z-50 w-auto max-w-md ${alertClasses}`}>
             <div className="flex items-center justify-center w-full">
-                <Alert description={description} title={title} color={color} />
+                <Alert description={description} title={title} color="danger" />
             </div>
         </div>
     );
