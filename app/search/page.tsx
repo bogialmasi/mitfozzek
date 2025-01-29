@@ -5,22 +5,7 @@ import { Button, Form, Input, Spinner } from "@heroui/react";
 import { title } from '@/components/primitives';
 import { useRouter } from 'next/navigation';
 import { MyListItem } from '@/components/search/card_searchresult_listitem';
-
-// This is what a recipe looks like in my example.ts file
-interface Recipe {
-  recipe_id: number;
-  recipe_name: string;
-  recipe_description: string;
-  recipe_time: string;
-  recipe_headcount: number;
-  source_user_id: number;
-  ingredients: Ingredient[];
-}
-
-interface Ingredient {
-  id: number;
-  name: string;
-}
+import { Recipe, Ingredient } from '@/types';
 
 export default function SearchPage() {
   const router = useRouter();
@@ -97,12 +82,9 @@ export default function SearchPage() {
         {!loading && !error && results.length > 0 && (
           <div className="w-full max-w-xl text-center justify-center overflow-visible">
             <h1 className={title()}>Keresési találatok</h1>
-            {loading &&
-              <div>
-                <Spinner color="primary" label="Betöltés..." />
-              </div>}
+            {loading && <Spinner color="primary" label="Betöltés..." />}
             {results.map((recipe, index) => (
-              <MyListItem key={index} recipe={recipe} />
+              <MyListItem key={recipe.recipe_id} recipe={recipe} />
             ))}
           </div>
         )}
