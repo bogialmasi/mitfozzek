@@ -13,8 +13,10 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [pantryItems, setPantryItems] = useState<any[]>([]); // list of pantry items
+
   useEffect(() => {
+    setLoading(true);
     const token = localStorage.getItem('token');
     console.log(token);
     if (!token) {
@@ -46,13 +48,31 @@ export default function ProfilePage() {
             userDescription: data.user_description || 'Nincs megadva leírás.',
             email: data.email,
           });
-          setLoading(false);
         } else {
           setError(data.message || 'Az adatok betöltése sikertelen.');
         }
-      } catch (error) {
-        setError('An error occurred while fetching user data');
-      } finally {
+
+        const pantryResponse = await fetch('/api/pantry', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!pantryResponse.ok) {
+          setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
+          return;
+        }
+
+        const pantryData = await pantryResponse.json();
+        setPantryItems(pantryData.pantry_items || []);
+        setLoading(false);
+      } catch (err) {
+        console.error('Hiba a spájz feltöltése közben:', err);
+        setError('Something went wrong.');
+        setLoading(false);
+      }
+      finally {
         setLoading(false);
       }
     };
@@ -60,57 +80,64 @@ export default function ProfilePage() {
   }, []);
 
   if (loading) return (
-  <div>
-    <div className="flex justify-center items-center h-screen">
-      <p>Betöltés...</p>
-      <Spinner />
-    </div>
-  </div>);
+    <div>
+      <div className="flex justify-center items-center h-screen">
+        <p>Betöltés...</p>
+        <Spinner />
+      </div>
+    </div>);
 
   if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <section className="flex flex-col gap-4">
-        <div className="grid grid-flow-col auto-cols-max md:auto-cols-min grid-cols-1">
-          <section className="flex flex-col gap-6 py-8 md:py-10">
-            <div className="justify-right gap-6"><h1 className={title()}>{profile?.username}</h1></div>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                className={buttonStyles({ variant: "bordered", radius: "full" })}
-                href={siteConfig.profileMenuItems.addRecipe}
-              >
-                Recept hozzáadása
-              </Link>
-              <Link
-                className={buttonStyles({ variant: "bordered", radius: "full" })}
-                href={siteConfig.profileMenuItems.myRecipes}
-              >
-                Receptjeim
-              </Link>
-              <Link
-                className={buttonStyles({ variant: "bordered", radius: "full" })}
-                href={siteConfig.profileMenuItems.favRecipes}
-              >
-                Kedvenc receptjeim <HeroFilledHeart/>
-              </Link>
-              <div className={subtitle({ class: "mt-4" })}>
-                <h3>{profile?.userDescription}</h3>
-              </div>
-              <Link
-                className={buttonStyles({ variant: "bordered", radius: "full" })}
-                href={siteConfig.profileMenuItems.modifyProfile}
-              >
-                <HeroSettings /> Profilom módosítása
-              </Link>
-              <div className={subtitle({ class: "mt-4" })}>
-                <h3>Keresési feltéteim: <br /> <Link><HeroSettings />Módosítás</Link></h3>
+      <div className="grid grid-flow-col auto-cols-max md:auto-cols-min grid-cols-1">
+        <section className="flex flex-col gap-6 py-8 md:py-10">
+          <div className="justify-right gap-6"><h1 className={title()}>{profile?.username}</h1>
+          </div>
+          <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
+            {/* Left Side: 60% */}
+            <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link
+                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  href={siteConfig.profileMenuItems.addRecipe}
+                >
+                  Recept hozzáadása
+                </Link>
+                <Link
+                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  href={siteConfig.profileMenuItems.myRecipes}
+                >
+                  Receptjeim
+                </Link>
+                <Link
+                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  href={siteConfig.profileMenuItems.favRecipes}
+                >
+                  Kedvenc receptjeim <HeroFilledHeart />
+                </Link>
+                <div className={subtitle({ class: "mt-4" })}>
+                  <h3>{profile?.userDescription}</h3>
+                </div>
+                <Link
+                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  href={siteConfig.profileMenuItems.modifyProfile}
+                >
+                  <HeroSettings /> Profilom módosítása
+                </Link>
+                <div className={subtitle({ class: "mt-4" })}>
+                  <h3>Keresési feltéteim: <br /> <Link><HeroSettings />Módosítás</Link></h3>
+                </div>
               </div>
             </div>
+            {/* Right Side: 40% */}
+            <div className=" col-span-12 md:col-span-5 flex flex-col gap-4 py-6">
+              <MyPantry pantryIngredients={pantryItems} />
+            </div>
           </section>
-        </div>
-        {profile && <MyPantry userId={profile.userId} />}
-      </section>
+        </section>
+      </div>
     </div>
   );
 };
