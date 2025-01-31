@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const { username, password } = await req.json();
 
     if (!username || !password) {
-      return NextResponse.json({ success: false, message: 'Minden mező kitöltése kötelező' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Username and password required' }, { status: 400 });
     }
 
     const [rows] = await pool.query(
@@ -25,13 +25,13 @@ export async function POST(req: NextRequest) {
     const user = (rows as User[])[0];
 
     if (!user) {
-      return NextResponse.json({ success: false, message: 'Hibás adatok' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'No user found' }, { status: 401 });
     }
 
     // argon2 verification
     const validPassword = await argon2.verify(user.password, password);
     if(!validPassword){
-      return NextResponse.json({ success: false, message: 'Hibás jelszó' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Invalid password' }, { status: 401 });
     }
 
     if (validPassword) {
@@ -42,14 +42,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         token,
-        message: 'Sikeres bejelentkezés'
+        message: 'Login successful'
       });
 
     } else {
-      return NextResponse.json({ success: false, message: 'Hibás adatok' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Login failed' }, { status: 401 });
     }
   } catch (error) {
-    console.error('Hiba a bejelentkezés során:', error);
+    console.error('Login failed:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

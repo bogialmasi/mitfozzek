@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
 
   if (!type) {
     return NextResponse.json(
-      { error: 'Hiányzó paraméter' },
+      { error: 'Missing the paraméter' },
       { status: 400 }
     );
   }
@@ -35,14 +35,12 @@ export async function GET(req: NextRequest) {
     const [rows] = await pool.query(query);
     return NextResponse.json(rows); // fetched data is returned
   } catch (error) {
-    console.error('Adatbázis hívás hiba:', error);
+    console.error('Error fetching data:', error);
     return NextResponse.json(
-      { error: 'Adatbázis hiba' },
+      { error: 'Database error' },
       { status: 500 }
     );
   }
-
-
 }
 
 export async function POST() {

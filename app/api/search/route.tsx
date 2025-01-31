@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       const recipeResults = recipes as RowDataPacket[];
 
       if (recipeResults.length === 0) {
-        return NextResponse.json({ success: false, message: 'Nincs találat' }, { status: 404 });
+        return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
       }
 
       // Ingredients of the recipe
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
     const recipeResults = recipes as RowDataPacket[];
 
     if (recipeResults.length === 0) {
-      return NextResponse.json({ success: false, message: 'Nincs találat' }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
     }
 
     // Ingredients of the recipes
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(recipesWithIngredients);
   } catch (error) {
-    console.error('Adatok lekérése sikertelen:', error);
-    return NextResponse.json({ success: false, message: 'Server oldali hiba' }, { status: 500 });
+    console.error('Error fetching data:', error);
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

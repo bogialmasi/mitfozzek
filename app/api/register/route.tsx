@@ -6,8 +6,6 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password, email } = await req.json();
 
-    console.log("Front end-től kapott adatok: ", {username: username, password: password, email: email})
-
     if (!username || !password) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
@@ -19,7 +17,7 @@ export async function POST(req: NextRequest) {
     );
 
     if ((existingUser as any[]).length > 0) {
-      return NextResponse.json({ success: false, message: 'Felhasználónév foglalt' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Username taken' }, { status: 400 });
     }
 
     // Hash the password using Argon2
@@ -47,12 +45,12 @@ export async function POST(req: NextRequest) {
     );
 
     if ((result as any).affectedRows) {
-      return NextResponse.json({ success: true, message: 'Sikeres regisztráció' });
+      return NextResponse.json({ success: true, message: 'Registration successful' });
     } else {
-      return NextResponse.json({ success: false, message: 'Sikertelen regisztráció' }, { status: 500 });
+      return NextResponse.json({ success: false, message: 'Registration failed' }, { status: 500 });
     }
   } catch (error) {
-    console.error('Hiba a regisztráció során:', error);
+    console.error('Registration failed:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
