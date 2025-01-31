@@ -5,7 +5,6 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-    useDisclosure,
 } from "@heroui/react";
 
 interface MyLoginModalProps {

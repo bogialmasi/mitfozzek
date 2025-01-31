@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { subtitle, title } from '@/components/primitives';
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
-import { HeartFilledIcon, HeroEmptyHeart, HeroSearch, HeroShoppingCart, SearchIcon } from '@/components/icons';
+import { HeroSearch, HeroShoppingCart } from '@/components/icons';
 import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
 import { Button, useDisclosure } from '@heroui/react';
@@ -13,7 +13,7 @@ import { useAuthentication } from '../context/authenticationContext';
 import { MySuccessAlert } from '@/components/recipe/alert_success';
 import { PressEvent } from '@react-types/shared';
 import { MyLoginModal } from '@/components/login_check/modal_login';
-import { Ingredient, Recipe } from '@/types';
+import { Recipe } from '@/types';
 import { MyDangerAlert } from '@/components/recipe/alert_danger';
 import { MyAddToFavoritesButton } from '@/components/recipe/button_addtofavorites';
 
@@ -32,7 +32,6 @@ export default function RecipePage() {
   const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
 
   const router = useRouter();
-  const query = router;
 
   /* TODO handle exception if saving fails, show red alert! */
   const handlePress = (e: PressEvent) => {
@@ -52,56 +51,6 @@ export default function RecipePage() {
     }
   };
 
-  const userId = user?.userId;
-  const recipeId = resultRecipe?.recipe_id
-
-  const handleFavorites = async () => {
-    if (!userId) {
-      console.error('Hiányzó userId');
-      return;
-    }
-    if (!recipeId) {
-      console.error('Hiányzó recipeId');
-      return;
-    }
-    try {
-      const response = await fetch('/api/favrecipes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // sending userId in headers
-        },
-        body: JSON.stringify({
-          userId,
-          recipeId,
-        }),
-      });
-      const result = await response.json();
-      console.log('Response:', result);
-      if (response.ok) {
-        // Success
-        setSuccessAlertContent({
-          title: "Sikeres mentés",
-          description: "Recept elmentve a kedvencek közé",
-        });
-        setSuccessAlertVisible(true); // Show the alert
-      } else {
-        // Something went wrong
-        setDangerAlertContent({
-          title: "Sikertelen mentés",
-          description: "A recept mentése sikertelen. Próbálja újra",
-        });
-        setDangerAlertVisible(true);// Show the alert
-      } 
-    } catch (error) {
-      console.error('Favorites mentés hiba:', error);
-      setDangerAlertContent({
-        title: "Sikertelen mentés",
-        description: "A recept mentése sikertelen. Próbálja újra"
-      });
-      setDangerAlertVisible(true); // Show the alert
-    }
-  }
 
 
   useEffect(() => {
