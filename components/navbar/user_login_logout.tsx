@@ -3,7 +3,6 @@ import { useAuthentication } from "@/app/context/authenticationContext";
 import { Button } from "@heroui/button";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { button as buttonStyles } from "@heroui/theme";
-import Link from "next/link";
 
 export const MyUserLoginLogout = () => {
     const { user, logout } = useAuthentication();
@@ -15,13 +14,13 @@ export const MyUserLoginLogout = () => {
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "shadow",
-                        })}>{user.username}</Button>
+                        })}>{user.username} ID: {user.userId}</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
-                        <DropdownItem key="profile" href="/profile">
+                        <DropdownItem key="profile" href="/profile" textValue="Profilom">
                             Profilom
                         </DropdownItem>
-                        <DropdownItem key="logout" onPress={logout}>
+                        <DropdownItem key="logout" onPress={logout} textValue="Kijelentkezés">
                             <a href="/">Kijelentkezés</a>
                         </DropdownItem>
                     </DropdownMenu>
@@ -36,10 +35,10 @@ export const MyUserLoginLogout = () => {
                         })}>Bejelentkezés</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
-                        <DropdownItem key="login" href="/login">
+                        <DropdownItem key="login" href="/login" textValue="Bejelentkezés">
                             Bejelentkezés
                         </DropdownItem>
-                        <DropdownItem key="register" href="/register">
+                        <DropdownItem key="register" href="/register" textValue="Bejelentkezés">
                             Regisztráció
                         </DropdownItem>
                     </DropdownMenu>
