@@ -1,39 +1,72 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Examples } from "@/config/example";
+import pool from '@/lib/db';
+import * as jwt from 'jsonwebtoken';
+import { NextRequest, NextResponse } from 'next/server';
+import { RowDataPacket } from 'mysql2';
 
-// Gives back a list of pantry items based on the user_id params
+const JWT_SECRET = process.env.JWT_SECRET!;
 
+// Gives back a list of pantry items based on the user token
 export async function GET(req: NextRequest) {
-    if (req.method !== 'GET') {
-        return NextResponse.json({ success: false }, { status: 405 });
-    }
-
     try {
-        const { searchParams } = req.nextUrl;
-        const id = Number(searchParams.get('user_id')) || null; // converting id string to number
+        //Get the token from the Authorization header
+        console.log('Authorization header:', req.headers.get('Authorization'));
+        const authorization = req.headers.get('Authorization');
+        const token = authorization?.split(' ')[1];
+        if (!token) {
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+        }
 
-        // Get the pantry items for the user
-        const userPantries = Examples.pantry.filter(p =>
-            Examples.con_user_pantry.some(con => con.user_id === id && con.pantry_id === p.pantry_id)
+        //Verify and decode the token
+        const decoded: any = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.userId; // Extract userId from the decoded token
+
+        if (!userId) {
+            return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
+        }
+
+        // Check if the user has a pantry
+        const [pantry] = await pool.query<RowDataPacket[]>(
+            'SELECT pantry_id FROM con_user_pantry WHERE user_id = ?',
+            [userId]
         );
 
-        // Map pantry data to include ingredient names and measurement names
-        const fullPantry = userPantries.map(item => {
-            // Find the ingredient name
-            const ingredient = Examples.ingredients.find(i => i.ingredient_id === item.ingredient_id);
-            // Find the measurement name
-            const measurement = Examples.measurements.find(m => m.measurement_id === item.measurement_id);
+        // If user doesn't have a pantry, return an empty response
+        if (pantry.length === 0) {
+            return NextResponse.json({ success: true, pantry_items: [] });
+        }
 
-            return {
-                ingredient_name: ingredient ? ingredient.ingredient_name : 'Ismeretlen összetevő',
-                ingredient_quantity: item.ingredient_quantity,
-                measurement_name: measurement ? measurement.measurement_name : 'Ismeretlen mérték',
-            };
-        });
+        const pantryId = pantry[0].pantry_id;
 
-        return NextResponse.json(fullPantry);
+        // Query to get pantry items for the user
+        const [pantryItems] = await pool.query<RowDataPacket[]>(
+            `SELECT 
+                pantry.ingredient_id,
+                ingredients.ingredient_name AS ingredient_name,
+                pantry.ingredient_quantity,
+                measurements.measurement_name AS measurement_name
+            FROM pantry
+            JOIN ingredients ON pantry.ingredient_id = ingredients.ingredient_id
+            JOIN measurements ON pantry.measurement_id = measurements.measurement_id
+            WHERE pantry.pantry_id = ?`,
+            [pantryId]
+        );
+
+        // If no pantry items found, return an empty array
+        if (pantryItems.length === 0) {
+            return NextResponse.json({ success: true, pantry_items: [] });
+        }
+
+        // Format and return pantry items
+        const formattedPantryItems = pantryItems.map((item) => ({
+            ingredient_id: item.ingredient_id,
+            ingredient_name: item.ingredient_name,
+            ingredient_quantity: item.ingredient_quantity,
+            measurement_name: item.measurement_name
+        }));
+
+        return NextResponse.json({pantry_items: formattedPantryItems });
     } catch (error) {
-        console.error('Hiba a keresés során:', error);
-        return NextResponse.json({ success: false, message: 'Szerver oldali hiba' }, { status: 500 });
+        console.error('Error fetching user data:', error);
+        return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
     }
 }
