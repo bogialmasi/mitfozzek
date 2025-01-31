@@ -26,34 +26,47 @@ export async function GET(req: NextRequest) {
         }
 
         // Get the user's favorite recipes (user_fav_recipes)
-        const [user_fav_recipes] = await pool.query('SELECT * FROM user_fav_recipes WHERE user_id = ?', [userId]);
-        const favoriteRecipes = (user_fav_recipes as RowDataPacket[]);
+        const [user_fav_recipes] = await pool.query<RowDataPacket[]>(
+            'SELECT * FROM user_fav_recipes WHERE user_id = ?',
+            [userId]
+        );
+        const favoriteRecipes = user_fav_recipes as RowDataPacket[];
 
         const fullRecipePromises = favoriteRecipes.map(async (fav) => {
             // Get the recipe details for each favorite recipe
-            const [recipes] = await pool.query('SELECT * FROM recipes WHERE recipe_id = ?', [fav.recipe_id]);
-            const recipe = (recipes as RowDataPacket[])[0];  // Assuming one recipe per query
-      
-            // Get the ingredients for this recipe (using con_recipe_ingredients)
-            const [con_recipe_ingredients] = await pool.query('SELECT * FROM con_recipe_ingredients WHERE recipe_id = ?', [recipe.recipe_id]);
-            const conIngredients = (con_recipe_ingredients as RowDataPacket[]);
-      
-            // Get the ingredient details for each ingredient in this recipe
-            const ingredients = await Promise.all(conIngredients.map(async (con) => {
-              const [ingredient] = await pool.query('SELECT * FROM ingredients WHERE ingredient_id = ?', [con.ingredient_id]);
-              return (ingredient as RowDataPacket[])[0];  // Assuming one ingredient per query
-            }));
-      
-            // Combine the recipe data with the ingredients
+            const [recipes] = await pool.query<RowDataPacket[]>(
+                'SELECT * FROM recipes WHERE recipe_id = ?',
+                [fav.recipe_id]
+            );
+            const recipe = recipes[0] as RowDataPacket;  // Assuming one recipe per query
+
+            // Get the ingredients for the recipe (con_recipe_ingredients)
+            const [con_recipe_ingredients] = await pool.query<RowDataPacket[]>(
+                'SELECT * FROM con_recipe_ingredients WHERE recipe_id = ?',
+                [recipe.recipe_id]
+            );
+            const conIngredients = con_recipe_ingredients as RowDataPacket[];
+
+            // Get the ingredient details for each ingredient in the recipe
+            const ingredients = await Promise.all(
+                conIngredients.map(async (con) => {
+                    const [ingredient] = await pool.query<RowDataPacket[]>(
+                        'SELECT * FROM ingredients WHERE ingredient_id = ?',
+                        [con.ingredient_id]
+                    );
+                    return ingredient[0] as RowDataPacket;  // Assuming one ingredient per query
+                })
+            );
+
             return {
-              ...recipe,
-              ingredients,
+                ...recipe,
+                ingredients,
             };
-          });
-      
-          const fullRecipes = await Promise.all(fullRecipePromises);
-          console.log(fullRecipes);
-          return NextResponse.json(fullRecipes);
+        });
+
+        const fullRecipes = await Promise.all(fullRecipePromises);
+        console.log(fullRecipes);
+        return NextResponse.json(fullRecipes);
     } catch (error) {
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });

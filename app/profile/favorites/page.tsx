@@ -54,7 +54,9 @@ export default function FavoritesPage() {
   const handleDelete = (recipeId: number) => {
     setFavorites((prevFavorites) => {
       if (!prevFavorites) return []; // Ensure the return of an empty array if prevFavorites is null
-      return prevFavorites.filter((recipe) => recipe.recipe_id !== recipeId);
+      const newFavorites = prevFavorites.filter((recipe) => recipe.recipe_id !== recipeId);
+      console.log("DELETED. After delete:", newFavorites);
+      return newFavorites;
     });
   };
 
