@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [pantryItems, setPantryItems] = useState<any[]>([]); // list of pantry items
+  const [pantryItems, setPantryItems] = useState<any[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -45,7 +45,7 @@ export default function ProfilePage() {
           setProfile({
             userId: data.user_id,
             username: data.username,
-            userDescription: data.user_description || 'Nincs megadva leírás.',
+            userDescription: data.user_desc || 'Nincs megadva leírás.',
             email: data.email,
           });
         } else {
