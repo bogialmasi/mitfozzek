@@ -1,7 +1,11 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { subtitle } from "@/components/primitives";
-import { getKeyValue, Listbox, ListboxItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import { Listbox, ListboxItem } from "@heroui/react";
+import { HeroPlus, HeroSettings } from "../icons";
+import Link from "next/link";
+import { siteConfig } from "@/config/site";
+import { button as buttonStyles } from "@heroui/theme";
 
 interface PantryItem {
     ingredient_id: number;
@@ -22,25 +26,44 @@ export const MyPantry: React.FC<MyPantryProps> = ({ pantryIngredients }) => {
     }
 
     return (
-        <section>
-            <div className={subtitle({ class: "mt-4" })}>
-                Spájzom
-            </div>
-            <div className="w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
-                <Listbox aria-label="Spájzom" items={pantryIngredients} onAction={(key) => alert(key)}
-                    classNames={{
-                        base: "max-w-md",
-                        list: "max-h-[300px] overflow-scroll",
-                    }}>
-                    {(item) => (
-                        <ListboxItem
-                            key={item.ingredient_id} textValue={item.ingredient_name}
-                        ><div className="flex gap-2 items-center">
-                                {item.ingredient_name}, {item.ingredient_quantity} {item.measurement_name}
-                            </div>
-                        </ListboxItem>
-                    )}
-                </Listbox>
+        <section className="flex justify-center w-full py-8">
+            <div className="w-full max-w-md mx-auto px-4 py-6 border border-default-200 dark:border-default-100 rounded-lg">
+                <div className="text-center flex items-center justify-center gap-2  ">
+                    <div className={subtitle({ class: "mt-4" })}>
+                        Spájzom
+                    </div>
+                </div>
+
+                <div className="w-full max-w-md border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 mx-auto">
+                    <Listbox aria-label="Spájzom" items={pantryIngredients} onAction={(key) => alert(key)}
+                        classNames={{
+                            base: "max-w-md",
+                            list: "max-h-md overflow-auto",
+                        }}>
+                        {(item) => (
+                            <ListboxItem
+                                key={item.ingredient_id} textValue={item.ingredient_name}
+                            ><div className="flex gap-2 items-center">
+                                    {item.ingredient_name}, {item.ingredient_quantity} {item.measurement_name}
+                                </div>
+                            </ListboxItem>
+                        )}
+                    </Listbox>
+                </div>
+                <div className="py-4 flex justify-center space-x-4">
+                    <Link
+                        className={buttonStyles({ variant: "bordered", radius: "full" })}
+                        href={siteConfig.profileMenuItems.modifyPantry}
+                    >
+                        <HeroSettings /> Spájz módosítása
+                    </Link>
+                    <Link
+                        className={buttonStyles({ variant: "bordered", radius: "full" })}
+                        href={siteConfig.profileMenuItems.modifyPantry}
+                    >
+                        <HeroPlus /> Hozzáadás
+                    </Link>
+                </div>
             </div>
         </section>
     );

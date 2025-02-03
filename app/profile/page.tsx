@@ -5,7 +5,7 @@ import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
 import { MyPantry } from "@/components/profile/pantry";
-import { HeroFilledHeart, HeroSettings } from "@/components/icons";
+import { HeroFilledHeart, HeroPlus, HeroSettings, HeroUser } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
 import { User } from "@/types";
 
@@ -93,17 +93,18 @@ export default function ProfilePage() {
     <div>
       <div className="grid grid-flow-col auto-cols-max md:auto-cols-min grid-cols-1">
         <section className="flex flex-col gap-6 py-8 md:py-10">
-          <div className="justify-right gap-6"><h1 className={title()}>{profile?.username}</h1>
-          </div>
           <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
-            {/* Left Side: 60% */}
-            <div className="col-span-12 md:col-span-7 flex flex-col gap-2 py-12">
+            {/* Left Side */}
+            <div className="col-span-12 md:col-span-6 flex flex-col gap-2 py-12">
+              <div className="justify-center gap-6 py-6 flex">
+              <HeroUser /><h1 className={`${title()} flex items-center`}>{profile?.username}</h1>
+              </div>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
                   href={siteConfig.profileMenuItems.addRecipe}
                 >
-                  Recept hozzáadása
+                  <HeroPlus/> Recept hozzáadása
                 </Link>
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
@@ -131,8 +132,8 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            {/* Right Side: 40% */}
-            <div className=" col-span-12 md:col-span-5 flex flex-col gap-4 py-6">
+            {/* Right Side*/}
+            <div className=" col-span-12 md:col-span-6 flex flex-col gap-4 py-6">
               <MyPantry pantryIngredients={pantryItems} />
             </div>
           </section>
