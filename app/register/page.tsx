@@ -11,6 +11,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -36,24 +37,10 @@ export default function RegisterPage() {
         }
     };
 
-    /*
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      // Prevent default browser page refresh.
-      e.preventDefault();
-  
-      // Get form data as an object.
-      const data = Object.fromEntries(new FormData(e.currentTarget));
-  
-      // Submit data to your backend API.
-      setSubmitted(data);
-    };
-    
-    <Form onSubmit={onSubmit} validationBehavior="native">*/
-
     return (
         <section className="flex flex-col items-center justify-center">
-            <Form onSubmit={handleRegister} validationBehavior="native" 
-            className="w-full max-w-xs flex flex-col gap-6">
+            <Form onSubmit={handleRegister} validationBehavior="native"
+                className="w-full max-w-xs flex flex-col gap-6">
                 <div className="inline-block max-w-xl text-center justify-center">
                     <h1 className={title()}>Regisztráció</h1>
                 </div>
