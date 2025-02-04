@@ -442,3 +442,98 @@ export const HeroPlus: React.FC<IconSvgProps> = (props) => {
 
   )
 }
+
+// SVGator.com
+export const ChefHat: React.FC<IconSvgProps> = (props) => {
+  const { width = 30, height = 30, ...rest } = props;
+  return (
+    <svg
+      id="eO5eUNIu7xC1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 30 30"
+      width={width}
+      height={height}
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      data-project-id="8ed4c8a2a506485b8347491198ba1e56"
+      data-export-id="79ba1eba62d740029ff96f7e70f5ac19"
+      data-cached="true"
+      //projectId="8ed4c8a2a506485b8347491198ba1e56"
+      //exportId="79ba1eba62d740029ff96f7e70f5ac19"
+      //cached="true"
+      {...rest}
+    >
+      <ellipse rx="12.5" ry="12.5" transform="translate(15 15)" strokeWidth="0" />
+      <rect
+        width="9.641014"
+        height="8.383491"
+        rx="0"
+        ry="0"
+        transform="translate(10.179493 13.855848)"
+        fill="#fff"
+        strokeWidth="0"
+        strokeLinecap="round"
+      />
+      <line
+        x1="0"
+        y1="1.152581"
+        x2="0"
+        y2="-1.847419"
+        transform="translate(12.939759 19.895013)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="0.3"
+        strokeLinecap="round"
+        strokeLinejoin="bevel"
+      />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(18.940241 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
+      />
+      <ellipse rx="3" ry="3" transform="translate(15.482478 11.269074)" strokeWidth="0" />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(15 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
+      />
+      <ellipse rx="3" ry="3" transform="translate(11.581513 11.269074)" strokeWidth="0" />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(11.059759 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
+      />
+      <line
+        x1="0"
+        y1="1.152581"
+        x2="0"
+        y2="-1.847419"
+        transform="translate(16.919759 19.895013)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="0.3"
+        strokeLinecap="round"
+        strokeLinejoin="bevel"
+      />
+      <line
+        x1="0"
+        y1="1.152581"
+        x2="0"
+        y2="-1.847419"
+        transform="translate(15 19.895013)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="0.3"
+        strokeLinecap="round"
+        strokeLinejoin="bevel"
+      />
+    </svg>
+  );
+};

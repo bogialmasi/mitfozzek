@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "favicon.ico", // using SVGator.com then favicon.io/favicon-converter/
   },
 };
 
