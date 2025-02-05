@@ -1,5 +1,5 @@
 'use client'
-import { HeroCancel, HeroCheck } from "@/components/icons";
+import { HeroCancel, HeroCheck, HeroTrash } from "@/components/icons";
 import { title } from "@/components/primitives";
 import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
@@ -8,6 +8,7 @@ import { Spinner } from "@heroui/react";
 import { PressEvent } from "@react-types/shared";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
 
 export default function EditProfilePage() {
   const [username, setUsername] = useState('');
@@ -17,11 +18,11 @@ export default function EditProfilePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     const token = localStorage.getItem('token');
-    console.log(token);
     if (!token) {
       setError('Bejelentkezés szükséges');
       setLoading(false);
@@ -40,7 +41,7 @@ export default function EditProfilePage() {
         if (data.success && data.user_id && data.username) {
           setUsername(data.username);
           setEmail(data.email);
-          setDescription(data.user_desc);
+          setDescription(data.user_desc || ' ');
         } else {
           setError(data.message || 'Edit profile failed');
         }
@@ -72,6 +73,7 @@ export default function EditProfilePage() {
       return;
     }
 
+    /* Profile editing */
     try {
       const response = await fetch('/api/profile/edit', {
         method: 'PATCH',
@@ -105,6 +107,10 @@ export default function EditProfilePage() {
   // Does not save any of the changes
   function handleCancel(e: PressEvent): void {
     router.push('/profile');
+  }
+
+  function handleDeactivate(e: PressEvent): void {
+    setIsModalOpen(true);
   }
 
   if (loading) return (
@@ -170,8 +176,15 @@ export default function EditProfilePage() {
         <div className="py-4 flex justify-center w-full space-x-4">
           <Button type="submit"><HeroCheck />Módosítások mentése</Button><Button type="button" onPress={handleCancel}><HeroCancel />Mégsem</Button>
         </div>
+        <div className="flex justify-center w-full">
+          <Button type="button" onPress={handleDeactivate} color="danger" variant="ghost"><HeroTrash />Felhasználói fiók deaktiválása</Button>
+        </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </Form>
+      <MyDeactivateModal isOpen={isModalOpen} 
+      onOpenChange={(isModalOpen) =>{
+        if(!isModalOpen && !localStorage.getItem("token")) {router.replace("/")} // Replace doesn't allow going back
+      }} />
     </div>
   );
 }
