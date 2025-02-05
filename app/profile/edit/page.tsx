@@ -181,10 +181,13 @@ export default function EditProfilePage() {
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </Form>
-      <MyDeactivateModal isOpen={isModalOpen} 
-      onOpenChange={(isModalOpen) =>{
-        if(!isModalOpen && !localStorage.getItem("token")) {router.replace("/")} // Replace doesn't allow going back
-      }} />
+      <MyDeactivateModal isOpen={isModalOpen}
+        onOpenChange={(openState) =>{
+          setIsModalOpen(openState);
+          if(!openState && !localStorage.getItem('token')){
+            setTimeout(() => router.replace('/'), 5000)
+          }
+        }} />
     </div>
   );
 }

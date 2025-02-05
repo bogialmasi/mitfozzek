@@ -20,7 +20,7 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
     const router = useRouter();
     const [error, setError] = useState('');
     const { logout } = useAuthentication();
-    
+
     const onConfirm = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -39,9 +39,6 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
             setError(`A fiók deaktiválásra került.`)
             logout(); // removes token and user context
             onOpenChange(false);
-            setTimeout(() => {
-                router.replace("/")
-            }, 5000); // 5 sec
         } else {
             setError(data.message || 'Deaktiválás nem sikerült');
             console.log(data.message);
