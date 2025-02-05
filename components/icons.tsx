@@ -443,12 +443,21 @@ export const HeroPlus: React.FC<IconSvgProps> = (props) => {
   )
 }
 
+export const HeroTrash: React.FC<IconSvgProps> = (props) => {
+  const { width = 40, height = 40, ...rest } = props;
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+    </svg>
+  )
+}
+
 // SVGator.com
 export const ChefHat: React.FC<IconSvgProps> = (props) => {
   const { width = 30, height = 30, ...rest } = props;
   return (
     <svg
-      id="eO5eUNIu7xC1"
+      id="eN0uQVA8eW11"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 30 30"
@@ -456,69 +465,63 @@ export const ChefHat: React.FC<IconSvgProps> = (props) => {
       height={height}
       shapeRendering="geometricPrecision"
       textRendering="geometricPrecision"
-      data-project-id="8ed4c8a2a506485b8347491198ba1e56"
-      data-export-id="79ba1eba62d740029ff96f7e70f5ac19"
-      data-cached="true"
-      //projectId="8ed4c8a2a506485b8347491198ba1e56"
-      //exportId="79ba1eba62d740029ff96f7e70f5ac19"
-      //cached="true"
-      {...rest}
+      //dataProjectId="8ed4c8a2a506485b8347491198ba1e56"
+      //dataExportId="986326165eb54c609cbbe20abed97313"
+      //dataCached="false"
     >
-      <ellipse rx="12.5" ry="12.5" transform="translate(15 15)" strokeWidth="0" />
+      <ellipse rx="15" ry="15" transform="translate(15 15)" strokeWidth="0" />
       <rect
-        width="9.641014"
-        height="8.383491"
+        width="11"
+        height="10"
         rx="0"
         ry="0"
-        transform="translate(10.179493 13.855848)"
+        transform="translate(9.5 13.786673)"
         fill="#fff"
         strokeWidth="0"
         strokeLinecap="round"
+      />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(19.383744 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
+      />
+      <ellipse
+        rx="3"
+        ry="3"
+        transform="translate(15.980559 11.269074)"
+        strokeWidth="0"
+      />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(13.962383 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
+      />
+      <ellipse
+        rx="3"
+        ry="3"
+        transform="translate(12 11.269074)"
+        strokeWidth="0"
+      />
+      <ellipse
+        rx="3.940241"
+        ry="4.736672"
+        transform="translate(10.022142 13.310922)"
+        fill="#fff"
+        strokeWidth="0"
       />
       <line
         x1="0"
         y1="1.152581"
         x2="0"
         y2="-1.847419"
-        transform="translate(12.939759 19.895013)"
+        transform="translate(12 20.847419)"
         fill="none"
         stroke="#000"
-        strokeWidth="0.3"
-        strokeLinecap="round"
-        strokeLinejoin="bevel"
-      />
-      <ellipse
-        rx="3.940241"
-        ry="4.736672"
-        transform="translate(18.940241 13.310922)"
-        fill="#fff"
-        strokeWidth="0"
-      />
-      <ellipse rx="3" ry="3" transform="translate(15.482478 11.269074)" strokeWidth="0" />
-      <ellipse
-        rx="3.940241"
-        ry="4.736672"
-        transform="translate(15 13.310922)"
-        fill="#fff"
-        strokeWidth="0"
-      />
-      <ellipse rx="3" ry="3" transform="translate(11.581513 11.269074)" strokeWidth="0" />
-      <ellipse
-        rx="3.940241"
-        ry="4.736672"
-        transform="translate(11.059759 13.310922)"
-        fill="#fff"
-        strokeWidth="0"
-      />
-      <line
-        x1="0"
-        y1="1.152581"
-        x2="0"
-        y2="-1.847419"
-        transform="translate(16.919759 19.895013)"
-        fill="none"
-        stroke="#000"
-        strokeWidth="0.3"
+        strokeWidth="0.5"
         strokeLinecap="round"
         strokeLinejoin="bevel"
       />
@@ -527,10 +530,22 @@ export const ChefHat: React.FC<IconSvgProps> = (props) => {
         y1="1.152581"
         x2="0"
         y2="-1.847419"
-        transform="translate(15 19.895013)"
+        transform="translate(18 20.847419)"
         fill="none"
         stroke="#000"
-        strokeWidth="0.3"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        strokeLinejoin="bevel"
+      />
+      <line
+        x1="0"
+        y1="1.152581"
+        x2="0"
+        y2="-1.847419"
+        transform="translate(15 20.847419)"
+        fill="none"
+        stroke="#000"
+        strokeWidth="0.5"
         strokeLinecap="round"
         strokeLinejoin="bevel"
       />
