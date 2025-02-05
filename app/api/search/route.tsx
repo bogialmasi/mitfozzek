@@ -57,30 +57,30 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
     `;
 
-    const conditions = [];
+    const filters = [];
     const params = [];
 
     // Dynamic adding filters
     if (searchQuery) {
-      conditions.push('LOWER(recipes.recipe_name) LIKE LOWER(?)');
+      filters.push('LOWER(recipes.recipe_name) LIKE LOWER(?)');
       params.push(`%${searchQuery}%`);
     }
     if (selectedIngredients.length > 0) {
-      conditions.push(`con_recipe_ingredients.ingredient_id IN (${selectedIngredients.map(() => '?').join(',')})`);
+      filters.push(`con_recipe_ingredients.ingredient_id IN (${selectedIngredients.map(() => '?').join(',')})`);
       params.push(...selectedIngredients);
     }
     if (selectedDishType.length > 0) {
-      conditions.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
+      filters.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
       params.push(...selectedDishType);
     }
     if (selectedDishCategory.length > 0) {
-      conditions.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
+      filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
       params.push(...selectedDishCategory);
     }
 
     // Append conditions to query
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
+    if (filters.length > 0) {
+      query += ' WHERE ' + filters.join(' AND ');
     }
     const [recipes] = await pool.query(query, params);
     const recipeResults = recipes as RowDataPacket[];
