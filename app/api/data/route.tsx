@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
     }
 
   try{
-    const [rows] = await pool.query(query);
-    return NextResponse.json(rows); // fetched data is returned
+    const [result] = await pool.query(query);
+    return NextResponse.json(result); // fetched data is returned
   } catch (error) {
     console.error('Error fetching data:', error);
     return NextResponse.json(

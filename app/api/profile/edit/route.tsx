@@ -1,7 +1,7 @@
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import argon2 from 'argon2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -65,16 +65,21 @@ export async function PATCH(req: NextRequest) {
         console.log("query:", query);
         console.log("params:", params);
 
-        const [result, _] = await pool.query(query, params);
+        const [result] = await pool.query<RowDataPacket[]>(query, params);
 
-        const affectedRows = (result as ResultSetHeader).affectedRows;
-        if (affectedRows === 0) {
+        if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Profile edit failed' }, { status: 404 });
         }
 
         return NextResponse.json({ status: 200 });
 
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
         console.error('Error editing profile:', error);
         return NextResponse.json({ message: 'Editing profile failed' }, { status: 500 });
 

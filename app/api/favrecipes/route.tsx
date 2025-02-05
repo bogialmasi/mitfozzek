@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -109,6 +109,12 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
         );
         return NextResponse.json({ message: 'Item added to favorites', recipeId: recipeId, result }, { status: 200 });
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
         console.error('Error adding favorite item:', error);
         return NextResponse.json({ message: 'Adding to favorites failed' }, { status: 500 });
 
@@ -148,26 +154,24 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Invalid recipeId' }, { status: 400 });
         }
 
-        /* Delete the recipe from user_fav_recipes
-        [result] is extracting the first element of the array (ResultSetHeader), where affectedRows is located.
-        using _ indicated that fieldPacket[] is used but unintentional. Query returns multiple values but i only need one 
-        _ : convention in programming languages to sign an unused variable*/
-        const [result, _] = await pool.query(
+        const [result] = await pool.query<RowDataPacket[]>(
             'DELETE FROM user_fav_recipes WHERE user_id = ? AND recipe_id = ?',
             [userId, recipeId]
         );
-
-        // Explicitly cast resul to ResultSetHeader. that's where affectedRows is
-        const affectedRows = (result as ResultSetHeader).affectedRows;
-
         // If no rows were affected
-        if (affectedRows === 0) {
+        if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Recipe not found in favorites' }, { status: 404 });
         }
 
         return NextResponse.json({ message: 'Recipe removed from favorites', recipeId }, { status: 200 });
 
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
         console.error('Error deleting favorite item:', error);
         return NextResponse.json({ message: 'Deleting from favorites failed' }, { status: 500 });
     }

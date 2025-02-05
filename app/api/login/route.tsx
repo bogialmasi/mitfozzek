@@ -17,12 +17,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Username and password required' }, { status: 400 });
     }
 
-    const [rows] = await pool.query(
+    const [result] = await pool.query(
       'SELECT user_id, username, password FROM users WHERE username = ?',
       [username]
     );
 
-    const user = (rows as User[])[0];
+    const user = (result as User[])[0];
 
     if (!user) {
       return NextResponse.json({ success: false, message: 'No user found' }, { status: 401 });
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // argon2 verification
     const validPassword = await argon2.verify(user.password, password);
-    if(!validPassword){
+    if (!validPassword) {
       return NextResponse.json({ success: false, message: 'Invalid password' }, { status: 401 });
     }
 

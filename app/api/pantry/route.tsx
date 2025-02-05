@@ -64,8 +64,14 @@ export async function GET(req: NextRequest) {
             measurement_name: item.measurement_name
         }));
 
-        return NextResponse.json({pantry_items: formattedPantryItems });
+        return NextResponse.json({ pantry_items: formattedPantryItems });
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
     }

@@ -28,19 +28,19 @@ export async function GET(req: NextRequest) {
         }
 
         // Use the userId to query the database for user-specific data, not including the password
-        const [rows] = await pool.query<RowDataPacket[]>(
+        const [result] = await pool.query<RowDataPacket[]>(
             'SELECT user_id, username, user_desc, email FROM users WHERE user_id = ?',
             [userId]
         );
 
-        if (rows.length === 0) {
+        if (result.length === 0) {
             return NextResponse.json(
                 { success: false, message: 'User not found' },
                 { status: 404 }
             );
         }
 
-        const user = rows[0]; // The first row
+        const user = result[0]; // The first row
         return NextResponse.json({
             success: true,
             user_id: user.user_id,
@@ -49,6 +49,12 @@ export async function GET(req: NextRequest) {
             email: user.email,
         });
     } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
 
