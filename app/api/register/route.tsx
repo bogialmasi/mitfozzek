@@ -18,19 +18,20 @@ export async function POST(req: NextRequest) {
     if ((existingUser as any[]).length > 0) {
       return NextResponse.json({ success: false, message: 'Username taken' }, { status: 400 });
     }
-
-    // Hash the password using Argon2
-    const hashPassword = async (password: string) => {
-      try {
-        // Hash the password using Argon2 (this automatically salts the password)
-        const hashedPassword = await argon2.hash(password);
-        console.log(hashedPassword);
-        return hashedPassword;
-      } catch (err) {
-        console.error("Error hashing password:", err);
-        throw new Error("Password hashing failed");
-      }
-    };
+    /*
+      // Hash the password using Argon2
+        const hashPassword = async (password: string) => {
+          try {
+            // Hash the password using Argon2 (this automatically salts the password)
+            const hashedPassword = await argon2.hash(password);
+            console.log(hashedPassword);
+            return hashedPassword;
+          } catch (err) {
+            console.error("Error hashing password:", err);
+            throw new Error("Password hashing failed");
+          }
+        };
+    */
     const hashedPassword = await argon2.hash(password, {
       type: argon2.argon2i, // Argon2i - provides resistance to side-channel attacks
       memoryCost: 2 ** 16, // Memory cost: how much memory to use for hashing (higher is more secure)
