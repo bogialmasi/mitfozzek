@@ -49,7 +49,7 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1 space-x-2" href="/">
-            <ChefHat />
+        
             <p className="font-bold text-inherit">Mit főzzek?</p>
           </NextLink>
         </NavbarBrand>
