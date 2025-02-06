@@ -33,14 +33,18 @@ export async function GET(req: NextRequest) {
             [userId]
         );
 
+
         if (result.length === 0) {
             return NextResponse.json(
-                { success: false, message: 'User not found' },
+                { success: false, message: 'Nincs ilyen felhasználó' },
                 { status: 404 }
             );
         }
 
         const user = result[0]; // The first row
+        if (user.inactive === 1) {
+            return NextResponse.json({ success: false, message: 'Felhasználó deaktiválva' }, { status: 403 });
+        }
         return NextResponse.json({
             success: true,
             user_id: user.user_id,

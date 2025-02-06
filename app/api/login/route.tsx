@@ -7,6 +7,7 @@ interface User {
   user_id: number;
   username: string;
   password: string;
+  inactive: number;
 }
 
 export async function POST(req: NextRequest) {
@@ -14,24 +15,28 @@ export async function POST(req: NextRequest) {
     const { username, password } = await req.json();
 
     if (!username || !password) {
-      return NextResponse.json({ success: false, message: 'Username and password required' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Felhasználónév és jelszó megadása kötelező' }, { status: 400 });
     }
 
     const [result] = await pool.query(
-      'SELECT user_id, username, password FROM users WHERE username = ?',
+      'SELECT user_id, username, password, inactive FROM users WHERE username = ?',
       [username]
     );
 
     const user = (result as User[])[0];
 
     if (!user) {
-      return NextResponse.json({ success: false, message: 'No user found' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Nincs ilyen felhasználó' }, { status: 401 });
+    }
+
+    if (user.inactive === 1) {
+      return NextResponse.json({ success: false, message: 'Felhasználó deaktiválva' }, { status: 403 });
     }
 
     // argon2 verification
     const validPassword = await argon2.verify(user.password, password);
     if (!validPassword) {
-      return NextResponse.json({ success: false, message: 'Invalid password' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Helytelen jelszó' }, { status: 401 });
     }
 
     if (validPassword) {
@@ -42,11 +47,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         token,
-        message: 'Login successful'
+        message: 'Sikeres bejelentkezés'
       });
 
     } else {
-      return NextResponse.json({ success: false, message: 'Login failed' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Sikertelen bejelentkezés' }, { status: 401 });
     }
   } catch (error) {
     console.error('Login failed:', error);
