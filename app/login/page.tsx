@@ -37,7 +37,7 @@ export default function LoginPage() {
             router.push('/search');
         } else {
             setLoading(false);
-            setError(data.message || 'Login failed.');
+            setError(data.message || 'Hiba történt a bejelentkezéskor');
         }
     };
 
@@ -70,7 +70,9 @@ export default function LoginPage() {
                     type="password"
                     variant="bordered"
                 />
-                <Button type="submit">Belépés</Button>
+                <Button type="submit" isDisabled={loading}>
+                    {loading ? "Bejelentkezés..." : "Belépés"}
+                </Button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <div>
                     <h3>Nincs fiókja? <Link href="/register">Regisztráció</Link></h3>
