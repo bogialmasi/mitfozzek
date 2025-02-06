@@ -8,11 +8,8 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export async function PATCH(req: NextRequest) {
     try {
         // Get the token from the Authorization header
-        console.log(req.headers);
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
-        console.log('Token:', token);
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
         }
@@ -20,11 +17,20 @@ export async function PATCH(req: NextRequest) {
         // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Get userId from the decoded token
-        console.log("userId:", userId);
 
         if (!userId) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
+        const [userInactive] = await pool.query<RowDataPacket[]>('SELECT inactive FROM users WHERE user_id = ?', [userId]);
+        if (userInactive.length === 0) {
+            return NextResponse.json({ success: false, message: 'Nincs ilyen felhasználó' }, { status: 404 });
+        }
+        const user = userInactive[0];
+
+        if (user.inactive === 1) {
+            return NextResponse.json({ success: false, message: 'Deaktivált felhasználó' }, { status: 403 });
+        }
+
 
         const [result] = await pool.query<RowDataPacket[]>(`UPDATE users SET inactive = 1 WHERE user_id = ?`, [userId]);
 
