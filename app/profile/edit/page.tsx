@@ -185,7 +185,7 @@ export default function EditProfilePage() {
         onOpenChange={(openState) =>{
           setIsModalOpen(openState);
           if(!openState && !localStorage.getItem('token')){
-            setTimeout(() => router.replace('/'), 5000)
+            router.replace('/')
           }
         }} />
     </div>

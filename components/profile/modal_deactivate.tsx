@@ -34,11 +34,14 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
             },
         });
         const data = await response.json();
-
         if (response.status === 200) {
             setError(`A fiók deaktiválásra került.`)
             logout(); // removes token and user context
-            onOpenChange(false);
+            //onOpenChange(false);
+            setTimeout(() => {
+                onOpenChange(false); // Close after 5 seconds
+            }, 5000);
+
         } else {
             setError(data.message || 'Deaktiválás nem sikerült');
             console.log(data.message);
