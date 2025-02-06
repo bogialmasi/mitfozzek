@@ -26,7 +26,6 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper function to check if the token is expired
   const isTokenExpired = (token: string): boolean => {
     const decoded: any = jwtDecode(token);
     return decoded.exp * 1000 < Date.now(); // Expiration time is in seconds, convert to milliseconds
@@ -38,8 +37,7 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
       // If token is expired, log out the user
       if (isTokenExpired(token)) {
         console.log("Token has expired, logging out.");
-        localStorage.removeItem('token');
-        setUser(null);
+        logout();
       } else {
         try {
           const decodedUser = jwtDecode<User>(token);
@@ -48,21 +46,21 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
             username: decodedUser.username,
           })
           console.log("Decoded User:", decodedUser, "\n userId:", decodedUser.userId, "\n username:", decodedUser.username);
-          //setUser(decodedUser);
         } catch (error) {
           console.error('Token is invalid', error);
+          logout();
         }
       }
     }
     setLoading(false);
   }, []);
 
+  
   // Run expiration check every 5 seconds to see if the token has expired
   useEffect(() => {
     const interval = setInterval(() => {
       const token = localStorage.getItem('token');
       if (token && isTokenExpired(token)) {
-        console.log("Token expired after 1 minute, logging out.");
         localStorage.removeItem('token');
         setUser(null); // Clear the user state
       }
@@ -72,16 +70,24 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
     return () => clearInterval(interval);
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem('token', token);
-    const decodedUser = jwtDecode<User>(token);
-    setUser(decodedUser);
-  };
-
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('session');
     setUser(null);
   };
+
+  const login = (token: string) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('session', 'true') // session has started when user logged in
+    const decodedUser = jwtDecode<User>(token);
+    if (isTokenExpired(token)) {
+      console.log("Token expired on login, logging out.");
+      logout();
+    } else {
+      setUser(decodedUser);
+    };
+  };
+
 
   return (
     <UserAuthenticationContext.Provider value={{ user, loading, login, logout }}>
