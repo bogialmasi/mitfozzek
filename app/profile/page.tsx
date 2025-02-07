@@ -4,14 +4,14 @@ import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
-import { MyPantry } from "@/components/profile/pantry";
+import { MyPantryList } from "@/components/pantry/table_pantry";
 import { HeroFilledHeart, HeroPlus, HeroSettings, HeroUser } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
 import { User } from "@/types";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [pantryItems, setPantryItems] = useState<any[]>([]);
 
@@ -134,7 +134,7 @@ export default function ProfilePage() {
             </div>
             {/* Right Side*/}
             <div className=" col-span-12 md:col-span-6 flex flex-col gap-4 py-6">
-              <MyPantry pantryIngredients={pantryItems} />
+              <MyPantryList pantryIngredients={pantryItems} />
             </div>
           </section>
         </section>
