@@ -14,7 +14,7 @@ export const MyUserLoginLogout = () => {
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "shadow",
-                        })}>{user.username} ID: {user.userId}</Button>
+                        })}>Helló, {user.username}!</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
                         <DropdownItem key="profile" href="/profile" textValue="Profilom">
