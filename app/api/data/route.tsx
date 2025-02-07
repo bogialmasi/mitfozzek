@@ -24,6 +24,9 @@ export async function GET(req: NextRequest) {
     case 'dish_category':
       query = 'SELECT category_id AS "key", category_name AS "value" FROM dish_category;';
       break;
+      case 'measurement':
+      query = 'SELECT measurement_id AS "key", measurement_name AS "value" FROM measurements;';
+      break;
     default:
       return NextResponse.json(
         { error: 'Érvénytelen paraméter' },
@@ -41,8 +44,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function POST() {
-  return NextResponse.json({ message: 'This is a POST method' });
 }
