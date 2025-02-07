@@ -1,7 +1,7 @@
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import argon2 from 'argon2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import pool from '@/lib/db';
+import { ResultSetHeader } from 'mysql2';
 export async function POST(req: NextRequest) {
   try {
     const { username, password, email } = await req.json();
@@ -18,20 +19,7 @@ export async function POST(req: NextRequest) {
     if ((existingUser as any[]).length > 0) {
       return NextResponse.json({ success: false, message: 'Username taken' }, { status: 400 });
     }
-    /*
-      // Hash the password using Argon2
-        const hashPassword = async (password: string) => {
-          try {
-            // Hash the password using Argon2 (this automatically salts the password)
-            const hashedPassword = await argon2.hash(password);
-            console.log(hashedPassword);
-            return hashedPassword;
-          } catch (err) {
-            console.error("Error hashing password:", err);
-            throw new Error("Password hashing failed");
-          }
-        };
-    */
+
     const hashedPassword = await argon2.hash(password, {
       type: argon2.argon2i, // Argon2i - provides resistance to side-channel attacks
       memoryCost: 2 ** 16, // Memory cost: how much memory to use for hashing (higher is more secure)
@@ -39,10 +27,19 @@ export async function POST(req: NextRequest) {
       parallelism: 1, // Parallelism: how many threads to use (higher increases security)
     });
     // Insert new user into the database
-    const [result] = await pool.query(
+    const [result] = await pool.query<ResultSetHeader>(
       'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
       [username, hashedPassword, email]
     );
+
+    const resultId = result.insertId
+    console.log('ResultId:', resultId); // Auto increment id from insertion
+    if (result.insertId != null) {
+      const [resultPantry] = await pool.query<ResultSetHeader>(
+        'INSERT INTO con_user_pantry (user_id, pantry_id) VALUES (?, ?)',
+        [resultId, resultId] // Both user_id and pantry_id match
+      )
+    }
 
     if ((result as any).affectedRows) {
       return NextResponse.json({ success: true, message: 'Registration successful' });
