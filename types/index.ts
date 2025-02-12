@@ -9,6 +9,11 @@ export interface Ingredient {
   name: string;
 }
 
+export interface Measurement {
+  id: number;
+  name: string;
+}
+
 export interface Recipe {
   recipe_id: number;
   recipe_name: string;
