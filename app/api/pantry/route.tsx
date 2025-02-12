@@ -102,6 +102,16 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
         }
 
+        const [existingItem] = await pool.query<RowDataPacket[]>(
+            "SELECT * FROM pantry WHERE pantry_id = ? AND ingredient_id = ?",
+            [userId, ingredient_id]
+        );
+
+        if (existingItem.length > 0) {
+            // If a record is found, return a duplicate error
+            return NextResponse.json({ success: false, message: "Már van ilyen összetevő a spájzban" }, { status: 400 });
+        }
+
         await pool.query(
             "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity, measurement_id) VALUES (?, ?, ?, ?)",
             [userId, ingredient_id, ingredient_quantity, measurement_id]
