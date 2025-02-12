@@ -43,35 +43,3 @@ export const MyLogoutAlert = () => {
     </div>
   );
 };
-  /*
-    useEffect(() => {
-      //const token = localStorage.getItem('token');
-      const session = localStorage.getItem('session');
-      console.log('SESSION AFTER LOGIN:', session);
-      if (session === 'true') {
-        setWasSession(true);
-      }
-      setValidatedSession(true);
-    }, [user]);*/
-/*
-  useEffect(() => {
-    if (validatedSession && !checkedSession) {
-      setCheckedSession(true); // session is checked
-    }
-  }, [validatedSession]);
-
-  useEffect(() => {
-    if (validatedSession && wasSession && user === null && checkedSession) {
-      console.log('validated: ', validatedSession, ',was session: ', wasSession, ',user: ', user)
-      console.log("User got logged out")
-
-      const session = localStorage.getItem('session');
-      logout();
-      console.log('SESSION AFTER LOGOUT:', session)
-
-
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 5000); // Hide after 5 seconds
-    }
-  }, [user, wasSession, validatedSession, logout, checkedSession]);
-*/
