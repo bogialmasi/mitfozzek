@@ -1,36 +1,47 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { subtitle } from "@/components/primitives";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
-import { HeroCancel, HeroPlus, HeroSettings } from "../icons";
+import { Button, Input, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { HeroPlus, HeroSettings } from "../icons";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { button as buttonStyles } from "@heroui/theme";
-import { Ingredient, Measurement } from "@/types";
-import { MyPantrySearchBar } from "./searchbar_pantry";
-import { MyPantryDropdown } from "./dropdown_measurements";
 import { MyPantryModal } from "./modal_pantry";
+import { MyDangerAlert } from "../recipe/alert_danger";
+import { MySuccessAlert } from "../recipe/alert_success";
 
-interface PantryListItem {
+interface PantryItem {
     ingredient_id: number;
     ingredient_name: string;
     ingredient_quantity: number;
     measurement_name: string;
 }
 
-interface MyPantryListProps {
-    pantryIngredients: PantryListItem[];
+interface MyPantryTableProps {
+    pantryIngredients: PantryItem[];
 }
 
 
-export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients }) => {
+export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients: pantryIngredients }) => {
+
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });
+
+    const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
+    const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "", });
+
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal form
     const [searchQuery, setSearchQuery] = useState('');
-    const filteredPantryItems = pantryIngredients.filter((item) =>
+    const [pantryItems, setPantryItems] = useState<PantryItem[]>(pantryIngredients);
+    const [error, setError] = useState<string>('');
+
+    const filteredPantryItems = pantryItems.filter((item) =>
         item.ingredient_name.toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
 
-    const [ingredients, setIngredients] = useState<{key: number; value: string}[]>([]);
+
+    const [ingredients, setIngredients] = useState<{ key: number; value: string }[]>([]);
     const [measurements, setMeasurements] = useState<{ key: number; value: string }[]>([]);
 
     useEffect(() => {
@@ -54,19 +65,41 @@ export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients })
         const selectedMeasurement = measurements.find((measure) => measure.key === measurementId);
 
         if (selectedIngredient && selectedMeasurement) {
-            const newItem: PantryListItem = {
-                ingredient_id: selectedIngredient.key,
-                ingredient_name: selectedIngredient.value,
-                ingredient_quantity: quantity,
-                measurement_name: selectedMeasurement.value,
-            };
-
-            pantryIngredients.push(newItem);
-            console.log('New item added:', newItem);
+            const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); // item is already in the list
+            if (alreadyExistingItem) {
+                setDangerAlertContent({
+                    title: `${selectedIngredient.value} már van a spájzban`,
+                    description: `${selectedIngredient.value}, ${alreadyExistingItem.ingredient_quantity} ${alreadyExistingItem.measurement_name}`,
+                });
+                setDangerAlertVisible(true);
+            }
+            else {
+                const newItem: PantryItem = {
+                    ingredient_id: selectedIngredient.key,
+                    ingredient_name: selectedIngredient.value,
+                    ingredient_quantity: quantity,
+                    measurement_name: selectedMeasurement.value,
+                };
+                try {
+                    setPantryItems((prev) => [...prev, newItem]);
+                    setError('');
+                    setSuccessAlertContent({
+                        title: `Sikeres hozzáadás`,
+                        description: `${selectedIngredient.value} sikeresen hozzáadva a spájzhoz`,
+                    });
+                    setSuccessAlertVisible(true);
+                } catch (error) {
+                    setDangerAlertContent({
+                        title: "Hiba történt",
+                        description: "Az összetevő hozzáadása sikertelen. Próbálja újra.",
+                    });
+                    setDangerAlertVisible(true);
+                }
+            }
         }
     };
 
-    const getKeyValue = (item: PantryListItem, columnKey: string) => {
+    const getKeyValue = (item: PantryItem, columnKey: string) => {
         switch (columnKey) {
             case "ingredient_name":
                 return item.ingredient_name;
@@ -121,6 +154,18 @@ export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients })
                         ingredients={ingredients} measurements={measurements}
                         onAddItem={handleAddItem} />
                 </div>
+                {successAlertVisible && (
+                    <MySuccessAlert
+                        title={successAlertContent.title}
+                        description={successAlertContent.description}
+                    />
+                )}
+                {dangerAlertVisible && (
+                    <MyDangerAlert
+                        title={dangerAlertContent.title}
+                        description={dangerAlertContent.description}
+                    />
+                )}
             </div>
         </section>
     );

@@ -4,7 +4,7 @@ import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
-import { MyPantryList } from "@/components/pantry/table_pantry";
+import { MyPantryTable } from "@/components/pantry/table_pantry";
 import { HeroFilledHeart, HeroPlus, HeroSettings, HeroUser } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
 import { User } from "@/types";
@@ -134,7 +134,7 @@ export default function ProfilePage() {
             </div>
             {/* Right Side*/}
             <div className=" col-span-12 md:col-span-6 flex flex-col gap-4 py-6">
-              <MyPantryList pantryIngredients={pantryItems} />
+              <MyPantryTable pantryIngredients={pantryItems} />
             </div>
           </section>
         </section>
