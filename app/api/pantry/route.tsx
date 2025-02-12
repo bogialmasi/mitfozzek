@@ -76,3 +76,40 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
     }
 }
+
+export async function POST(req: NextRequest) {
+    //Get the token from the Authorization header
+    console.log('Authorization header:', req.headers.get('Authorization'));
+    const authorization = req.headers.get('Authorization');
+    const token = authorization?.split(' ')[1];
+    if (!token) {
+        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+    }
+
+    //Verify and decode the token
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId; // Extract userId from the decoded token
+
+    if (!userId) {
+        return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
+    }
+
+    try {
+        const { ingredient_id, ingredient_quantity, measurement_id } = await req.json();
+
+        // cannot insert without all three fields being filled in
+        if (!ingredient_id || !ingredient_quantity || !measurement_id) {
+            return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
+        }
+
+        await pool.query(
+            "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity, measurement_id) VALUES (?, ?, ?, ?)",
+            [userId, ingredient_id, ingredient_quantity, measurement_id]
+        );
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error inserting pantry item:", error);
+        return NextResponse.json({ success: false, message: "Database error" }, { status: 500 });
+    }
+}
