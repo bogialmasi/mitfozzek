@@ -1,11 +1,15 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { subtitle } from "@/components/primitives";
-import { getKeyValue, Input, Listbox, ListboxItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
-import { HeroPlus, HeroSettings } from "../icons";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { HeroCancel, HeroPlus, HeroSettings } from "../icons";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { button as buttonStyles } from "@heroui/theme";
+import { Ingredient, Measurement } from "@/types";
+import { MyPantrySearchBar } from "./searchbar_pantry";
+import { MyPantryDropdown } from "./dropdown_measurements";
+import { MyPantryModal } from "./modal_pantry";
 
 interface PantryListItem {
     ingredient_id: number;
@@ -20,11 +24,47 @@ interface MyPantryListProps {
 
 
 export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients }) => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal form
     const [searchQuery, setSearchQuery] = useState('');
     const filteredPantryItems = pantryIngredients.filter((item) =>
         item.ingredient_name.toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
 
+    const [ingredients, setIngredients] = useState<{key: number; value: string}[]>([]);
+    const [measurements, setMeasurements] = useState<{ key: number; value: string }[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [ingredientsRes, measurementsRes] = await Promise.all([
+                    fetch('/api/data?type=ingredients'),
+                    fetch('/api/data?type=measurement')
+                ]);
+                setIngredients(await ingredientsRes.json());
+                setMeasurements(await measurementsRes.json());
+            } catch (error) {
+                console.error('Dropdown adatok betöltése sikertelen:', error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleAddItem = (ingredientId: number, quantity: number, measurementId: number) => {
+        const selectedIngredient = ingredients.find((ing) => ing.key === ingredientId);
+        const selectedMeasurement = measurements.find((measure) => measure.key === measurementId);
+
+        if (selectedIngredient && selectedMeasurement) {
+            const newItem: PantryListItem = {
+                ingredient_id: selectedIngredient.key,
+                ingredient_name: selectedIngredient.value,
+                ingredient_quantity: quantity,
+                measurement_name: selectedMeasurement.value,
+            };
+
+            pantryIngredients.push(newItem);
+            console.log('New item added:', newItem);
+        }
+    };
 
     const getKeyValue = (item: PantryListItem, columnKey: string) => {
         switch (columnKey) {
@@ -57,14 +97,12 @@ export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients })
                     <TableHeader>
                         <TableColumn>Hozzávaló</TableColumn>
                         <TableColumn>Mennyiség</TableColumn>
-                        <TableColumn>Mértékegység</TableColumn>
                     </TableHeader>
                     <TableBody items={filteredPantryItems}>
                         {(item) => (
                             <TableRow key={item.ingredient_id}>
                                 <TableCell>{getKeyValue(item, "ingredient_name")}</TableCell>
-                                <TableCell>{getKeyValue(item, "ingredient_quantity")}</TableCell>
-                                <TableCell>{getKeyValue(item, "measurement_name")}</TableCell>
+                                <TableCell>{getKeyValue(item, "ingredient_quantity")} {getKeyValue(item, "measurement_name")}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
@@ -76,12 +114,12 @@ export const MyPantryList: React.FC<MyPantryListProps> = ({ pantryIngredients })
                     >
                         <HeroSettings /> Spájz módosítása
                     </Link>
-                    <Link
-                        className={buttonStyles({ variant: "bordered", radius: "full" })}
-                        href={siteConfig.profileMenuItems.modifyPantry}
-                    >
+                    <Button className={buttonStyles({ variant: "bordered", radius: "full" })} onPress={onOpen}>
                         <HeroPlus /> Hozzáadás
-                    </Link>
+                    </Button>
+                    <MyPantryModal isOpen={isOpen} onOpenChange={onOpenChange}
+                        ingredients={ingredients} measurements={measurements}
+                        onAddItem={handleAddItem} />
                 </div>
             </div>
         </section>
