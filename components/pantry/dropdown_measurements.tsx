@@ -23,7 +23,7 @@ export const MyPantryDropdown: React.FC<MyPantryDropdownProps> = ({ list, select
 
   /* Same as dropdown searchfilters but single selection! */
   return (
-    <div className='max-w-full'>
+    <div className='w-full'>
       <Dropdown>
         <DropdownTrigger>
           <Button variant="bordered">
