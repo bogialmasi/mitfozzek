@@ -73,7 +73,6 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                 <Divider />
                 <CardBody>
                     <div>
-                        {/* Ingredients List */}
                         <p className="text-sm font-semibold">Hozzávalók:</p>
                         <ul className="flex space-x-1">
                             {recipe.ingredients.map((ingredient, index) => (
@@ -84,7 +83,6 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                             ))}
                         </ul>
                         <Divider className="my-3" />
-                        {/* Description */}
                         <p className="text-sm">
                             {showFullDescription
                                 ? recipe.recipe_description
