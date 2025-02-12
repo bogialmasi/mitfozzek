@@ -4,6 +4,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { MyPantrySearchBar } from './searchbar_pantry';
 import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroPlus } from '../icons';
+import { button as buttonStyles } from "@heroui/theme";
 
 interface MyPantryModalProps {
     isOpen: boolean;
@@ -34,7 +35,7 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
                     setError('Bejelentkezés szükséges');
                     return;
                 }
-                const response = await fetch('/api/pantry', {
+                const res = await fetch('/api/pantry', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -42,15 +43,11 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
                     },
                     body: JSON.stringify(newItem),
                 });
-
-                if (response.ok) {
-                    console.log("Sikeresen hozzáadva");
-                    onOpenChange(false);
-                } else {
-                    console.error("Hozzáadás sikertelen");
-                }
+                onAddItem(ingredient, quantity, measurement); // updating pantry table
+                onOpenChange(false);
             } catch (error) {
                 console.error("Hozzáadás sikertelen:", error);
+                onOpenChange(false);
             }
         }
     };
@@ -71,24 +68,34 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
                         isOpen={ingredientSearchOpen}
                         setIsOpen={(e) => setIngredientSearchOpen(e)}
                     />
-                    <Input
-                        value={String(quantity)}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
-                        label="Quantity"
-                        type="number"
-                        variant="bordered"
-                    />
-                    <MyPantryDropdown
-                        list={measurements}
-                        selectedKeys={new Set(measurement !== null ? [measurement] : [])}
-                        onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
-                    />
+                    <div className='flex items-center justify-center w-full space-x-4'>
+                        <Input
+                            value={String(quantity)}
+                            onChange={(e) => setQuantity(Number(e.target.value))}
+                            placeholder="Mennyiség"
+                            type="number"
+                            variant="bordered"
+                        />
+                        <MyPantryDropdown
+                            list={measurements}
+                            selectedKeys={new Set(measurement !== null ? [measurement] : [])}
+                            onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
+                        />
+                    </div>
+                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="bordered" onPress={() => onOpenChange(false)}>
+                    <Button className={buttonStyles({
+                        radius: "full",
+                        variant: "flat",
+                    })} onPress={() => onOpenChange(false)}>
                         <HeroCancel /> Mégsem
                     </Button>
-                    <Button variant='flat' onPress={handleAddItem}>
+                    <Button className={buttonStyles({
+                        radius: "full",
+                        variant: "shadow",
+                        color: "primary",
+                    })} onPress={handleAddItem}>
                         <HeroPlus /> Hozzáadás
                     </Button>
                 </ModalFooter>
