@@ -12,11 +12,11 @@ export const MyDangerAlert: React.FC<MyDangerAlertProps> = ({ title, description
     useEffect(() => {
         setShowAlert(true);
         // Hide the alert after 2 sec
-        const timer = setTimeout(() => {
+        const timer: NodeJS.Timeout = setTimeout(() => {
             setShowAlert(false);
         }, 2000);
         return () => clearTimeout(timer); // Cleanup the timeout on unmount
-    }, []);
+    }, [showAlert]);
 
     // Apply the opacity transition to fade in/out
     const alertClasses = showAlert
