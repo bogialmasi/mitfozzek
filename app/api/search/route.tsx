@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       }
 
       // Ingredients of the recipe
-      const [ingredientsData] = await pool.query(
+      const [ingredientsData] = await pool.query<RowDataPacket[]>(
         `SELECT ingredients.ingredient_id, ingredients.ingredient_name
          FROM ingredients
          JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
@@ -35,11 +35,9 @@ export async function GET(req: NextRequest) {
         [recipeId]
       );
 
-      const ingredientResults = ingredientsData as RowDataPacket[];
-
       const fullRecipe = {
         ...recipeResults[0],
-        ingredients: ingredientResults.map((ingredient) => ({
+        ingredients: ingredientsData.map((ingredient) => ({
           id: ingredient.ingredient_id,
           name: ingredient.ingredient_name,
         })),
@@ -82,29 +80,25 @@ export async function GET(req: NextRequest) {
     if (filters.length > 0) {
       query += ' WHERE ' + filters.join(' AND ');
     }
-    const [recipes] = await pool.query(query, params);
-    const recipeResults = recipes as RowDataPacket[];
+    const [recipes] = await pool.query<RowDataPacket[]>(query, params);
 
-    if (recipeResults.length === 0) {
+    if (recipes.length === 0) {
       return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
     }
 
     // Ingredients of the recipes
     const recipesWithIngredients = await Promise.all(
-      recipeResults.map(async (recipe) => {
-        const [ingredientsData] = await pool.query(
+      recipes.map(async (recipe) => {
+        const [ingredientsData] = await pool.query<RowDataPacket[]>(
           `SELECT ingredients.ingredient_id, ingredients.ingredient_name
            FROM ingredients
            JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
            WHERE con_recipe_ingredients.recipe_id = ?`,
           [recipe.recipe_id]
         );
-
-        const ingredientResults = ingredientsData as RowDataPacket[];
-
         return {
           ...recipe,
-          ingredients: ingredientResults.map((ingredient) => ({
+          ingredients: ingredientsData.map((ingredient) => ({
             id: ingredient.ingredient_id,
             name: ingredient.ingredient_name,
           })),

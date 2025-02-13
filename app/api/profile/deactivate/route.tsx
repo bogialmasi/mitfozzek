@@ -1,7 +1,7 @@
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest) {
         }
 
 
-        const [result] = await pool.query<RowDataPacket[]>(`UPDATE users SET inactive = 1 WHERE user_id = ?`, [userId]);
+        const [result] = await pool.query<ResultSetHeader[]>(`UPDATE users SET inactive = 1 WHERE user_id = ?`, [userId]);
 
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Deactivating profile failed' }, { status: 400 });

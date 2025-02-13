@@ -1,7 +1,7 @@
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import argon2 from 'argon2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -65,7 +65,7 @@ export async function PATCH(req: NextRequest) {
         console.log("query:", query);
         console.log("params:", params);
 
-        const [result] = await pool.query<RowDataPacket[]>(query, params);
+        const [result] = await pool.query<ResultSetHeader[]>(query, params);
 
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Profile edit failed' }, { status: 404 });

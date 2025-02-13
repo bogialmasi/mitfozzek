@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import pool from '@/lib/db';
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 export async function POST(req: NextRequest) {
   try {
     const { username, password, email } = await req.json();
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user already exists
-    const [existingUser] = await pool.query(
+    const [existingUser] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE username = ?',
       [username]
     );

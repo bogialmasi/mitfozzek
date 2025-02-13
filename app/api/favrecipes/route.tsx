@@ -2,7 +2,7 @@ import { NextApiResponse } from 'next';
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -38,18 +38,17 @@ export async function GET(req: NextRequest) {
                 'SELECT * FROM recipes WHERE recipe_id = ?',
                 [fav.recipe_id]
             );
-            const recipe = recipes[0] as RowDataPacket;  // Assuming one recipe per query
+            const recipe = recipes[0];  // Assuming one recipe per query
 
             // Get the ingredients for the recipe (con_recipe_ingredients)
             const [con_recipe_ingredients] = await pool.query<RowDataPacket[]>(
                 'SELECT * FROM con_recipe_ingredients WHERE recipe_id = ?',
                 [recipe.recipe_id]
             );
-            const conIngredients = con_recipe_ingredients as RowDataPacket[];
 
             // Get the ingredient details for each ingredient in the recipe
             const ingredients = await Promise.all(
-                conIngredients.map(async (con) => {
+                con_recipe_ingredients.map(async (con) => {
                     const [ingredient] = await pool.query<RowDataPacket[]>(
                         'SELECT * FROM ingredients WHERE ingredient_id = ?',
                         [con.ingredient_id]
@@ -103,7 +102,7 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
         }
 
         //Insert into the database
-        const result = await pool.query(
+        const result = await pool.query<ResultSetHeader[]>(
             'INSERT INTO user_fav_recipes (user_id, recipe_id) VALUES (?, ?)',
             [userId, recipeId]
         );

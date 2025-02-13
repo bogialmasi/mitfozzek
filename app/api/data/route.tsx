@@ -1,4 +1,5 @@
 import pool from '@/lib/db';
+import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     }
 
   try{
-    const [result] = await pool.query(query);
+    const [result] = await pool.query<RowDataPacket[]>(query);
     return NextResponse.json(result); // fetched data is returned
   } catch (error) {
     console.error('Error fetching data:', error);
