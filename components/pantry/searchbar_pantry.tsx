@@ -15,11 +15,9 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKe
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        console.log("typed in input:", value);
         setSearchQuery(value);
         if (value.trim()) {
             setIsOpen(true); // Open when typing
-            console.log("opened dropdown")
         }
     };
 
@@ -39,10 +37,6 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKe
         onSelectionChange(key);
         setIsOpen(false);
     };
-
-
-    console.log("isOpen:", isOpen);
-    console.log("filteredList:", filteredList);
 
     return (
         <div className="w-full">
