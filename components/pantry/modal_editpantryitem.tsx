@@ -3,27 +3,29 @@ import React, { useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
 import { MyPantryDropdown } from './dropdown_measurements';
-import { HeroCancel, HeroPlus } from '../icons';
+import { HeroCancel, HeroPlus, HeroSearch, HeroSettings, HeroTrash } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 
-interface MyPantryModalProps {
+interface MyEditPantryModalProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
     ingredients: { key: number; value: string }[];
     measurements: { key: number; value: string }[];
-    onAddItem: (ingredientId: number, quantity: number, measurementId: number) => void;
+    onEditItem: (ingredientId: number, quantity: number, measurementId: number) => void;
+    onDeleteItem: (ingredientId: number) => void;
 }
 
-export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChange, ingredients, measurements, onAddItem }) => {
+
+export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, onOpenChange, ingredients, measurements, onEditItem, onDeleteItem }) => {
     const [ingredient, setIngredient] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
     const [error, setError] = useState('');
 
-    const handleAddItem = async () => {
+    const handleEditItem = async () => {
         if (ingredient && quantity > 0 && measurement) {
-            const newItem = {
+            const editItem = {
                 ingredient_id: ingredient,
                 ingredient_quantity: quantity,
                 measurement_id: measurement,
@@ -36,22 +38,50 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
                     return;
                 }
                 const res = await fetch('/api/pantry', {
-                    method: 'POST',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify(newItem),
+                    body: JSON.stringify(editItem),
                 });
-                onAddItem(ingredient, quantity, measurement); // updating pantry table
+                onEditItem(ingredient, quantity, measurement); // updating pantry table
                 onOpenChange(false);
             } catch (error) {
-                console.error("Hozzáadás sikertelen:", error);
+                console.error("Módosítás sikertelen:", error);
                 onOpenChange(false);
             }
         }
     };
 
+    const handleDeleteItem = async () => {
+        if (ingredient && quantity > 0 && measurement) {
+            const deleteItem = {
+                ingredient_id: ingredient
+            };
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Bejelentkezés szükséges');
+                    return;
+                }
+                const res = await fetch('/api/pantry', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(deleteItem),
+                });
+                onDeleteItem(ingredient); // deleting from pantry table
+                onOpenChange(false);
+            } catch (error) {
+                console.error("Törlés sikertelen:", error);
+                onOpenChange(false);
+            }
+        }
+    };
 
     return (
         <Modal isOpen={isOpen} placement="top-center"
@@ -59,7 +89,7 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
             isKeyboardDismissDisabled={true}
             onOpenChange={(open) => onOpenChange(open)}>
             <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">Add Ingredient</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">Összetevő módosítása</ModalHeader>
                 <ModalBody>
                     <MyPantrySearchBar
                         list={ingredients}
@@ -95,11 +125,19 @@ export const MyPantryModal: React.FC<MyPantryModalProps> = ({ isOpen, onOpenChan
                         radius: "full",
                         variant: "shadow",
                         color: "primary",
-                    })} onPress={handleAddItem}>
-                        <HeroPlus /> Hozzáadás
+                    })} onPress={handleEditItem}>
+                        <HeroSettings /> Módosítás
+                    </Button>
+                    <Button className={buttonStyles({
+                        radius: "full",
+                        variant: "shadow",
+                        color: "primary",
+                    })} onPress={handleDeleteItem}>
+                        <HeroTrash /> Törlés
                     </Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>
-    );
-};
+    )
+
+}
