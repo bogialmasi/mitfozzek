@@ -176,8 +176,9 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No data to update' }, { status: 400 });
         }
 
-        query += conditions.join(', ') + " WHERE pantry_id = ?"
+        query += conditions.join(', ') + " WHERE pantry_id = ? AND ingredient_id = ?"
         params.push(userId); // pantry_id is same number as user_id
+        params.push(ingredient_id);
         console.log("query:", query);
         console.log("params:", params);
 
