@@ -1,10 +1,12 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
 import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroPlus } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
+import { MySuccessAlert } from '../alert/alert_success';
+import { MyDangerAlert } from '../alert/alert_danger';
 
 interface MyAddPantryModalProps {
     isOpen: boolean;
@@ -20,6 +22,27 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
     const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
     const [error, setError] = useState('');
+
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });
+
+    const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
+    const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "", });
+
+    useEffect(() => {
+        let timeout: NodeJS.Timeout;
+        if (successAlertVisible) {
+            timeout = setTimeout(() => {
+                setSuccessAlertVisible(false);
+            }, 3000);
+        }
+        if (dangerAlertVisible) {
+            timeout = setTimeout(() => {
+                setDangerAlertVisible(false);
+            }, 3000);
+        }
+        return () => clearTimeout(timeout);
+    }, [successAlertVisible, dangerAlertVisible]);
 
     const handleAddItem = async () => {
         if (ingredient && quantity > 0 && measurement) {
@@ -45,61 +68,87 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                 });
                 onAddItem(ingredient, quantity, measurement); // updating pantry table
                 onOpenChange(false);
+                if (res.ok) {
+                    setSuccessAlertContent({
+                        title: 'Sikeres hozzáadás',
+                        description: `Új összetevő sikeresen hozzáadva`,
+                    })
+                    setSuccessAlertVisible(true)
+                }
             } catch (error) {
                 console.error("Hozzáadás sikertelen:", error);
                 onOpenChange(false);
+                setDangerAlertContent({
+                    title: "Hiba történt",
+                    description: "Az összetevő hozzáadása sikertelen. Próbálja újra.",
+                })
+                setDangerAlertVisible(true)
             }
         }
     };
 
 
     return (
-        <Modal isOpen={isOpen} placement="top-center"
-            isDismissable={false}
-            isKeyboardDismissDisabled={true}
-            onOpenChange={(open) => onOpenChange(open)}>
-            <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">Összetevő hozzáadása</ModalHeader>
-                <ModalBody>
-                    <MyPantrySearchBar
-                        list={ingredients}
-                        selectedKey={ingredient}
-                        onSelectionChange={setIngredient}
-                        isOpen={ingredientSearchOpen}
-                        setIsOpen={(e) => setIngredientSearchOpen(e)}
-                    />
-                    <div className='flex items-center justify-center w-full space-x-4'>
-                        <Input
-                            value={String(quantity)}
-                            onChange={(e) => setQuantity(Number(e.target.value))}
-                            placeholder="Mennyiség"
-                            type="number"
-                            variant="bordered"
+        <div>
+            <Modal isOpen={isOpen} placement="top-center"
+                isDismissable={false}
+                isKeyboardDismissDisabled={true}
+                onOpenChange={(open) => onOpenChange(open)}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Összetevő hozzáadása</ModalHeader>
+                    <ModalBody>
+                        <MyPantrySearchBar
+                            list={ingredients}
+                            selectedKey={ingredient}
+                            onSelectionChange={setIngredient}
+                            isOpen={ingredientSearchOpen}
+                            setIsOpen={(e) => setIngredientSearchOpen(e)}
                         />
-                        <MyPantryDropdown
-                            list={measurements}
-                            selectedKeys={new Set(measurement !== null ? [measurement] : [])}
-                            onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
-                        />
-                    </div>
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                </ModalBody>
-                <ModalFooter>
-                    <Button className={buttonStyles({
-                        radius: "full",
-                        variant: "flat",
-                    })} onPress={() => onOpenChange(false)}>
-                        <HeroCancel /> Mégsem
-                    </Button>
-                    <Button className={buttonStyles({
-                        radius: "full",
-                        variant: "shadow",
-                        color: "primary",
-                    })} onPress={handleAddItem}>
-                        <HeroPlus /> Hozzáadás
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+                        <div className='flex items-center justify-center w-full space-x-4'>
+                            <Input
+                                value={String(quantity)}
+                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                placeholder="Mennyiség"
+                                type="number"
+                                variant="bordered"
+                            />
+                            <MyPantryDropdown
+                                list={measurements}
+                                selectedKeys={new Set(measurement !== null ? [measurement] : [])}
+                                onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
+                            />
+                        </div>
+                        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button className={buttonStyles({
+                            radius: "full",
+                            variant: "flat",
+                        })} onPress={() => onOpenChange(false)}>
+                            <HeroCancel /> Mégsem
+                        </Button>
+                        <Button className={buttonStyles({
+                            radius: "full",
+                            variant: "shadow",
+                            color: "primary",
+                        })} onPress={handleAddItem}>
+                            <HeroPlus /> Hozzáadás
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            {successAlertVisible && (
+                <MySuccessAlert
+                    title={successAlertContent.title}
+                    description={successAlertContent.description}
+                />
+            )}
+            {dangerAlertVisible && (
+                <MyDangerAlert
+                    title={dangerAlertContent.title}
+                    description={dangerAlertContent.description}
+                />
+            )}
+        </div>
     );
 };
