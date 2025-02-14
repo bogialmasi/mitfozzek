@@ -108,8 +108,7 @@ export async function POST(req: NextRequest) {
         );
 
         if (existingItem.length > 0) {
-            // If a record is found, return a duplicate error
-            return NextResponse.json({ success: false, message: "Már van ilyen összetevő a spájzban" }, { status: 400 });
+            return NextResponse.json({ success: false, message: 'Item already exists in pantry' }, { status: 400 });
         }
 
         await pool.query<ResultSetHeader[]>(

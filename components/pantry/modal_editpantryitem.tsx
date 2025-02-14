@@ -46,6 +46,17 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
         return () => clearTimeout(timeout);
     }, [successAlertVisible, dangerAlertVisible]);
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // handle input <= 0 value
+        const newValue = Number(e.target.value);
+        if (newValue <= 0) {
+            console.log('invalid value input')
+            setError("A mennyiségnek 0-tól nagyobbnak kell lennie");
+        } else {
+            setError("");
+        }
+        setQuantity(newValue);
+    };
+
     const handleEditItem = async () => {
         if (ingredient && quantity > 0 && measurement) {
             const editItem = {
@@ -68,21 +79,36 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     },
                     body: JSON.stringify(editItem),
                 });
+                const response = await res.json();
                 onEditItem(ingredient, quantity, measurement); // updating pantry table
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
                         title: "Sikeres módosítás",
-                        description: "Recept módosítva",
+                        description: "Összetevő módosítva",
                     });
                     setSuccessAlertVisible(true);
+                }
+                else if (response.message === 'Quantity cannot be zero') {
+                    setError('A mennyiség nem lehet 0.')
+                    setDangerAlertContent({
+                        title: "Hibás adatok",
+                        description: "A mennyiség nem lehet nulla.",
+                    });
+                    setDangerAlertVisible(true);
+                } else if (response.message === 'No data to update') {
+                    setDangerAlertContent({
+                        title: "Az adatok megegyeznek",
+                        description: "Módosítás nem történt",
+                    });
+                    setDangerAlertVisible(true);
                 }
             } catch (error) {
                 console.error("Módosítás sikertelen:", error);
                 onOpenChange(false);
                 setDangerAlertContent({
                     title: "Sikertelen módosítás",
-                    description: "A recept módosítása sikertelen. Próbálja újra.",
+                    description: "Az összetevő módosítása sikertelen. Próbálja újra.",
                 });
                 setDangerAlertVisible(true);
             }
@@ -114,7 +140,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                 if (res.ok) {
                     setSuccessAlertContent({
                         title: "Sikeres törlés",
-                        description: "Recept törölve",
+                        description: "Összetevő törölve a spájzból",
                     })
                     setSuccessAlertVisible(true);
                 }
@@ -123,7 +149,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                 onOpenChange(false);
                 setDangerAlertContent({
                     title: "Sikertelen törlés",
-                    description: "A recept törlése sikertelen. Próbálja újra.",
+                    description: "Az összetevő törlése sikertelen. Próbálja újra.",
                 });
                 setDangerAlertVisible(true);
             }
@@ -149,7 +175,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                         <div className='flex items-center justify-center w-full space-x-4'>
                             <Input
                                 value={String(quantity)}
-                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                onChange={handleChange}
                                 placeholder="Mennyiség"
                                 type="number"
                                 variant="bordered"

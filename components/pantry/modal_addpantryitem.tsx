@@ -44,6 +44,17 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
         return () => clearTimeout(timeout);
     }, [successAlertVisible, dangerAlertVisible]);
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // handle input <= 0 value
+        const newValue = Number(e.target.value);
+        if (newValue <= 0) {
+            console.log('invalid value input')
+            setError("A mennyiségnek 0-tól nagyobbnak kell lennie");
+        } else {
+            setError("");
+        }
+        setQuantity(newValue);
+    };
+
     const handleAddItem = async () => {
         if (ingredient && quantity > 0 && measurement) {
             const newItem = {
@@ -66,12 +77,19 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                     },
                     body: JSON.stringify(newItem),
                 });
+                const response = await res.json();
                 onAddItem(ingredient, quantity, measurement); // updating pantry table
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
                         title: 'Sikeres hozzáadás',
                         description: `Új összetevő sikeresen hozzáadva`,
+                    })
+                    setSuccessAlertVisible(true)
+                } else if (response.message === 'Item already exists in pantry') {
+                    setSuccessAlertContent({
+                        title: "Már van ilyen összetevő a spájzban",
+                        description: "Az újbóli hozzáadás nem szükséges.",
                     })
                     setSuccessAlertVisible(true)
                 }
@@ -107,7 +125,7 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                         <div className='flex items-center justify-center w-full space-x-4'>
                             <Input
                                 value={String(quantity)}
-                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                onChange={handleChange}
                                 placeholder="Mennyiség"
                                 type="number"
                                 variant="bordered"
