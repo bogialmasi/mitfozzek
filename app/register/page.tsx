@@ -12,7 +12,6 @@ export default function RegisterPage() {
     const [passwordAgain, setPasswordAgain] = useState('');
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
