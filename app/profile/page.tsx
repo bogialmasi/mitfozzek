@@ -18,7 +18,6 @@ export default function ProfilePage() {
   useEffect(() => {
     setLoading(true);
     const token = localStorage.getItem('token');
-    console.log(token);
     if (!token) {
       setError('Bejelentkezés szükséges');
       setLoading(false);
