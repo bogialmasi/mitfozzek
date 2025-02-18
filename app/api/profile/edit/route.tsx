@@ -29,16 +29,26 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        const { username, email, description, password } = await req.json();
+        const { username, email, description, password, newPassword } = await req.json();
 
         let query = `UPDATE users SET `;
         const conditions = [];
         const params = [];
 
-        if (password) {
-            const hashedPassword = await argon2.hash(password);
-            conditions.push('password = ?');
-            params.push(hashedPassword);
+        if (newPassword) {
+            const [result] = await pool.query<RowDataPacket[]>(`SELECT password FROM users WHERE user_id = ?`, [userId]);
+            if (result.length === 0) {
+                return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+            }
+            const hashedOldPassword = result[0].password; // already hashed, from db
+            const verifyOldPassword = await argon2.verify(hashedOldPassword, password); // old password
+            if (!verifyOldPassword) {
+                return NextResponse.json({ success: false, message: 'Old password is incorrect' }, { status: 401 });
+            } else {
+                const hashedNewPassword = await argon2.hash(newPassword); // only happens if old password is correct
+                conditions.push('password = ?');
+                params.push(hashedNewPassword);
+            }
         }
 
         if (username) {

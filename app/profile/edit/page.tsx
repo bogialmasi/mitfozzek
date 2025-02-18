@@ -12,7 +12,9 @@ import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
 
 export default function EditProfilePage() {
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(''); // current
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordAgain, setNewPasswordAgain] = useState('');
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -43,7 +45,8 @@ export default function EditProfilePage() {
           setEmail(data.email);
           setDescription(data.user_desc || ' ');
         } else {
-          setError(data.message || 'Edit profile failed');
+          setError(data.message || 'A profil módosítása sikertelen');
+          return;
         }
       }
       catch (err) {
@@ -57,14 +60,12 @@ export default function EditProfilePage() {
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const updatedData: any = {};
-    if (username) updatedData.username = username;
-    if (email) updatedData.email = email;
-    if (description) updatedData.description = description;
-    if (password) updatedData.password = password;
-
     e.preventDefault();
     setError('');
+    if (newPassword !== newPasswordAgain) { // check before updatedData is set
+      setError('A jelszavak nem egyeznek');
+      return;
+    }
     setLoading(true);
     const token = localStorage.getItem('token');
     if (!token) {
@@ -74,6 +75,15 @@ export default function EditProfilePage() {
     }
 
     /* Profile editing */
+    const updatedData: any = {};
+    if (username) updatedData.username = username;
+    if (email) updatedData.email = email;
+    if (description) updatedData.description = description;
+    if (password) updatedData.password = password;
+    if (password && newPassword && newPasswordAgain) {
+      updatedData.newPassword = newPassword; // only if all three are filled in
+    }
+    console.log(updatedData);
     try {
       const response = await fetch('/api/profile/edit', {
         method: 'PATCH',
@@ -84,26 +94,25 @@ export default function EditProfilePage() {
         body: JSON.stringify(updatedData)
       });
 
+      const res = await response.json();
       if (!response.ok) {
-        setError(`Hiba: ${response.statusText} (${response.status})`);
+        if (res.message === 'Old password is incorrect') {
+          setError('A megadott jelszó helytelen');
+        }
         return;
       }
-
-      const data = await response.json();
-      if (response.status === 200) {
+      if (response.ok) {
+        console.log('data:', res);
         setLoading(false);
         router.push('/profile');
-      } else {
-        setError(data.message || 'Update failed.');
       }
     } catch (err) {
-      console.error('Error submitting profile update:', err);
+      console.error('Módosítás közben hiba lépett fel:', err);
       setError('Something went wrong.');
     } finally {
       setLoading(false);
     }
   };
-
   // Does not save any of the changes
   function handleCancel(e: PressEvent): void {
     router.push('/profile');
@@ -112,7 +121,6 @@ export default function EditProfilePage() {
   function handleDeactivate(e: PressEvent): void {
     setIsModalOpen(true);
   }
-
   if (loading) return (
     <div>
       <div className="flex justify-center items-center h-screen">
@@ -121,10 +129,6 @@ export default function EditProfilePage() {
       </div>
     </div>);
 
-  if (error) return <div>{error}</div>;
-
-
-
   return (
     <div>
       <h1 className={title()}>Profil módosítása</h1>
@@ -132,7 +136,6 @@ export default function EditProfilePage() {
         className="w-full flex flex-col gap-6 py-4">
         <Input
           value={username} onChange={(e) => setUsername(e.target.value)}
-          errorMessage="!"
           label="Felhasználónév"
           labelPlacement="outside"
           name="username"
@@ -142,11 +145,30 @@ export default function EditProfilePage() {
         />
         <Input
           value={password} onChange={(e) => setPassword(e.target.value)}
-          errorMessage="!"
-          label="Jelszó"
+          isRequired
+          errorMessage="Jelszó megadás kötelező!"
+          label="Jelenlegi jelszó"
           labelPlacement="outside"
           name="password"
-          placeholder="Jelszó"
+          placeholder="Jelenlegi jelszó"
+          type="password"
+          variant="bordered"
+        />
+        <Input
+          value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+          label="Új jelszó"
+          labelPlacement="outside"
+          name="password"
+          placeholder="Új jelszó"
+          type="password"
+          variant="bordered"
+        />
+        <Input
+          value={newPasswordAgain} onChange={(e) => setNewPasswordAgain(e.target.value)}
+          label="Új jelszó újra"
+          labelPlacement="outside"
+          name="password"
+          placeholder="Új jelszó újra"
           type="password"
           variant="bordered"
         />
@@ -173,18 +195,19 @@ export default function EditProfilePage() {
           onClear={() => setDescription('')}
           isInvalid={description.length >= 250}
         />
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <div className="py-4 flex justify-center w-full space-x-4">
-          <Button type="submit"><HeroCheck />Módosítások mentése</Button><Button type="button" onPress={handleCancel}><HeroCancel />Mégsem</Button>
+          <Button type="submit"><HeroCheck />Módosítások mentése</Button>
+          <Button type="button" onPress={handleCancel}><HeroCancel />Mégsem</Button>
         </div>
         <div className="flex justify-center w-full">
           <Button type="button" onPress={handleDeactivate} color="danger" variant="ghost"><HeroTrash />Felhasználói fiók deaktiválása</Button>
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
       </Form>
       <MyDeactivateModal isOpen={isModalOpen}
-        onOpenChange={(openState) =>{
+        onOpenChange={(openState) => {
           setIsModalOpen(openState);
-          if(!openState && !localStorage.getItem('token')){
+          if (!openState && !localStorage.getItem('token')) {
             router.replace('/')
           }
         }} />

@@ -9,6 +9,7 @@ import { Link } from "@heroui/link";
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordAgain, setPasswordAgain] = useState('');
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,7 +18,10 @@ export default function RegisterPage() {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-
+        if (password !== passwordAgain) {
+            setError('A jelszavak nem egyeznek')
+            return;
+        }
         const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
@@ -63,6 +67,17 @@ export default function RegisterPage() {
                     labelPlacement="outside"
                     name="password"
                     placeholder="Jelszó"
+                    type="password"
+                    variant="bordered"
+                />
+                <Input
+                    value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}
+                    isRequired
+                    errorMessage="!"
+                    label="Jelszó újra"
+                    labelPlacement="outside"
+                    name="password"
+                    placeholder="Jelszó újra"
                     type="password"
                     variant="bordered"
                 />
