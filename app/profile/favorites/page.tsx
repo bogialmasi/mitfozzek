@@ -60,10 +60,10 @@ export default function FavoritesPage() {
     });
   };
 
-  // Fetch the favorite recipes data
+  // Fetch the favorite recipes data whenever the list changes
   useEffect(() => {
     fetchFavorites();
-  }, []);
+  }, [favorites]);
 
   if (loading) return (
     <div>
