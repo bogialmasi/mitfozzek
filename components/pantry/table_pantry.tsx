@@ -20,13 +20,6 @@ interface MyPantryTableProps {
 
 
 export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients: pantryIngredients }) => {
-/*
-    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
-    const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });
-
-    const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
-    const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "", });
-*/
 
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); // add modal form
     const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); // edit modal form
@@ -57,14 +50,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
         };
         fetchData();
     }, []);
-/*
-    useEffect(() => {
-        console.log("Success alert visibility:", successAlertVisible);
-    }, [successAlertVisible]);
-
-    useEffect(() => {
-        console.log("Danger alert visibility chged:", dangerAlertVisible);
-    }, [dangerAlertVisible]);*/
 
     const handleAddItem = (ingredientId: number, quantity: number, measurementId: number) => {
         console.log('handleAddItem')
@@ -73,14 +58,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
 
         if (selectedIngredient && selectedMeasurement) {
             const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); // item is already in the list
-            if (alreadyExistingItem) {/*
-                setDangerAlertContent({
-                    title: `${selectedIngredient.value} már van a spájzban`,
-                    description: `${selectedIngredient.value}, ${alreadyExistingItem.ingredient_quantity} ${alreadyExistingItem.measurement_name}`,
-                });
-                setDangerAlertVisible(true);*/
-            }
-            else {
+            if (!alreadyExistingItem) {
                 const newItem: PantryItem = {
                     ingredient_id: selectedIngredient.key,
                     ingredient_name: selectedIngredient.value,
@@ -90,19 +68,9 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                 try {
                     setPantryItems((prev) => [...prev, newItem]);
                     setError('');
-                    console.log('Add successful')/*
-                    setSuccessAlertContent({
-                        title: `Sikeres hozzáadás`,
-                        description: `${selectedIngredient.value} sikeresen hozzáadva a spájzhoz`,
-                    });
-                    setSuccessAlertVisible(true);*/
+                    console.log('Add successful')
                 } catch (error) {
-                    console.log('Add failed')/*
-                    setDangerAlertContent({
-                        title: "Hiba történt",
-                        description: "Az összetevő hozzáadása sikertelen. Próbálja újra.",
-                    });
-                    setDangerAlertVisible(true);*/
+                    console.log('Add failed')
                 }
             }
         }
@@ -123,19 +91,9 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                 );
                 setError('');
                 console.log('Edit successful')
-                /*setSuccessAlertContent({
-                    title: `Sikeres módosítás`,
-                    description: `${ingredient.ingredient_name} módosítva: ${ingredient.ingredient_quantity} ${ingredient.measurement_name}`,
-                });
-                setSuccessAlertVisible(true);*/
             }
         } catch (error) {
             console.log('Edit failed')
-            /*setDangerAlertContent({
-                title: "Hiba történt",
-                description: "Az összetevő módosítása sikertelen. Próbálja újra.",
-            });
-            setDangerAlertVisible(true);*/
         }
     }
 
@@ -148,19 +106,9 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                 setPantryItems((prevItems) => prevItems.filter((item) => item.ingredient_id !== ingredientId));
                 setError('');
                 console.log('Delete successful')
-                /*setSuccessAlertContent({
-                    title: `Sikeres törlés`,
-                    description: `${ingredient.ingredient_name} (${ingredient.ingredient_quantity} ${ingredient.measurement_name}) törölve`,
-                });
-                setSuccessAlertVisible(true);*/
             }
         } catch (error) {
             console.log('Delete failed')
-            /*setDangerAlertContent({
-                title: "Hiba történt",
-                description: "Az összetevő törlés sikertelen. Próbálja újra.",
-            });
-            setDangerAlertVisible(true);*/
         }
     };
 
