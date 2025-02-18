@@ -1,9 +1,8 @@
 'use client'
 
 import React, { useState, useMemo } from 'react';
-import { Button, Checkbox, Input, useDisclosure } from "@heroui/react";
-import { CancelIcon, HeroCancel } from '../icons';
-import { useAuthentication } from '@/app/context/authenticationContext';
+import { Button, Input } from "@heroui/react";
+import { HeroCancel } from '../icons';
 import { MyCheckbox } from './checkbox_search_mypantryitems';
 
 interface MySearchBarProps {

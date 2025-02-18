@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
-import { ArrowUpIcon, HeroArrowUp } from "./icons";
+import { HeroArrowUp } from "./icons";
 import { button as buttonStyles } from "@heroui/theme";
 
 export const MyBackToTopButton: React.FC = () => {

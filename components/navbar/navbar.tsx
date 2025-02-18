@@ -15,11 +15,6 @@ import NextLink from "next/link";
 import clsx from "clsx";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  ChefHat,
-  GithubIcon,
-  Logo,
-} from "@/components/icons";
 import { MyUserLoginLogout } from "./user_login_logout";
 import { useAuthentication } from "@/app/context/authenticationContext";
 import { useRouter } from "next/router";

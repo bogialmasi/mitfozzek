@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Button } from "@heroui/react";
 import { Recipe } from "@/types";
 import { button as buttonStyles } from "@heroui/theme";
-import { MySuccessAlert } from '../recipe/alert_success';
-import { MyDangerAlert } from '../recipe/alert_danger';
+import { MySuccessAlert } from '../alert/alert_success';
+import { MyDangerAlert } from '../alert/alert_danger';
 
 interface MyFavRecipeProps {
     recipe: Recipe;

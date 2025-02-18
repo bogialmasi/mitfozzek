@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MyDangerAlert } from '@/components/recipe/alert_danger';
-import { MySuccessAlert } from '@/components/recipe/alert_success';
+import { MyDangerAlert } from '@/components/alert/alert_danger';
+import { MySuccessAlert } from '@/components/alert/alert_success';
 import { useAuthentication } from '@/app/context/authenticationContext';
 import { button as buttonStyles } from "@heroui/theme";
 import { useDisclosure } from '@heroui/modal';

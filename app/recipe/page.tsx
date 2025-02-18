@@ -10,11 +10,11 @@ import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
 import { Button, useDisclosure } from '@heroui/react';
 import { useAuthentication } from '../context/authenticationContext';
-import { MySuccessAlert } from '@/components/recipe/alert_success';
+import { MySuccessAlert } from '@/components/alert/alert_success';
 import { PressEvent } from '@react-types/shared';
 import { MyLoginModal } from '@/components/login_check/modal_login';
 import { Recipe } from '@/types';
-import { MyDangerAlert } from '@/components/recipe/alert_danger';
+import { MyDangerAlert } from '@/components/alert/alert_danger';
 import { MyAddToFavoritesButton } from '@/components/recipe/button_addtofavorites';
 
 export default function RecipePage() {
