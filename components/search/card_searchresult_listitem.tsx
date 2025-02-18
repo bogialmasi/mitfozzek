@@ -25,7 +25,6 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
         <Divider />
         <CardBody>
           <div>
-            {/* Ingredients List */}
             <p className="text-sm font-semibold">Hozzávalók:</p>
             <ul className="flex space-x-1">
               {recipe.ingredients.map((ingredient, index) => (
@@ -36,7 +35,6 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
               ))}
             </ul>
             <Divider className="my-3" />
-            {/* Description */}
             <p className="text-sm">
               {showFullDescription
                 ? recipe.recipe_description
