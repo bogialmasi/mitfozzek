@@ -28,8 +28,8 @@ export const MyListItem: React.FC<MyListItemProps> = ({ recipe }) => {
             <p className="text-sm font-semibold">Hozzávalók:</p>
             <ul className="flex space-x-1">
               {recipe.ingredients.map((ingredient, index) => (
-                <li key={ingredient.id} className="text-sm text-default-500">
-                  {ingredient.name}
+                <li key={index} className="text-sm text-default-500">
+                  {ingredient.ingredient_name}
                   {index < recipe.ingredients.length - 1 && ','}
                 </li>
               ))}
