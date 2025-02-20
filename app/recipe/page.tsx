@@ -6,7 +6,6 @@ import { subtitle, title } from '@/components/primitives';
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { HeroSearch, HeroShoppingCart } from '@/components/icons';
-import { MyHeadcountCounter } from '@/components/recipe/recipe_headcount';
 import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
 import { Button, useDisclosure } from '@heroui/react';
 import { useAuthentication } from '../context/authenticationContext';
@@ -59,8 +58,6 @@ export default function RecipePage() {
       setError(null);
 
       const id = searchParams.get('id');
-      console.log('Query Parameter ID:', id);
-
       if (!id) {
         setError('No ID provided in the query parameters');
         setLoading(false);
@@ -109,13 +106,7 @@ export default function RecipePage() {
       </div>
       <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
         {/* Left Side: 40% */}
-        <div className="col-span-12 md:col-span-5 flex flex-col gap-4 py-6">
-          <div className={subtitle({ class: "mt-2" })}>
-            <h3>Hány főre?:</h3>
-            <div className="flex justify-center">
-              <MyHeadcountCounter />
-            </div>
-          </div>
+        <div className="col-span-12 md:col-span-5 flex flex-col items-center gap-4 py-6 ">
           <div className={subtitle({ class: "mt-2" })}>
             <h3>Hozzávalók:</h3>
             <MyIngredientsTable recipe={resultRecipe} />
