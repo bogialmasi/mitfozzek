@@ -38,7 +38,6 @@ export default function ProfilePage() {
         }
 
         const data = await response.json();
-        console.log('Profile data:', data);
 
         if (data.success && data.user_id && data.username) {
           setProfile({
