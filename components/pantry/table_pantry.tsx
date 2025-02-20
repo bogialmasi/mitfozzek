@@ -6,13 +6,8 @@ import { HeroPlus, HeroSettings } from "../icons";
 import { button as buttonStyles } from "@heroui/theme";
 import { MyAddPantryModal } from "./modal_addpantryitem";
 import { MyEditPantryModal } from "./modal_editpantryitem";
+import { PantryItem } from "@/types";
 
-interface PantryItem {
-    ingredient_id: number;
-    ingredient_name: string;
-    ingredient_quantity: number;
-    measurement_name: string;
-}
 
 interface MyPantryTableProps {
     pantryIngredients: PantryItem[];
