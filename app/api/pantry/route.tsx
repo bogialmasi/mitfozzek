@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
                 pantry.ingredient_id,
                 ingredients.ingredient_name AS ingredient_name,
                 pantry.ingredient_quantity,
+                measurements.measurement_id,
                 measurements.measurement_name AS measurement_name
             FROM pantry
             JOIN ingredients ON pantry.ingredient_id = ingredients.ingredient_id
@@ -61,6 +62,7 @@ export async function GET(req: NextRequest) {
             ingredient_id: item.ingredient_id,
             ingredient_name: item.ingredient_name,
             ingredient_quantity: item.ingredient_quantity,
+            measurement_id: item.measurement_id,
             measurement_name: item.measurement_name
         }));
 

@@ -29,7 +29,6 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // Make sure to use the correct token source
                 },
             });
-            const data = await res.json();
 
             if (res.ok) {
                 setSuccessAlertContent({
@@ -76,8 +75,8 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                         <p className="text-sm font-semibold">Hozzávalók:</p>
                         <ul className="flex space-x-1">
                             {recipe.ingredients.map((ingredient, index) => (
-                                <li key={ingredient.id} className="text-sm text-default-500">
-                                    {ingredient.name}
+                                <li key={ingredient.ingredient_id} className="text-sm text-default-500">
+                                    {ingredient.ingredient_name}
                                     {index < recipe.ingredients.length - 1 && ','}
                                 </li>
                             ))}

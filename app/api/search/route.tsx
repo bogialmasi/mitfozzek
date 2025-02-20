@@ -26,11 +26,14 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
       }
 
-      // Ingredients of the recipe
+      // Ingredients of the recipe, with measurements
       const [ingredientsData] = await pool.query<RowDataPacket[]>(
-        `SELECT ingredients.ingredient_id, ingredients.ingredient_name
+        `SELECT ingredients.ingredient_id, ingredients.ingredient_name,
+         con_recipe_ingredients.ingredient_quantity, 
+         measurements.measurement_id, measurements.measurement_name
          FROM ingredients
          JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+         JOIN measurements ON con_recipe_ingredients.measurement_id = measurements.measurement_id
          WHERE con_recipe_ingredients.recipe_id = ?`,
         [recipeId]
       );
@@ -38,8 +41,11 @@ export async function GET(req: NextRequest) {
       const fullRecipe = {
         ...recipeResults[0],
         ingredients: ingredientsData.map((ingredient) => ({
-          id: ingredient.ingredient_id,
-          name: ingredient.ingredient_name,
+          ingredient_id: ingredient.ingredient_id,
+          ingredient_name: ingredient.ingredient_name,
+          ingredient_quantity: ingredient.ingredient_quantity,
+          measurement_id: ingredient.measurement_id,
+          measurement_name: ingredient.measurement_name,
         })),
       };
 
@@ -99,8 +105,8 @@ export async function GET(req: NextRequest) {
         return {
           ...recipe,
           ingredients: ingredientsData.map((ingredient) => ({
-            id: ingredient.ingredient_id,
-            name: ingredient.ingredient_name,
+            ingredient_id: ingredient.ingredient_id,
+            ingredient_name: ingredient.ingredient_name,
           })),
         };
       })
