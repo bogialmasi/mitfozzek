@@ -4,6 +4,9 @@ import { MyFavRecipe } from "@/components/profile/card_favrecipe";
 import { Spinner } from "@heroui/spinner";
 import { useEffect, useState } from "react";
 import { Ingredient, Recipe } from "@/types";
+import { button as buttonStyles } from "@heroui/theme";
+import { HeroSearch } from "@/components/icons";
+import Link from "next/link";
 
 export default function FavoritesPage() {
 
@@ -27,7 +30,7 @@ export default function FavoritesPage() {
         },
       });
       if (!response.ok) {
-        throw new Error('Hiba történt a receptek betöltésekor1');
+        throw new Error('Hiba történt a receptek betöltésekor');
       }
       const data = await response.json();
       if (data && Array.isArray(data)) {
@@ -44,7 +47,7 @@ export default function FavoritesPage() {
         setError('Nincs találat');
       }
     } catch (error) {
-      setError('Hiba történt a receptek betöltésekor2');
+      setError('Hiba történt a receptek betöltésekor');
     } finally {
       setLoading(false);
     }
@@ -62,7 +65,12 @@ export default function FavoritesPage() {
 
   // Fetch the favorite recipes data whenever the list changes
   useEffect(() => {
+    if (!favorites || favorites.length === 0) {
+      setLoading(false);
+      return;
+    }
     fetchFavorites();
+    
   }, [favorites]);
 
   if (loading) return (
@@ -84,7 +92,24 @@ export default function FavoritesPage() {
             ))}
           </ul>
         ) : (
-          <p>A kedvenc receptek listája üres</p>
+          <div className="py-4">
+            <p>A kedvenc receptek listája üres</p>
+            <div className="flex flex-col gap-4 py-4">
+              <Link
+                className={buttonStyles({ variant: "bordered", radius: "full" })}
+                href={`/search`}
+              >
+                Keresés a receptek között <HeroSearch />
+              </Link>
+              <Link
+                className={buttonStyles({ variant: "bordered", radius: "full" })}
+                href={`/profile`}
+              >
+                Vissza a profilomra
+              </Link>
+            </div>
+          </div>
+
         )}
       </div>
     </div>
