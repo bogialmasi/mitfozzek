@@ -1,42 +1,67 @@
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { CancelIcon, CheckmarkIcon, HeroCheck } from "../icons";
-
-interface Ingredient {
-    id: number;
-    name: string;
-}
-
-interface Recipe {
-    recipe_id: number;
-    recipe_name: string;
-    recipe_description: string;
-    recipe_time: string;
-    recipe_headcount: number;
-    source_user_id: number;
-    ingredients: Ingredient[]; // array of ingredients
-}
+'use client'
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
+import { HeroMinus, HeroPlus } from "../icons";
+import { useEffect, useState } from "react";
+import { PantryItem, Recipe } from "@/types";
+import { MyPantryIngredientComparator } from "./ingredient_comparator";
 
 interface MyIngredientsTableProps {
-    recipe: Recipe;
+  recipe: Recipe;
 }
 
+export const MyHeadcountCounter: React.FC = () => {
+  const [headcount, setHeadcount] = useState(1);
+  const increment = () => setHeadcount((prev) => Math.min(15, prev + 1)); // Max headcount = 15
+  const decrement = () => setHeadcount((prev) => Math.max(1, prev - 1)); // Min headcount = 1
+
+
+  return (
+    <div className="py-4 flex items-center justify-between w-32 h-10 border rounded-md py-6">
+      <button
+        onClick={decrement}
+        className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
+      >
+        <HeroMinus />
+      </button>
+      <div className="flex-1 text-center text-lg font-semibold">
+        {headcount}
+      </div>
+      <button
+        onClick={increment}
+        className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
+      >
+        <HeroPlus />
+      </button>
+    </div>
+  );
+};
+
 export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe }) => {
-    return (
-        <Table aria-label="Example table with dynamic content">
-      <TableHeader>
-        <TableColumn>Összetevők</TableColumn>
-        <TableColumn>Mennyiség</TableColumn>
-        <TableColumn>Spájzom</TableColumn>
-      </TableHeader>
-      <TableBody items={recipe.ingredients}>
-        {(ingredient) => (
-          <TableRow key={ingredient.id}>
-            <TableCell>{ingredient.name}</TableCell>
-            <TableCell>200g</TableCell>
-            <TableCell><HeroCheck/></TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-    )
+
+
+  return (
+    <div className="max-w-full">
+      <div className="py-4 flex items-center justify-center">
+        <MyHeadcountCounter />
+      </div>
+      <Table aria-label="Recept hozzávalói">
+        <TableHeader>
+          <TableColumn>Összetevők</TableColumn>
+          <TableColumn>Mennyiség</TableColumn>
+          <TableColumn>Spájzom</TableColumn>
+        </TableHeader>
+        <TableBody items={recipe.ingredients}>
+          {(ingredient) => (
+            <TableRow key={ingredient.ingredient_id}>
+              <TableCell>{ingredient.ingredient_name}</TableCell>
+              <TableCell>{ingredient.ingredient_quantity} {ingredient.measurement_name}</TableCell>
+              <TableCell>
+                <MyPantryIngredientComparator ingredient={ingredient} />
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
 }
