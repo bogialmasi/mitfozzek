@@ -55,17 +55,11 @@ export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparator
         fetchPantry();
     }, []);
 
-    useEffect(() => {
-        console.log("TESTING Updated Pantry Items:", pantryItems);
-    }, [pantryItems]);
-
     // check if both recipe and pantry store the same ingredient id
     const pantryItem = pantryItems?.find(
         (item) =>
             item.ingredient_id === ingredient.ingredient_id
     );
-    console.log("Pantry items:", pantryItems);
-    console.log("pantry item same as ingredient:", pantryItem);
 
     // compare quantity values
     const enoughQuantity = pantryItem ? pantryItem.ingredient_quantity >= ingredient.ingredient_quantity : false;
