@@ -452,6 +452,15 @@ export const HeroTrash: React.FC<IconSvgProps> = (props) => {
   )
 }
 
+export const HeroMinus: React.FC<IconSvgProps> = (props) => {
+  const { width = 40, height = 40 } = props;
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+    </svg>
+  )
+}
+
 // SVGator.com
 export const ChefHat: React.FC<IconSvgProps> = (props) => {
   const { width = 30, height = 30, ...rest } = props;
@@ -465,9 +474,9 @@ export const ChefHat: React.FC<IconSvgProps> = (props) => {
       height={height}
       shapeRendering="geometricPrecision"
       textRendering="geometricPrecision"
-      //dataProjectId="8ed4c8a2a506485b8347491198ba1e56"
-      //dataExportId="986326165eb54c609cbbe20abed97313"
-      //dataCached="false"
+    //dataProjectId="8ed4c8a2a506485b8347491198ba1e56"
+    //dataExportId="986326165eb54c609cbbe20abed97313"
+    //dataCached="false"
     >
       <ellipse rx="15" ry="15" transform="translate(15 15)" strokeWidth="0" />
       <rect
