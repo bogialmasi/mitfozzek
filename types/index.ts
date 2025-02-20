@@ -5,13 +5,25 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export interface Ingredient {
-  id: number;
-  name: string;
+  ingredient_id: number;
+  ingredient_name: string;
+  ingredient_quantity: number;
+  measurement_id: number;
+  measurement_name: string;
 }
 
 export interface Measurement {
-  id: number;
-  name: string;
+  measurement_id: number;
+  measurement_name: string;
+}
+
+
+export interface PantryItem {
+  ingredient_id: number;
+  ingredient_name: string;
+  ingredient_quantity: number;
+  measurement_id: number;
+  measurement_name: string;
 }
 
 export interface Recipe {
@@ -23,6 +35,7 @@ export interface Recipe {
   source_user_id: number;
   ingredients: Ingredient[];
 }
+
 
 export interface User {
   userId: number;
