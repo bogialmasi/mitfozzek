@@ -6,6 +6,7 @@ import { button as buttonStyles } from "@heroui/theme";
 import { useDisclosure } from '@heroui/modal';
 import { Button } from '@heroui/button';
 import { HeroEmptyHeart } from '../icons';
+import { MyLoginModal } from '../login_check/modal_login';
 
 interface MyAddToFavoritesProps {
     recipeId: number;
@@ -13,7 +14,7 @@ interface MyAddToFavoritesProps {
 
 export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipeId }) => {
     const { user } = useAuthentication();
-    const { onOpen } = useDisclosure(); // Modal control
+    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
     const [isAdding, setIsAdding] = useState(false); // To manage loading state
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
@@ -24,52 +25,60 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
     const handleFavorites = async () => {
         if (!user) {
             onOpen(); // Open login modal if the user is not logged in
-            return;
         }
+        else {
+            const userId = user.userId;
 
-        const userId = user.userId;
+            if (!userId || !recipeId) {
+                console.error('Missing userId or recipeId');
+                return;
+            }
 
-        if (!userId || !recipeId) {
-            console.error('Missing userId or recipeId');
-            return;
-        }
+            setIsAdding(true);
 
-        setIsAdding(true);
-
-        try {
-            const response = await fetch('/api/favrecipes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify({ userId, recipeId }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.message === "Item added to favorites") {
-                setSuccessAlertContent({
-                    title: "Sikeres mentés",
-                    description: "Recept elmentve a kedvencek közé",
+            try {
+                const response = await fetch('/api/favrecipes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ userId, recipeId }),
                 });
-                setSuccessAlertVisible(true);
-            } else {
+
+                const result = await response.json();
+                console.log(result);
+                if (result.ok) {
+                    setSuccessAlertContent({
+                        title: "Sikeres mentés",
+                        description: "Recept elmentve a kedvencek közé",
+                    });
+                    setSuccessAlertVisible(true);
+                } else {
+                    if (result.message === 'Item already in favorites') {
+                        setSuccessAlertContent({
+                            title: "Ez a recept a kedvencek között van",
+                            description: "A recept már korábban a kedvencek közé került.",
+                        });
+                        setSuccessAlertVisible(true);
+                    } else {
+                        setDangerAlertContent({
+                            title: "Sikertelen mentés",
+                            description: "A recept mentése sikertelen. Próbálja újra.",
+                        });
+                        setDangerAlertVisible(true);
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding to favorites:', error);
                 setDangerAlertContent({
                     title: "Sikertelen mentés",
-                    description: "A recept mentése sikertelen. Próbálja újra.",
+                    description: "A hálózati hiba miatt a recept mentése sikertelen.",
                 });
                 setDangerAlertVisible(true);
+            } finally {
+                setIsAdding(false);
             }
-        } catch (error) {
-            console.error('Error adding to favorites:', error);
-            setDangerAlertContent({
-                title: "Sikertelen mentés",
-                description: "A hálózati hiba miatt a recept mentése sikertelen.",
-            });
-            setDangerAlertVisible(true);
-        } finally {
-            setIsAdding(false);
         }
     };
 
@@ -94,6 +103,7 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
                     description={dangerAlertContent.description}
                 />
             )}
+            <MyLoginModal isOpen={isOpen} onOpenChange={onOpenChange} />
         </div>
     );
 };
