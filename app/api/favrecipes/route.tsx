@@ -10,11 +10,10 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export async function GET(req: NextRequest) {
     try {
         //Get the token from the Authorization header
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
         if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
 
         //Verify and decode the token
@@ -76,13 +75,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest, res: NextApiResponse) {
     try {
         // Get the token from the Authorization header
-        console.log(req.headers);
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
         console.log('Token:', token);
         if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
 
         }
 
@@ -98,9 +95,19 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
         // Get itemId from the request body
         const { recipeId } = await req.json();
         if (!recipeId) {
-            return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
+            return NextResponse.json({ success: false, message: 'No recipeId' }, { status: 401 });
         }
 
+        // check if recipe is already favorited
+        const duplicate = await pool.query<RowDataPacket[]>(
+            'SELECT recipe_id from user_fav_recipes WHERE user_id = ? and recipe_id = ?',
+            [userId, recipeId],
+        )
+        console.log("duplicate : ", duplicate);
+
+        if (duplicate.length > 0) {
+            return NextResponse.json({ success: false, message: 'Item already in favorites' }, { status: 400 });
+        }
         //Insert into the database
         const result = await pool.query<ResultSetHeader[]>(
             'INSERT INTO user_fav_recipes (user_id, recipe_id) VALUES (?, ?)',
