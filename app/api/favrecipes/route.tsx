@@ -29,9 +29,8 @@ export async function GET(req: NextRequest) {
             'SELECT * FROM user_fav_recipes WHERE user_id = ?',
             [userId]
         );
-        const favoriteRecipes = user_fav_recipes as RowDataPacket[];
 
-        const fullRecipePromises = favoriteRecipes.map(async (fav) => {
+        const fullRecipePromises = user_fav_recipes.map(async (fav) => {
             // Get the recipe details for each favorite recipe
             const [recipes] = await pool.query<RowDataPacket[]>(
                 'SELECT * FROM recipes WHERE recipe_id = ?',
@@ -63,7 +62,6 @@ export async function GET(req: NextRequest) {
         });
 
         const fullRecipes = await Promise.all(fullRecipePromises);
-        console.log(fullRecipes);
         return NextResponse.json(fullRecipes);
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -105,7 +103,7 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
         )
         console.log("duplicate : ", duplicate);
 
-        if (duplicate.length > 0) {
+        if (duplicate[0].length > 0) {
             return NextResponse.json({ success: false, message: 'Item already in favorites' }, { status: 400 });
         }
         //Insert into the database
