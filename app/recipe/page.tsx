@@ -70,7 +70,6 @@ export default function RecipePage() {
           throw new Error('Recept lekérése sikertelen');
         }
         const data = await response.json();
-        console.log('Recept:', data);
         setResultRecipe(data);
       } catch (error) {
         setError((error as Error).message);
