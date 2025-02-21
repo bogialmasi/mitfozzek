@@ -36,12 +36,14 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                     description: "Recept törölve a kedvencek közül",
                 });
                 setSuccessAlertVisible(true);
+                return true;
             } else {
                 setDangerAlertContent({
                     title: "Sikertelen törlés",
                     description: "A recept törlése sikertelen. Próbálja újra",
                 });
                 setDangerAlertVisible(true);
+                return false;
             }
         } catch (error) {
             console.error('Error deleting favorite recipe:', error);
@@ -52,11 +54,9 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
     const handleDelete = async () => {
         setIsDeleting(true); // Disable the button during the delete process
         const success = await deleteFromFavorites(recipe.recipe_id);
-
         if (success) {
             onDelete(recipe.recipe_id); // Call the parent callback to remove the recipe from the list
         }
-
         setIsDeleting(false); // Re-enable the button after the delete operation
     };
     return (
@@ -75,7 +75,7 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                         <p className="text-sm font-semibold">Hozzávalók:</p>
                         <ul className="flex space-x-1">
                             {recipe.ingredients.map((ingredient, index) => (
-                                <li key={ingredient.ingredient_id} className="text-sm text-default-500">
+                                <li key={index} className="text-sm text-default-500">
                                     {ingredient.ingredient_name}
                                     {index < recipe.ingredients.length - 1 && ','}
                                 </li>

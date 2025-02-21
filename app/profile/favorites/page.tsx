@@ -1,5 +1,5 @@
 'use client'
-import { title, subtitle } from "@/components/primitives";
+import { title } from "@/components/primitives";
 import { MyFavRecipe } from "@/components/profile/card_favrecipe";
 import { Spinner } from "@heroui/spinner";
 import { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ export default function FavoritesPage() {
   // get data from /api/favrecipes
   const fetchFavorites = async () => {
     try {
+      setLoading(true)
       const token = localStorage.getItem('token');
       if (!token) {
         setError('Token missing. Please login again.');
@@ -33,13 +34,13 @@ export default function FavoritesPage() {
         throw new Error('Hiba történt a receptek betöltésekor');
       }
       const data = await response.json();
-      if (data && Array.isArray(data)) {
+      if (data) {
         // format response to fit into MyFavRecipe
-        const formattedRecipe = data.map((recipe: any) => ({
+        const formattedRecipe = data.map((recipe: Recipe) => ({
           ...recipe,
-          ingredients: (recipe.ingredients as any[])?.map((ingredient: any) => ({
-            id: ingredient.ingredient_id,
-            name: ingredient.ingredient_name
+          ingredients: (recipe.ingredients as Ingredient[])?.map((ingredient: Ingredient) => ({
+            ingredient_id : ingredient.ingredient_id,
+            ingredient_name: ingredient.ingredient_name,
           })) || []
         }));
         setFavorites(formattedRecipe);
@@ -54,24 +55,19 @@ export default function FavoritesPage() {
   };
 
   // Remove the deleted recipe from the list
-  const handleDelete = (recipeId: number) => {
+  const handleDelete = async (recipeId: number) => {
     setFavorites((prevFavorites) => {
       if (!prevFavorites) return []; // Ensure the return of an empty array if prevFavorites is null
       const newFavorites = prevFavorites.filter((recipe) => recipe.recipe_id !== recipeId);
-      console.log("DELETED. After delete:", newFavorites);
       return newFavorites;
     });
+    await fetchFavorites();
   };
 
   // Fetch the favorite recipes data whenever the list changes
   useEffect(() => {
-    if (!favorites || favorites.length === 0) {
-      setLoading(false);
-      return;
-    }
     fetchFavorites();
-    
-  }, [favorites]);
+  }, []);
 
   if (loading) return (
     <div>
@@ -109,7 +105,6 @@ export default function FavoritesPage() {
               </Link>
             </div>
           </div>
-
         )}
       </div>
     </div>
