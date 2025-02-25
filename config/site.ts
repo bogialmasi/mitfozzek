@@ -61,6 +61,7 @@ export const siteConfig = {
     modifyPantry: "profile/editpantry",
     favRecipes: "/profile/favorites",
     addRecipe: "/recipe/add",
-    myRecipes: "/recipe/myrecipes"
+    myRecipes: "/recipe/myrecipes",
+    shoppingLists: "/shopping"
   }
 };
