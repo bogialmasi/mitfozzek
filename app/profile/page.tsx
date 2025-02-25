@@ -5,7 +5,7 @@ import { button as buttonStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
 import { MyPantryTable } from "@/components/pantry/table_pantry";
-import { HeroFilledHeart, HeroPlus, HeroSettings, HeroUser } from "@/components/icons";
+import { HeroFilledHeart, HeroPlus, HeroSettings, HeroShoppingCart, HeroUser } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
 import { User } from "@/types";
 
@@ -93,16 +93,16 @@ export default function ProfilePage() {
         <section className="flex flex-col gap-6 py-8 md:py-10">
           <section className="grid grid-cols-12 h-[calc(100%-4rem)] gap-4 px-4">
             {/* Left Side */}
-            <div className="col-span-12 md:col-span-6 flex flex-col gap-2 py-12">
+            <div className="col-span-12 md:col-span-6 flex flex-col gap-2 py-12 max-w-full">
               <div className="justify-center gap-6 py-6 flex">
-              <HeroUser /><h1 className={`${title()} flex items-center`}>{profile?.username}</h1>
+                <HeroUser /><h1 className={`${title()} flex items-center`}>{profile?.username}</h1>
               </div>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
                   href={siteConfig.profileMenuItems.addRecipe}
                 >
-                  <HeroPlus/> Recept hozzáadása
+                  <HeroPlus /> Recept hozzáadása
                 </Link>
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
@@ -110,12 +110,22 @@ export default function ProfilePage() {
                 >
                   Receptjeim
                 </Link>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
                   href={siteConfig.profileMenuItems.favRecipes}
                 >
                   Kedvenc receptjeim <HeroFilledHeart />
                 </Link>
+                <Link
+                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  href={siteConfig.profileMenuItems.shoppingLists}
+                >
+                  Bevásárlólistáim <HeroShoppingCart />
+                </Link>
+              </div>
+              <div>
                 <div className={subtitle({ class: "mt-4" })}>
                   <h3>{profile?.userDescription}</h3>
                 </div>
