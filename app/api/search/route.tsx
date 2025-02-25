@@ -1,6 +1,10 @@
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
+import * as jwt from 'jsonwebtoken';
+import { user } from '@heroui/theme';
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(req: NextRequest) {
   if (req.method !== 'GET') {
@@ -14,6 +18,7 @@ export async function GET(req: NextRequest) {
     const selectedIngredients = searchParams.getAll('ingredients').map(Number);
     const selectedDishType = searchParams.getAll('dishType').map(Number);
     const selectedDishCategory = searchParams.getAll('dishCategory').map(Number);
+    const selectedUserDishCategory = searchParams.getAll('userDishCategory').map(Number);
     const id = searchParams.get('id');
 
     // One recipe based on ID
@@ -59,12 +64,13 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
+      LEFT JOIN dish_category ON dish_category.category_id = con_recipe_category.category_id
     `;
 
     const filters = [];
     const params = [];
 
-    // Dynamic adding filters
+    // Filters
     if (searchQuery) {
       filters.push('LOWER(recipes.recipe_name) LIKE LOWER(?)');
       params.push(`%${searchQuery}%`);
@@ -81,11 +87,40 @@ export async function GET(req: NextRequest) {
       filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
       params.push(...selectedDishCategory);
     }
+    if (selectedUserDishCategory.length > 0) {
+      const authorization = req.headers.get('Authorization');
+      const token = authorization?.split(' ')[1];
+      if (!token) {
+        selectedUserDishCategory.length = 0;
+        console.log('NO TOKEN -----')
+        console.log("Authorization:", req.headers.get('Authorization'));
+        console.log("Token:", token);
+        console.log("Selected User Dish Category:", selectedUserDishCategory);
+      } else {
+        const decoded: any = jwt.verify(token, JWT_SECRET);
+        const userId = decoded.userId;
+        console.log(userId);
+        if (userId) {
+          console.log('YES TOKEN -----')
+          console.log("Authorization:", req.headers.get('Authorization'));
+          console.log("Token:", token);
+          console.log("Selected User Dish Category:", selectedUserDishCategory);
+          query += ` LEFT JOIN user_dish_category ON user_dish_category.category_id = dish_category.category_id `;
+          filters.push(`user_dish_category.category_id IN (${selectedUserDishCategory.map(() => '?').join(',')})`);
+          filters.push(`user_dish_category.user_id = ?`);
+          params.push(...selectedUserDishCategory, userId);
+        }
+      }
+    }
 
-    // Append conditions to query
     if (filters.length > 0) {
       query += ' WHERE ' + filters.join(' AND ');
     }
+
+    console.log('----------------------------------------------------------------')
+    console.log("Final SQL Query:", query);
+    console.log("Filters:", filters)
+    console.log("Final Query Params:", params);
     const [recipes] = await pool.query<RowDataPacket[]>(query, params);
 
     if (recipes.length === 0) {
