@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Button, Input } from "@heroui/react";
 import { HeroCancel } from '../icons';
-import { MyCheckbox } from './checkbox_search_mypantryitems';
+import { MyPantryCheckBox } from './checkbox_search_mypantryitems';
 
 interface MySearchBarProps {
     list: { key: number; value: string }[];
@@ -56,7 +56,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                     placeholder="Keressen a hozávalók között..."
                     variant="bordered"
                 />
-                <MyCheckbox/>
+                <MyPantryCheckBox/>
                 {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (

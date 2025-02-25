@@ -6,7 +6,7 @@ import { MyLoginModal } from "../login_check/modal_login";
 
 /* This Checkbox is only for logged in users */
 
-export const MyCheckbox: React.FC = () => {
+export const MyPantryCheckBox: React.FC = () => {
     const [isSelected, setIsSelected] = useState<boolean>(false);
     const { user } = useAuthentication();
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
