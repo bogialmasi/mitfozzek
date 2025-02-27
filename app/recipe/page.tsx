@@ -7,7 +7,7 @@ import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { HeroSearch, HeroShoppingCart } from '@/components/icons';
 import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
-import { Button, useDisclosure } from '@heroui/react';
+import { Button, Spinner, useDisclosure } from '@heroui/react';
 import { useAuthentication } from '../context/authenticationContext';
 import { MySuccessAlert } from '@/components/alert/alert_success';
 import { PressEvent } from '@react-types/shared';
@@ -81,7 +81,13 @@ export default function RecipePage() {
     fetchResults();
   }, [searchParams]);
 
-  if (loading) return <p>Recept betöltése...</p>;
+  if (loading) return (
+    <div>
+      <div className="flex justify-center items-center h-screen">
+        <p>Betöltés...</p>
+        <Spinner />
+      </div>
+    </div>);
   if (error) return <p>Hiba: {error}</p>;
   if (!resultRecipe) {
     return (
