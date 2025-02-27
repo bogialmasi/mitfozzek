@@ -3,9 +3,10 @@
 import React, { useState, useMemo } from 'react';
 import { Button, Input } from "@heroui/react";
 import { HeroCancel } from '../icons';
-import { MyPantryCheckBox } from './checkbox_search_mypantryitems';
+import { useAuthentication } from '@/app/context/authenticationContext';
 
 interface MySearchBarProps {
+    isDisabled: boolean;
     list: { key: number; value: string }[];
     selectedKeys: number[];
     onSelectionChange: (keys: number[]) => void;
@@ -14,9 +15,9 @@ interface MySearchBarProps {
 }
 
 
-export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, onSelectionChange, isOpen, setIsOpen }) => {
+export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, isOpen, setIsOpen }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [checkBoxSelected, setCheckBoxSelected] = useState(false);
+    const { user } = useAuthentication();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -46,19 +47,19 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
     };
 
     return (
-        <div className="w-full">
-            <div className="relative mb-4">
+        <div>
+            <div>
                 <Input
-                    className="form-control input max-w-md"
+                    isDisabled={isDisabled}
+                    className="form-control input"
                     type="text"
                     value={searchQuery}
                     onChange={handleInputChange}
-                    placeholder="Keressen a hozávalók között..."
+                    placeholder="Keresés..."
                     variant="bordered"
                 />
-                <MyPantryCheckBox/>
                 {isOpen && filteredList.length > 0 && (
-                    <ul className="absolute z-10 border rounded shadow-md max-w-md w-full overflow-y-auto">
+                    <ul className="absolute z-10 border rounded overflow-y-auto">
                         {filteredList.map((item) => (
                             <li
                                 key={item.key}
@@ -78,10 +79,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKeys, on
                         item && (
                             <Button className="mt-4 flex items-center overflow-visible whitespace-nowrap px-4 min-w-[100px]"
                                 onPress={() => handleRemoveItem(key)} key={key}>
-                                {item.value}
-                                <span className="flex-shrink-0">
-                                    <HeroCancel />
-                                </span>
+                                {item.value} <HeroCancel />
                             </Button>
                         )
                     );
