@@ -20,6 +20,9 @@ export const MyUserLoginLogout = () => {
                         <DropdownItem key="profile" href="/profile" textValue="Profilom">
                             Profilom
                         </DropdownItem>
+                        <DropdownItem key="search" href="/search" textValue="Profilom">
+                            Keresés
+                        </DropdownItem>
                         <DropdownItem key="logout" onPress={logout} textValue="Kijelentkezés">
                             <a href="/">Kijelentkezés</a>
                         </DropdownItem>
@@ -40,6 +43,9 @@ export const MyUserLoginLogout = () => {
                         </DropdownItem>
                         <DropdownItem key="register" href="/register" textValue="Bejelentkezés">
                             Regisztráció
+                        </DropdownItem>
+                        <DropdownItem key="search" href="/search" textValue="Profilom">
+                            Keresés
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
