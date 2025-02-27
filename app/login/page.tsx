@@ -19,25 +19,28 @@ export default function LoginPage() {
         e.preventDefault();
         setError('');
         setLoading(true);
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
 
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();  // Only parse the response once
-
-        if (data.success) {
-            // Redirect to /search after successful login
+            if (data.success) {
+                // Redirect to /search after successful login
+                setLoading(false);
+                login(data.token);
+                router.push('/search');
+            } else {
+                setLoading(false);
+                setError(data.message || 'Hiba történt a bejelentkezéskor');
+            }
+        } catch (error) {
             setLoading(false);
-            login(data.token);
-            router.push('/search');
-        } else {
-            setLoading(false);
-            setError(data.message || 'Hiba történt a bejelentkezéskor');
+            setError('Hiba történt a bejelentkezéskor');
         }
     };
 
