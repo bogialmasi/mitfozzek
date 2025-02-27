@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MySearch } from '@/components/search/search_handler';
 import { Spinner } from "@heroui/react";
 import { title } from '@/components/primitives';
@@ -15,7 +15,9 @@ interface SearchFilters {
 }
 
 export default function SearchPage() {
-  //const router = useRouter();
+  // scroll down to results
+  const resultsRef = useRef<HTMLDivElement | null>(null);
+  const filtersChange = useRef(false); // don't scholl until filters are set
 
   const [ingredients, setIngredients] = useState([]);
   const [dishType, setDishType] = useState([]);
@@ -95,6 +97,16 @@ export default function SearchPage() {
         }
         const data = await response.json();
         setResults(data);
+
+        // wait before scroll to allow results to load
+        if (filtersChange.current) {
+          setTimeout(() => {
+            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // scrolls smoothly, as little as possible
+          }, 100);
+        }
+        else {
+          filtersChange.current = true;
+        }
       } catch (error) {
         console.error('Hiba a keresés során:', error);
         setResults([]);
@@ -120,7 +132,10 @@ export default function SearchPage() {
         />
       </div>
       <div className="w-full max-w-xl mt-6 text-center">
-        {error && <p>{error}</p>}
+        {error && <div className="w-full max-w-xl text-center justify-center overflow-visible"
+            ref={resultsRef}>
+            <p>{error}</p>
+          </div>}
         {loading && (
           <div>
             <div className="flex justify-center items-center">
@@ -131,10 +146,15 @@ export default function SearchPage() {
           </div>
         )}
         {!loading && results.length === 0 && filters.ingredients.length > 0 && (
-          <p>Nincs a keresési feltételeknek megfelelő recept</p>
+          <div className="w-full max-w-xl text-center justify-center overflow-visible"
+            ref={resultsRef}>
+            <p>Nincs a keresési feltételeknek megfelelő recept</p>
+          </div>
+
         )}
         {!loading && !error && results.length > 0 && (
-          <div className="w-full max-w-xl text-center justify-center overflow-visible">
+          <div className="w-full max-w-xl text-center justify-center overflow-visible"
+            ref={resultsRef}>
             <h1 className={title()}>Keresési találatok</h1>
             {loading && <Spinner color="primary" label="Betöltés..." />}
             {results.map((recipe, index) => (
