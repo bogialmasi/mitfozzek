@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       break;
     case 'user_dish_category':
       const authorization = req.headers.get('Authorization');
-      const token = authorization?.split(' ')[1];    
+      const token = authorization?.split(' ')[1];
       if (!token) {
         return NextResponse.json({
         });
@@ -34,6 +34,9 @@ export async function GET(req: NextRequest) {
       break;
     case 'dish_category':
       query = 'SELECT category_id AS "key", category_name AS "value" FROM dish_category;';
+      break;
+    case 'dish_cuisine':
+      query = 'SELECT cuisine_id AS "key", cuisine_name AS "value" FROM dish_cuisine;';
       break;
     case 'measurement':
       query = 'SELECT measurement_id AS "key", measurement_name AS "value" FROM measurements;';

@@ -2,7 +2,6 @@ import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
-import { user } from '@heroui/theme';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -19,6 +18,7 @@ export async function GET(req: NextRequest) {
     const selectedDishType = searchParams.getAll('dishType').map(Number);
     const selectedDishCategory = searchParams.getAll('dishCategory').map(Number);
     const selectedUserDishCategory = searchParams.getAll('userDishCategory').map(Number);
+    const selectedCuisine = searchParams.getAll('dishCuisine').map(Number);
     const id = searchParams.get('id');
 
     // One recipe based on ID
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
-      LEFT JOIN dish_category ON dish_category.category_id = con_recipe_category.category_id
+      LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
     `;
 
     const filters = [];
@@ -86,6 +86,10 @@ export async function GET(req: NextRequest) {
     if (selectedDishCategory.length > 0) {
       filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
       params.push(...selectedDishCategory);
+    }
+    if (selectedCuisine.length > 0) {
+      filters.push(`con_recipe_cuisine.cuisine_id IN (${selectedCuisine.map(() => '?').join(',')})`);
+      params.push(...selectedCuisine);
     }
     if (selectedUserDishCategory.length > 0) {
       const authorization = req.headers.get('Authorization');
