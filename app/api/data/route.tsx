@@ -5,15 +5,31 @@ import * as jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+export const getUserId = (req: NextRequest): number | null => {
+  try {
+    const authorization = req.headers.get('Authorization');
+    const token = authorization?.split(' ')[1];
+    if (!token) {
+      return null;
+    }
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId || null;  // Return userId if present
+    return userId;
+  } catch (error) {
+    console.error('Invalid token:', error);
+    return null;  // Return null if token verification fails
+  }
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const type = searchParams.get('type'); // the value of the type parameter from the URL
   if (!type) {
     return NextResponse.json({ error: 'Hiányzó type paraméter' }, { status: 400 });
   }
-
   // SQL query based on the type parameter
   let query = '';
+  let params: any[] = [];
   switch (type) {
     case 'ingredients':
       query = 'SELECT ingredient_id AS "key", ingredient_name AS "value" FROM ingredients;';
@@ -21,17 +37,9 @@ export async function GET(req: NextRequest) {
     case 'dish_type':
       query = 'SELECT dishtype_id AS "key", dishtype_name AS "value" FROM dish_type;';
       break;
-    case 'user_dish_category':
-      const authorization = req.headers.get('Authorization');
-      const token = authorization?.split(' ')[1];
-      if (!token) {
-        return NextResponse.json({
-        });
-      }
-      const decoded: any = jwt.verify(token, JWT_SECRET);
-      const userId = decoded.userId || null; // null if logged out
+    /*case 'user_dish_category':
       query = `SELECT dish_category.category_id AS "key", dish_category.category_name AS "value" FROM dish_category JOIN user_dish_category ON user_dish_category.category_id = dish_category.category_id WHERE user_dish_category.user_id = ${userId};`
-      break;
+      break;*/
     case 'dish_category':
       query = 'SELECT category_id AS "key", category_name AS "value" FROM dish_category;';
       break;
@@ -41,6 +49,17 @@ export async function GET(req: NextRequest) {
     case 'measurement':
       query = 'SELECT measurement_id AS "key", measurement_name AS "value" FROM measurements;';
       break;
+    case 'user_pantry':
+      const userId = getUserId(req);
+      if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      query = `SELECT ingredients.ingredient_id AS "key", ingredients.ingredient_name AS "value"
+             FROM ingredients 
+             JOIN pantry ON ingredients.ingredient_id = pantry.ingredient_id 
+             WHERE pantry.pantry_id = ?`;
+      params = [userId];
+      break;
     default:
       return NextResponse.json(
         { error: 'Érvénytelen paraméter' },
@@ -49,7 +68,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [result] = await pool.query<RowDataPacket[]>(query);
+    const [result] = await pool.query<RowDataPacket[]>(query, params);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching data:', error);

@@ -1,16 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MyDropdown } from './dropdown_searchfilters';
-import { Button, Form, Input } from "@heroui/react";
+import { Button, Form, Input, Checkbox } from "@heroui/react";
 import { MySearchBar } from './searchbar_ingredients';
-import { HeroSearch, SearchIcon } from '../icons';
+import { HeroSearch } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
-import { useRouter } from 'next/navigation';
-
-interface MySearchData {
-    key: number;
-    value: string;
-}
+import { useAuthentication } from '@/app/context/authenticationContext';
 
 interface MySearchProps {
     onSearch: (filters: {
@@ -18,50 +13,27 @@ interface MySearchProps {
         ingredients: number[];
         dishType: number[];
         dishCategory: number[];
+        dishCuisine: number[];
+        onlyPantryIngredients: boolean;
     }) => void;
+    ingredients: any[];
+    dishType: any[];
+    dishCategory: any[];
+    dishCuisine: any[];
+    onlyPantryIngredients: boolean;
 }
 
-export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
+export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dishCategory, dishCuisine, onlyPantryIngredients }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const router = useRouter();
-
-    // States for dropdown data
-    const [ingredients, setIngredients] = useState<MySearchData[]>([]);
-    const [dishType, setDishType] = useState<MySearchData[]>([]);
-    const [dishCategory, setDishCategory] = useState<MySearchData[]>([]);
-
+    const { user } = useAuthentication();
     const [searchQuery, setSearchQuery] = useState('');
-
+    const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(onlyPantryIngredients);
     const [selectedFilters, setSelectedFilters] = useState({
         ingredients: new Set<number>(),
         dishType: new Set<number>(),
         dishCategory: new Set<number>(),
+        dishCuisine: new Set<number>(),
     });
-
-
-
-    // Loads dropdown with data when page is loaded (mounted)
-    useEffect(() => {
-
-        const fetchData = async () => {
-            try {
-                const [ingredientsRes, dishTypeRes, dishCategoryRes] = await Promise.all([
-                    fetch('/api/data?type=ingredients'),
-                    fetch('/api/data?type=dish_type'),
-                    fetch('/api/data?type=dish_category'),
-                ]);
-
-                setIngredients(await ingredientsRes.json());
-                setDishType(await dishTypeRes.json());
-                setDishCategory(await dishCategoryRes.json());
-            } catch (error) {
-                console.error('Error fetching dropdown data:', error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
     // Uupdates the selected filters, changing the set in the selectedFilters state
     const updateFilter = (type: keyof typeof selectedFilters, keys: number[]) => {
         setSelectedFilters((prev) => ({
@@ -70,68 +42,92 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch }) => {
         }));
     };
 
-    // Handle search button click
-    const handleSearch = (event: React.FormEvent) => {
-        event.preventDefault();
-        const filters = {
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSearch({
             searchQuery,
             ingredients: Array.from(selectedFilters.ingredients),
             dishType: Array.from(selectedFilters.dishType),
             dishCategory: Array.from(selectedFilters.dishCategory),
-        };
-        console.log(filters);
-
-        if (onSearch) {
-            onSearch(filters);
-        }
-        const params = new URLSearchParams();
-        if (searchQuery) params.set('searchQuery', searchQuery);
-        filters.ingredients.forEach((id) => params.append('ingredients', id.toString()));
-        filters.dishType.forEach((id) => params.append('dishType', id.toString()));
-        filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
-        console.log(params);
+            dishCuisine: Array.from(selectedFilters.dishCuisine),
+            onlyPantryIngredients: pantryIngredientsOnly
+        });
     };
 
     return (
         <div className="w-full">
             <Form onSubmit={handleSearch} validationBehavior="native"
-                className="w-full flex flex-col overflow-visible py-6">
+                className="w-full flex flex-col overflow-visible py-4">
+                <div className='flex flex-col space-y-1 w-5/6'>
+                    <p className="text-sm py-2">Keressen rá a recept címére</p>
+                    <Input
+                        className="form-control input py-2"
+                        labelPlacement="outside"
+                        name="search"
+                        placeholder="Keresés..."
+                        type="text"
+                        variant="bordered"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
 
-                <Input
-                    className="form-control input py-4"
-                    labelPlacement="outside"
-                    name="search"
-                    placeholder="Keressen rá receptek címére..."
-                    type="text"
-                    variant="bordered"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-
-                <p className="text-sm py-2">Hozzávalók:</p>
-                <MySearchBar
-                    list={ingredients}
-                    selectedKeys={Array.from(selectedFilters.ingredients)}
-                    onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}
-                />
-
-                <br />
+                    <p className="text-sm py-2">Milyen hozzávalókat tartalmazzon a recept?</p>
+                    <MySearchBar
+                        isDisabled={pantryIngredientsOnly}
+                        list={ingredients}
+                        selectedKeys={Array.from(selectedFilters.ingredients)}
+                        onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                    />
+                </div>
+                <div className='flex flex-col space-y-1 w-5/6'>
+                    <p className="text-sm py-2">Milyen konyha?</p>
+                    <MySearchBar
+                        isDisabled={false}
+                        list={dishCuisine}
+                        selectedKeys={Array.from(selectedFilters.dishCuisine)}
+                        onSelectionChange={(keys: number[]) => updateFilter('dishCuisine', keys)}
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                    />
+                </div>
                 {!isOpen && (
                     <div>
-                        <p className="text-sm py-2">Étel típusa:</p>
-                        <MyDropdown
-                            list={dishType}
-                            selectedKeys={selectedFilters.dishType}
-                            onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
-                        />
-                        <p className="text-sm py-2">Ételérzékenységek, diéta:</p>
-                        <MyDropdown
-                            list={dishCategory}
-                            selectedKeys={selectedFilters.dishCategory}
-                            onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
-                        />
+                        <div className='flex flex-col space-y-1 w-md'>
+                            <p className="text-sm py-2">Reggeli, ebéd, vacsora, vagy valami különleges?</p>
+                            <MyDropdown
+                                list={dishType}
+                                selectedKeys={selectedFilters.dishType}
+                                onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
+                            />
+                        </div>
+                        <div className='flex flex-col space-y-1 w-md'>
+                            <p className="text-sm py-2">Keresés ételérzékenységek, speciális diéták alapján</p>
+                            <MyDropdown
+                                list={dishCategory}
+                                selectedKeys={selectedFilters.dishCategory}
+                                onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
+                            />
+                        </div>
+                    </div>
+                )}
+                {user && (
+                    <div>
+                        <div className='flex flex-col space-y-1 w-5/6'>
+                            <p className="text-sm py-2">Recept keresése a spájz összetevői alapján</p>
+                            <MySearchBar
+                                isDisabled={pantryIngredientsOnly}
+                                list={ingredients}
+                                selectedKeys={Array.from(selectedFilters.ingredients)}
+                                onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
+                                isOpen={isOpen}
+                                setIsOpen={setIsOpen}
+                            />
+                            <Checkbox isSelected={pantryIngredientsOnly} onValueChange={setPantryIngredientsOnly}>
+                                <p className="text-sm py-2">Olyan receptek keresése, amelyekhez a spájzomban már minden összetevő megvan</p>
+                            </Checkbox>
+                        </div>
                     </div>
                 )}
                 <br />

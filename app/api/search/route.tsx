@@ -17,11 +17,14 @@ export async function GET(req: NextRequest) {
     const selectedIngredients = searchParams.getAll('ingredients').map(Number);
     const selectedDishType = searchParams.getAll('dishType').map(Number);
     const selectedDishCategory = searchParams.getAll('dishCategory').map(Number);
-    const selectedUserDishCategory = searchParams.getAll('userDishCategory').map(Number);
     const selectedCuisine = searchParams.getAll('dishCuisine').map(Number);
+    const pantryIngredientsOnly = searchParams.get('pantryIngredientsOnly');
     const id = searchParams.get('id');
 
+    /*
+    //
     // One recipe based on ID
+    // */
     if (id) {
       const recipeId = Number(id);
       const [recipes] = await pool.query('SELECT * FROM recipes WHERE recipe_id = ?', [recipeId]);
@@ -57,7 +60,105 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(fullRecipe);
     }
 
+
+
+    /*
+    //
+    // Recipes that only contain pantry ingredients, with filters
+    // */
+
+    if (pantryIngredientsOnly === 'true') {
+      console.log(req.headers);
+      console.log('Authorization header:', req.headers.get('Authorization'));
+      const authorization = req.headers.get('Authorization');
+      const token = authorization?.split(' ')[1];
+      console.log('Token:', token);
+      if (!token) {
+        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+
+      }
+
+      if (!token) {
+        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+
+      }
+      const decoded: any = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.userId;
+
+      let query = `
+      SELECT DISTINCT recipes.recipe_id, recipes.recipe_name, recipes.recipe_description, recipes.recipe_time, recipes.recipe_headcount
+      FROM recipes
+      LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
+      LEFT JOIN pantry ON pantry.ingredient_id = con_recipe_ingredients.ingredient_id
+      WHERE NOT EXISTS (
+            SELECT 1 FROM con_recipe_ingredients
+            WHERE con_recipe_ingredients.recipe_id = recipes.recipe_id
+            AND con_recipe_ingredients.ingredient_id NOT IN (
+            SELECT ingredient_id FROM pantry WHERE pantry.pantry_id = ?
+            ));`;
+
+      const filters = [];
+      const params = [userId]; // userId is the first parameter
+
+      // Filters
+      if (searchQuery) {
+        filters.push('LOWER(recipes.recipe_name) LIKE LOWER(?)');
+        params.push(`%${searchQuery}%`);
+      }
+      if (selectedDishType.length > 0) {
+        filters.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
+        params.push(...selectedDishType);
+      }
+      if (selectedDishCategory.length > 0) {
+        filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
+        params.push(...selectedDishCategory);
+      }
+      if (selectedCuisine.length > 0) {
+        filters.push(`con_recipe_cuisine.cuisine_id IN (${selectedCuisine.map(() => '?').join(',')})`);
+        params.push(...selectedCuisine);
+      }
+      if (filters.length > 0) {
+        query += ' AND ' + filters.join(' AND ');
+      }
+
+      const [recipes] = await pool.query<RowDataPacket[]>(query, params);
+
+      if (recipes.length === 0) {
+        return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
+      }
+
+      // Ingredients of the recipes
+      const recipesWithIngredients = await Promise.all(
+        recipes.map(async (recipe) => {
+          const [ingredientsData] = await pool.query<RowDataPacket[]>(
+            `SELECT ingredients.ingredient_id, ingredients.ingredient_name
+           FROM ingredients
+           JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+           WHERE con_recipe_ingredients.recipe_id = ?`,
+            [recipe.recipe_id]
+          );
+          return {
+            ...recipe,
+            ingredients: ingredientsData.map((ingredient) => ({
+              ingredient_id: ingredient.ingredient_id,
+              ingredient_name: ingredient.ingredient_name,
+            })),
+          };
+        })
+      );
+
+      return NextResponse.json(recipesWithIngredients);
+    }
+
+
+
+    /*
+    //
     // Multiple recipes based on filters
+    // */
     let query = `
       SELECT DISTINCT recipes.recipe_id, recipes.recipe_name, recipes.recipe_description, recipes.recipe_time, recipes.recipe_headcount
       FROM recipes
@@ -91,32 +192,6 @@ export async function GET(req: NextRequest) {
       filters.push(`con_recipe_cuisine.cuisine_id IN (${selectedCuisine.map(() => '?').join(',')})`);
       params.push(...selectedCuisine);
     }
-    if (selectedUserDishCategory.length > 0) {
-      const authorization = req.headers.get('Authorization');
-      const token = authorization?.split(' ')[1];
-      if (!token) {
-        selectedUserDishCategory.length = 0;
-        console.log('NO TOKEN -----')
-        console.log("Authorization:", req.headers.get('Authorization'));
-        console.log("Token:", token);
-        console.log("Selected User Dish Category:", selectedUserDishCategory);
-      } else {
-        const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId;
-        console.log(userId);
-        if (userId) {
-          console.log('YES TOKEN -----')
-          console.log("Authorization:", req.headers.get('Authorization'));
-          console.log("Token:", token);
-          console.log("Selected User Dish Category:", selectedUserDishCategory);
-          query += ` LEFT JOIN user_dish_category ON user_dish_category.category_id = dish_category.category_id `;
-          filters.push(`user_dish_category.category_id IN (${selectedUserDishCategory.map(() => '?').join(',')})`);
-          filters.push(`user_dish_category.user_id = ?`);
-          params.push(...selectedUserDishCategory, userId);
-        }
-      }
-    }
-
     if (filters.length > 0) {
       query += ' WHERE ' + filters.join(' AND ');
     }

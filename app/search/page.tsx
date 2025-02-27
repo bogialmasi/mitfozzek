@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
 import { MySearch } from '@/components/search/search_handler';
-import { Spinner } from "@heroui/react";
+import { Checkbox, Spinner } from "@heroui/react";
 import { title } from '@/components/primitives';
 import { MyListItem } from '@/components/search/card_searchresult_listitem';
 import { Recipe } from '@/types';
@@ -23,7 +23,7 @@ export default function SearchPage() {
   const [dishType, setDishType] = useState([]);
   const [dishCategory, setDishCategory] = useState([]);
   const [dishCuisine, setDishCuisine] = useState([]);
-
+  const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(true);
   // search filters, grouped
   const [filters, setFilters] = useState<SearchFilters>({
     searchQuery: '',
@@ -38,6 +38,7 @@ export default function SearchPage() {
   const [results, setResults] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   // Fetch filters 
   useEffect(() => {
@@ -68,7 +69,6 @@ export default function SearchPage() {
         setLoading(false);
       }
     };
-
     fetchFilters();
   }, []);
 
@@ -85,18 +85,40 @@ export default function SearchPage() {
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
         filters.dishCuisine.forEach((id) => params.append('dishCuisine', id.toString()));
-
-        const response = await fetch(`/api/search?${params.toString()}`);
-        if (!response.ok) {
-          if (response.status === 404) {
-            setResults([]); // empty result set
-            setError('Nincs a keresésnek megfelelő elem');
-          } else {
-            setError(`Hiba a keresés során: ${response.status}`);
+        if (pantryIngredientsOnly) {
+          const token = localStorage.getItem('token');
+          params.append('pantryIngredientsOnly', 'true');
+          const response = await fetch(`/api/search?${params.toString()}`,
+            {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            });
+          if (!response.ok) {
+            if (response.status === 404) {
+              setResults([]); // empty result set
+              setError('Nincs a keresésnek megfelelő elem');
+            } else {
+              setError(`Hiba a keresés során: ${response.status}`);
+            }
           }
+          const data = await response.json();
+          setResults(data);
+        } else {
+          console.log("params:", params.toString())
+          const response = await fetch(`/api/search?${params.toString()}`);
+          if (!response.ok) {
+            if (response.status === 404) {
+              setResults([]); // empty result set
+              setError('Nincs a keresésnek megfelelő elem');
+            } else {
+              setError(`Hiba a keresés során: ${response.status}`);
+            }
+          }
+          const data = await response.json();
+          setResults(data);
         }
-        const data = await response.json();
-        setResults(data);
 
         // wait before scroll to allow results to load
         if (filtersChange.current) {
@@ -115,13 +137,13 @@ export default function SearchPage() {
       }
     };
     fetchResults();
-  }, [filters]);
+  }, [filters, pantryIngredientsOnly]);
 
 
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <div className="w-full max-w-xl text-left justify-center overflow-visible ">
+      <div className="w-full text-left justify-center overflow-visible ">
         <h1 className={title()}>Keresés a receptek között</h1>
         <MySearch
           onSearch={setFilters}
@@ -129,13 +151,14 @@ export default function SearchPage() {
           dishType={dishType}
           dishCategory={dishCategory}
           dishCuisine={dishCuisine}
+          onlyPantryIngredients={pantryIngredientsOnly}
         />
       </div>
-      <div className="w-full max-w-xl mt-6 text-center">
-        {error && <div className="w-full max-w-xl text-center justify-center overflow-visible"
-            ref={resultsRef}>
-            <p>{error}</p>
-          </div>}
+      <div className="w-full mt-6 text-center">
+        {error && <div className="w-full text-center justify-center overflow-visible"
+          ref={resultsRef}>
+          <p>{error}</p>
+        </div>}
         {loading && (
           <div>
             <div className="flex justify-center items-center">
@@ -146,14 +169,14 @@ export default function SearchPage() {
           </div>
         )}
         {!loading && results.length === 0 && filters.ingredients.length > 0 && (
-          <div className="w-full max-w-xl text-center justify-center overflow-visible"
+          <div className="w-full text-center justify-center overflow-visible"
             ref={resultsRef}>
             <p>Nincs a keresési feltételeknek megfelelő recept</p>
           </div>
 
         )}
         {!loading && !error && results.length > 0 && (
-          <div className="w-full max-w-xl text-center justify-center overflow-visible"
+          <div className="w-full text-center justify-center overflow-visible"
             ref={resultsRef}>
             <h1 className={title()}>Keresési találatok</h1>
             {loading && <Spinner color="primary" label="Betöltés..." />}
