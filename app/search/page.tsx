@@ -1,8 +1,8 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { MySearch } from '@/components/search/search_handler';
+import { MySearch } from '@/components/search/form_search';
 import { Checkbox, Spinner } from "@heroui/react";
-import { title } from '@/components/primitives';
+import { subtitle, title } from '@/components/primitives';
 import { MyListItem } from '@/components/search/card_searchresult_listitem';
 import { Recipe } from '@/types';
 
@@ -12,18 +12,24 @@ interface SearchFilters {
   dishType: number[];
   dishCategory: number[];
   dishCuisine: number[];
+  onlyPantryIngredients: boolean;
+  pantryIngredients: number[];
 }
 
 export default function SearchPage() {
   // scroll down to results
   const resultsRef = useRef<HTMLDivElement | null>(null);
-  const filtersChange = useRef(false); // don't scholl until filters are set
+  const scrollResults = () => {
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   const [ingredients, setIngredients] = useState([]);
   const [dishType, setDishType] = useState([]);
   const [dishCategory, setDishCategory] = useState([]);
   const [dishCuisine, setDishCuisine] = useState([]);
-  const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(true);
+  const [pantryIngredients, setPantryIngredients] = useState([]);
   // search filters, grouped
   const [filters, setFilters] = useState<SearchFilters>({
     searchQuery: '',
@@ -31,6 +37,8 @@ export default function SearchPage() {
     dishType: [],
     dishCategory: [],
     dishCuisine: [],
+    onlyPantryIngredients: false,
+    pantryIngredients: [],
   });
 
 
@@ -53,15 +61,28 @@ export default function SearchPage() {
           fetch('/api/data?type=dish_category'),
           fetch('/api/data?type=dish_cuisine')
         ]);
+        const token = localStorage.getItem('token');
+        const pantryIngredientsRes = await fetch('/api/data?type=user_pantry', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
 
         if (!ingredientsRes.ok || !dishTypeRes.ok || !dishCategoryRes.ok || !dishCuisineRes.ok) {
           throw new Error("Hiba a keresési filterek betöltése közben");
+        }
+        if (!pantryIngredientsRes.ok) {
+          throw new Error('A spájz betöltése sikertelen');
         }
 
         setIngredients(await ingredientsRes.json());
         setDishType(await dishTypeRes.json());
         setDishCategory(await dishCategoryRes.json());
         setDishCuisine(await dishCuisineRes.json());
+
+        setPantryIngredients(await pantryIngredientsRes.json());
+
       } catch (error) {
         console.error('Hiba a filterek betöltése közben:', error);
         setError('Hiba a keresési filterek betöltése közben');
@@ -82,10 +103,11 @@ export default function SearchPage() {
         const params = new URLSearchParams();
         filters.searchQuery && params.append('searchQuery', filters.searchQuery);
         filters.ingredients.forEach((id) => params.append('ingredients', id.toString()));
+        filters.pantryIngredients.forEach((id) => params.append('ingredients', id.toString())); // pantry ingredients are also ingredients for search
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
         filters.dishCuisine.forEach((id) => params.append('dishCuisine', id.toString()));
-        if (pantryIngredientsOnly) {
+        if (filters.onlyPantryIngredients) {
           const token = localStorage.getItem('token');
           params.append('pantryIngredientsOnly', 'true');
           const response = await fetch(`/api/search?${params.toString()}`,
@@ -119,16 +141,6 @@ export default function SearchPage() {
           const data = await response.json();
           setResults(data);
         }
-
-        // wait before scroll to allow results to load
-        if (filtersChange.current) {
-          setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // scrolls smoothly, as little as possible
-          }, 100);
-        }
-        else {
-          filtersChange.current = true;
-        }
       } catch (error) {
         console.error('Hiba a keresés során:', error);
         setResults([]);
@@ -137,7 +149,7 @@ export default function SearchPage() {
       }
     };
     fetchResults();
-  }, [filters, pantryIngredientsOnly]);
+  }, [filters]);
 
 
 
@@ -146,38 +158,44 @@ export default function SearchPage() {
       <div className="w-full text-left justify-center overflow-visible ">
         <h1 className={title()}>Keresés a receptek között</h1>
         <MySearch
-          onSearch={setFilters}
+          onSearch={(newFilters) => {
+            setFilters(newFilters);
+            scrollResults();
+          }}
           ingredients={ingredients}
           dishType={dishType}
           dishCategory={dishCategory}
           dishCuisine={dishCuisine}
-          onlyPantryIngredients={pantryIngredientsOnly}
+          pantryIngredients={pantryIngredients}
         />
       </div>
-      <div className="w-full mt-6 text-center">
-        {error && <div className="w-full text-center justify-center overflow-visible"
-          ref={resultsRef}>
-          <p>{error}</p>
+      <br />
+      <div className="w-full mt-6 text-center" ref={resultsRef}>
+
+        {error && <div className="w-full text-center justify-center overflow-visible">
+          <h1 className={subtitle()}>{error}</h1>
         </div>}
+
         {loading && (
           <div>
             <div className="flex justify-center items-center">
-              <p>Receptek betöltése ... </p>
+              <h1 className={subtitle()}>Receptek betöltése folyamatban...</h1>
               <br />
               <Spinner />
             </div>
           </div>
         )}
+
         {!loading && results.length === 0 && filters.ingredients.length > 0 && (
-          <div className="w-full text-center justify-center overflow-visible"
-            ref={resultsRef}>
+          <div className="w-full text-center justify-center overflow-visible">
+            <h1 className={title()}>Keresési találatok</h1>
             <p>Nincs a keresési feltételeknek megfelelő recept</p>
           </div>
 
         )}
+
         {!loading && !error && results.length > 0 && (
-          <div className="w-full text-center justify-center overflow-visible"
-            ref={resultsRef}>
+          <div className="w-full text-center justify-center overflow-visible">
             <h1 className={title()}>Keresési találatok</h1>
             {loading && <Spinner color="primary" label="Betöltés..." />}
             {results.map((recipe, index) => (

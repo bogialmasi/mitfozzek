@@ -15,24 +15,26 @@ interface MySearchProps {
         dishCategory: number[];
         dishCuisine: number[];
         onlyPantryIngredients: boolean;
+        pantryIngredients: number[];
     }) => void;
     ingredients: any[];
     dishType: any[];
     dishCategory: any[];
     dishCuisine: any[];
-    onlyPantryIngredients: boolean;
+    pantryIngredients: any[];
 }
 
-export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dishCategory, dishCuisine, onlyPantryIngredients }) => {
+export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dishCategory, dishCuisine, pantryIngredients }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { user } = useAuthentication();
     const [searchQuery, setSearchQuery] = useState('');
-    const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(onlyPantryIngredients);
+    const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState({
         ingredients: new Set<number>(),
         dishType: new Set<number>(),
         dishCategory: new Set<number>(),
         dishCuisine: new Set<number>(),
+        pantryIngredient: new Set<number>(),
     });
     // Uupdates the selected filters, changing the set in the selectedFilters state
     const updateFilter = (type: keyof typeof selectedFilters, keys: number[]) => {
@@ -50,9 +52,11 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
             dishType: Array.from(selectedFilters.dishType),
             dishCategory: Array.from(selectedFilters.dishCategory),
             dishCuisine: Array.from(selectedFilters.dishCuisine),
-            onlyPantryIngredients: pantryIngredientsOnly
+            onlyPantryIngredients: pantryIngredientsOnly,
+            pantryIngredients: Array.from(selectedFilters.pantryIngredient),
         });
     };
+
 
     return (
         <div className="w-full">
@@ -79,8 +83,28 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
                         isOpen={isOpen}
                         setIsOpen={setIsOpen}
+                        showSelection={true}
                     />
                 </div>
+                {user && (
+                    <div className='bg-gray-200 border rounded-xl p-4 w-5/6 py-2'>
+                        <div className='flex flex-col space-y-1 w-5/6'>
+                            <p className="text-sm py-2">Recept keresése a spájz összetevői alapján</p>
+                            <MySearchBar
+                                isDisabled={false}
+                                list={pantryIngredients}
+                                selectedKeys={Array.from(selectedFilters.ingredients)}
+                                onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
+                                isOpen={isOpen}
+                                setIsOpen={setIsOpen}
+                                showSelection={false}
+                            />
+                            <Checkbox isSelected={pantryIngredientsOnly} onValueChange={setPantryIngredientsOnly}>
+                                <p className="text-sm py-2">Olyan receptek keresése, amelyekhez a spájzomban már minden összetevő megvan</p>
+                            </Checkbox>
+                        </div>
+                    </div>
+                )}
                 <div className='flex flex-col space-y-1 w-5/6'>
                     <p className="text-sm py-2">Milyen konyha?</p>
                     <MySearchBar
@@ -90,6 +114,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         onSelectionChange={(keys: number[]) => updateFilter('dishCuisine', keys)}
                         isOpen={isOpen}
                         setIsOpen={setIsOpen}
+                        showSelection={true}
                     />
                 </div>
                 {!isOpen && (
@@ -110,34 +135,17 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                                 onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
                             />
                         </div>
+
+                        <br />
+                        <Button className={buttonStyles({
+                            color: "primary",
+                            radius: "full",
+                            variant: "shadow",
+                        })} type="submit">
+                            Keresés <HeroSearch />
+                        </Button>
                     </div>
                 )}
-                {user && (
-                    <div>
-                        <div className='flex flex-col space-y-1 w-5/6'>
-                            <p className="text-sm py-2">Recept keresése a spájz összetevői alapján</p>
-                            <MySearchBar
-                                isDisabled={pantryIngredientsOnly}
-                                list={ingredients}
-                                selectedKeys={Array.from(selectedFilters.ingredients)}
-                                onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
-                            />
-                            <Checkbox isSelected={pantryIngredientsOnly} onValueChange={setPantryIngredientsOnly}>
-                                <p className="text-sm py-2">Olyan receptek keresése, amelyekhez a spájzomban már minden összetevő megvan</p>
-                            </Checkbox>
-                        </div>
-                    </div>
-                )}
-                <br />
-                <Button className={buttonStyles({
-                    color: "primary",
-                    radius: "full",
-                    variant: "shadow",
-                })} type="submit">
-                    Keresés <HeroSearch />
-                </Button>
             </Form>
         </div>
     );

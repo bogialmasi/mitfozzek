@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     // */
 
     if (pantryIngredientsOnly === 'true') {
-      console.log(req.headers);
+      console.log('headers: ',req.headers);
       console.log('Authorization header:', req.headers.get('Authorization'));
       const authorization = req.headers.get('Authorization');
       const token = authorization?.split(' ')[1];
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
             WHERE con_recipe_ingredients.recipe_id = recipes.recipe_id
             AND con_recipe_ingredients.ingredient_id NOT IN (
             SELECT ingredient_id FROM pantry WHERE pantry.pantry_id = ?
-            ));`;
+            ))`;
 
       const filters = [];
       const params = [userId]; // userId is the first parameter
