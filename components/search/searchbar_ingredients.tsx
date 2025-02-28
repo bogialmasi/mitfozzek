@@ -12,10 +12,11 @@ interface MySearchBarProps {
     onSelectionChange: (keys: number[]) => void;
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    showSelection: boolean;
 }
 
 
-export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, isOpen, setIsOpen }) => {
+export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, isOpen, setIsOpen, showSelection }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const { user } = useAuthentication();
 
@@ -72,19 +73,24 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                     </ul>
                 )}
             </div>
-            <div className="flex flex-wrap gap-2">
-                {selectedKeys.map((key) => {
-                    const item = list.find((item) => item.key === key);
-                    return (
-                        item && (
-                            <Button className="mt-4 flex items-center overflow-visible whitespace-nowrap px-4 min-w-[100px]"
-                                onPress={() => handleRemoveItem(key)} key={key}>
-                                {item.value} <HeroCancel />
-                            </Button>
-                        )
-                    );
-                })}
-            </div>
+            {showSelection && selectedKeys.length > 0 && (
+                <div>
+                    <p className="text-sm py-2">Kiválasztva:</p>
+                    <div className="flex flex-wrap space-x-3">
+                        {selectedKeys.map((key) => {
+                            const item = list.find((item) => item.key === key);
+                            return (
+                                item && (
+                                    <Button className="mt-2 flex items-center overflow-visible whitespace-nowrap px-4 min-w-[100px]"
+                                        onPress={() => handleRemoveItem(key)} key={key}>
+                                        {item.value} <HeroCancel />
+                                    </Button>
+                                )
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
