@@ -61,7 +61,7 @@ export default function RegisterPage() {
                 <Input
                     value={password} onChange={(e) => setPassword(e.target.value)}
                     isRequired
-                    errorMessage="!"
+                    errorMessage="Adjon meg jelszót!"
                     label="Jelszó"
                     labelPlacement="outside"
                     name="password"
@@ -72,7 +72,7 @@ export default function RegisterPage() {
                 <Input
                     value={passwordAgain} onChange={(e) => setPasswordAgain(e.target.value)}
                     isRequired
-                    errorMessage="!"
+                    errorMessage="Adjon meg jelszót!"
                     label="Jelszó újra"
                     labelPlacement="outside"
                     name="password"
