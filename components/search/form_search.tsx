@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { MyDropdown } from './dropdown_searchfilters';
 import { Button, Form, Input, Checkbox } from "@heroui/react";
-import { MySearchBar } from './searchbar_ingredients';
+import { MySearchBar } from './searchbar_dropdown';
 import { HeroSearch } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { useAuthentication } from '@/app/context/authenticationContext';
@@ -81,13 +81,11 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         list={ingredients}
                         selectedKeys={Array.from(selectedFilters.ingredients)}
                         onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
                         showSelection={true}
                     />
                 </div>
                 {user && (
-                    <div className='bg-gray-200 border rounded-xl p-4 w-5/6 py-2'>
+                    <div className='bg-gray-200 dark:bg-gray-800 rounded-xl p-4 w-5/6 py-2'>
                         <div className='flex flex-col space-y-1 w-5/6'>
                             <p className="text-sm py-2">Recept keresése a spájz összetevői alapján</p>
                             <MySearchBar
@@ -95,8 +93,6 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                                 list={pantryIngredients}
                                 selectedKeys={Array.from(selectedFilters.ingredients)}
                                 onSelectionChange={(keys: number[]) => updateFilter('ingredients', keys)}
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
                                 showSelection={false}
                             />
                             <Checkbox isSelected={pantryIngredientsOnly} onValueChange={setPantryIngredientsOnly}>
@@ -112,12 +108,9 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         list={dishCuisine}
                         selectedKeys={Array.from(selectedFilters.dishCuisine)}
                         onSelectionChange={(keys: number[]) => updateFilter('dishCuisine', keys)}
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
                         showSelection={true}
                     />
                 </div>
-                {!isOpen && (
                     <div>
                         <div className='flex flex-col space-y-1 w-md'>
                             <p className="text-sm py-2">Reggeli, ebéd, vacsora, vagy valami különleges?</p>
@@ -145,7 +138,6 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                             Keresés <HeroSearch />
                         </Button>
                     </div>
-                )}
             </Form>
         </div>
     );
