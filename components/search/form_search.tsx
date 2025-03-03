@@ -67,15 +67,6 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
             dishCuisine: new Set<number>(),
             pantryIngredient: new Set<number>(),
         });
-        onSearch({
-            searchQuery: '',
-            ingredients: [],
-            dishType: [],
-            dishCategory: [],
-            dishCuisine: [],
-            onlyPantryIngredients: false,
-            pantryIngredients: [],
-        });
     }
 
 
