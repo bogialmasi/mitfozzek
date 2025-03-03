@@ -74,7 +74,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
         <div className="w-full">
             <Form onSubmit={handleSearch} validationBehavior="native"
                 className="w-full flex flex-col overflow-visible py-4">
-                <div className='flex flex-col space-y-1 w-5/6'>
+                <div className='flex flex-col space-y-1 w-full'>
                     <p className="text-sm py-2">Keressen rá a recept címére</p>
                     <Input
                         className="form-control input py-2"
@@ -97,8 +97,8 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                     />
                 </div>
                 {user && (
-                    <div className='bg-gray-200 dark:bg-gray-800 rounded-xl p-4 w-5/6 py-2'>
-                        <div className='flex flex-col space-y-1 w-5/6'>
+                    <div className='bg-gray-200 dark:bg-gray-800 rounded-xl p-4 w-full py-2'>
+                        <div className='flex flex-col space-y-1 w-full'>
                             <p className="text-sm py-2">Recept keresése a spájz összetevői alapján</p>
                             <MySearchBar
                                 isDisabled={false}
@@ -113,7 +113,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         </div>
                     </div>
                 )}
-                <div className='flex flex-col space-y-1 w-5/6'>
+                <div className='flex flex-col space-y-1 w-full'>
                     <p className="text-sm py-2">Milyen konyha?</p>
                     <MySearchBar
                         isDisabled={false}
