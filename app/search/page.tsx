@@ -70,10 +70,10 @@ export default function SearchPage() {
         })
 
         if (!ingredientsRes.ok || !dishTypeRes.ok || !dishCategoryRes.ok || !dishCuisineRes.ok) {
-          throw new Error("Hiba a keresési filterek betöltése közben");
+          setError("Hiba a keresési filterek betöltése közben");
         }
         if (!pantryIngredientsRes.ok) {
-          throw new Error('A spájz betöltése sikertelen');
+          setError('A spájz betöltése sikertelen');
         }
 
         setIngredients(await ingredientsRes.json());
