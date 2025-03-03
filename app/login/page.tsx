@@ -45,6 +45,14 @@ export default function LoginPage() {
         }
     };
 
+    if (loading) return (
+        <div>
+            <div className="flex justify-center items-center h-screen">
+                <p>Betöltés...</p>
+                <Spinner />
+            </div>
+        </div>);
+
     return (
         <section className="flex flex-col items-center justify-center gap-6 py-8 md:py-10">
             <Form onSubmit={handleLogin} validationBehavior="native"
