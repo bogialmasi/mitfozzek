@@ -1,30 +1,44 @@
 'use client'
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Button, Input } from "@heroui/react";
 import { HeroCancel } from '../icons';
-import { useAuthentication } from '@/app/context/authenticationContext';
 
 interface MySearchBarProps {
     isDisabled: boolean;
     list: { key: number; value: string }[];
     selectedKeys: number[];
     onSelectionChange: (keys: number[]) => void;
-    isOpen: boolean;
-    setIsOpen: (value: boolean) => void;
     showSelection: boolean;
 }
 
 
-export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, isOpen, setIsOpen, showSelection }) => {
+export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, showSelection }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const { user } = useAuthentication();
+    const inputRef = useRef<HTMLInputElement>(null);
+    const dropdownRef = useRef<HTMLUListElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);
         setIsOpen(!!value); // Open when typing, close when cleared
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+        if (inputRef.current && !inputRef.current.contains(e.target as Node) &&
+            dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            setSearchQuery(''); // clear search query if clicked outside
+            setIsOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     // Filter the list based on the search query (Ingredient)
     const filteredList = useMemo(() => {
@@ -36,13 +50,15 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
     }, [searchQuery, list]);
 
 
-    const handleSelectItem = (key: number) => {
+    const handleSelectItem = (key: number, e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!selectedKeys.includes(key)) {
             onSelectionChange([...selectedKeys, key]);
         }
         setSearchQuery(''); // Clear the search bar after selection
         setIsOpen(false);  // Close the dropdown
     };
+
     const handleRemoveItem = (key: number) => {
         onSelectionChange(selectedKeys.filter((selectedKey) => selectedKey !== key));
     };
@@ -51,6 +67,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
         <div>
             <div>
                 <Input
+                    ref={inputRef}
                     isDisabled={isDisabled}
                     className="form-control input"
                     type="text"
@@ -64,7 +81,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                         {filteredList.map((item) => (
                             <li
                                 key={item.key}
-                                onClick={() => handleSelectItem(item.key)}
+                                onClick={(e) => handleSelectItem(item.key, e)}
                                 className="p-2 cursor-pointer bg-white dark:bg-black"
                             >
                                 {item.value}
