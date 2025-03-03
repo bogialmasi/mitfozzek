@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { subtitle } from "@/components/primitives";
-import { Button, Input, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { Button, Input, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
 import { HeroPlus, HeroSettings } from "../icons";
 import { button as buttonStyles } from "@heroui/theme";
 import { MyAddPantryModal } from "./modal_addpantryitem";
@@ -15,7 +15,7 @@ interface MyPantryTableProps {
 
 
 export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients: pantryIngredients }) => {
-
+    const [loading, setLoading] = useState(false);
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); // add modal form
     const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); // edit modal form
     const [searchQuery, setSearchQuery] = useState('');
@@ -33,6 +33,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
                 const [ingredientsRes, measurementsRes] = await Promise.all([
                     fetch('/api/data?type=ingredients'),
                     fetch('/api/data?type=measurement')
@@ -41,6 +42,9 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                 setMeasurements(await measurementsRes.json());
             } catch (error) {
                 console.error('Dropdown adatok betöltése sikertelen:', error);
+            }
+            finally {
+                setLoading(false);
             }
         };
         fetchData();
@@ -58,6 +62,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                     ingredient_id: selectedIngredient.key,
                     ingredient_name: selectedIngredient.value,
                     ingredient_quantity: quantity,
+                    measurement_id: selectedMeasurement.key,
                     measurement_name: selectedMeasurement.value,
                 };
                 try {
@@ -121,6 +126,14 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
         }
     };
 
+    if (loading) return (
+        <div>
+            <div className="flex justify-center items-center h-screen">
+                <p>Betöltés...</p>
+                <Spinner />
+            </div>
+        </div>);
+
     return (
         <section className="flex justify-center w-full py-8">
             <div className="w-full max-w-md mx-auto px-4 py-6 rounded-lg">
@@ -151,11 +164,11 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                 </Table>
                 <div className="py-4 flex justify-center space-x-4">
                     <Button className={buttonStyles({ variant: "bordered", radius: "full" })}
-                        onPress={onEditOpen}>
+                        onClick={onEditOpen}>
                         <HeroSettings /> Spájz módosítása
                     </Button>
                     <Button className={buttonStyles({ variant: "bordered", radius: "full" })}
-                        onPress={onAddOpen}>
+                        onClick={onAddOpen}>
                         <HeroPlus /> Hozzáadás
                     </Button>
                     <MyAddPantryModal isOpen={isAddOpen} onOpenChange={onAddOpenChange}

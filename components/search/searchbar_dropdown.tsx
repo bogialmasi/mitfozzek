@@ -99,7 +99,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                             return (
                                 item && (
                                     <Button className="mt-2 flex items-center overflow-visible whitespace-nowrap px-4 min-w-[100px]"
-                                        onPress={() => handleRemoveItem(key)} key={key}>
+                                        onClick={() => handleRemoveItem(key)} key={key}>
                                         {item.value} <HeroCancel />
                                     </Button>
                                 )

@@ -9,6 +9,7 @@ import { PressEvent } from "@react-types/shared";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
+import { siteConfig } from "@/config/site";
 
 export default function EditProfilePage() {
   const [username, setUsername] = useState('');
@@ -104,7 +105,7 @@ export default function EditProfilePage() {
       if (response.ok) {
         console.log('data:', res);
         setLoading(false);
-        router.push('/profile');
+        router.push(siteConfig.links.profile);
       }
     } catch (err) {
       console.error('Módosítás közben hiba lépett fel:', err);
@@ -114,11 +115,11 @@ export default function EditProfilePage() {
     }
   };
   // Does not save any of the changes
-  function handleCancel(e: PressEvent): void {
-    router.push('/profile');
+  function handleCancel() {
+    router.push(siteConfig.links.profile);
   }
 
-  function handleDeactivate(e: PressEvent): void {
+  function handleDeactivate() {
     setIsModalOpen(true);
   }
   if (loading) return (
@@ -198,10 +199,10 @@ export default function EditProfilePage() {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div className="py-4 flex justify-center w-full space-x-4">
           <Button type="submit"><HeroCheck />Módosítások mentése</Button>
-          <Button type="button" onPress={handleCancel}><HeroCancel />Mégsem</Button>
+          <Button type="button" onClick={handleCancel}><HeroCancel />Mégsem</Button>
         </div>
         <div className="flex justify-center w-full">
-          <Button type="button" onPress={handleDeactivate} color="danger" variant="ghost"><HeroTrash />Felhasználói fiók deaktiválása</Button>
+          <Button type="button" onClick={handleDeactivate} color="danger" variant="ghost"><HeroTrash />Felhasználói fiók deaktiválása</Button>
         </div>
       </Form>
       <MyDeactivateModal isOpen={isModalOpen}

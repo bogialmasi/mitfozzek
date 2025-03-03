@@ -142,14 +142,14 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "flat",
-                        })} onPress={() => onOpenChange(false)}>
+                        })} onClick={() => onOpenChange(false)}>
                             <HeroCancel /> Mégsem
                         </Button>
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "shadow",
                             color: "primary",
-                        })} onPress={handleAddItem}>
+                        })} onClick={handleAddItem}>
                             <HeroPlus /> Hozzáadás
                         </Button>
                     </ModalFooter>

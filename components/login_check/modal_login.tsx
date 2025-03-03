@@ -36,7 +36,7 @@ export const MyLoginModal: React.FC<MyLoginModalProps> = ({ isOpen, onOpenChange
                                 <Button color="primary">
                                     <a href={siteConfig.links.register}>Regisztráció</a>
                                 </Button>
-                                <Button color="danger" variant="light" onPress={onClose}>
+                                <Button color="danger" variant="light" onClick={onClose}>
                                     Bezárás
                                 </Button>
                             </ModalFooter>

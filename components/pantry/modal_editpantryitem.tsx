@@ -192,21 +192,21 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "flat",
-                        })} onPress={() => onOpenChange(false)}>
+                        })} onClick={() => onOpenChange(false)}>
                             <HeroCancel /> Mégsem
                         </Button>
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "shadow",
                             color: "primary",
-                        })} onPress={handleEditItem}>
+                        })} onClick={handleEditItem}>
                             <HeroSettings /> Módosítás
                         </Button>
                         <Button className={buttonStyles({
                             radius: "full",
                             variant: "shadow",
                             color: "primary",
-                        })} onPress={handleDeleteItem}>
+                        })} onClick={handleDeleteItem}>
                             <HeroTrash /> Törlés
                         </Button>
                     </ModalFooter>

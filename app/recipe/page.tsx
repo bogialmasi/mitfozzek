@@ -33,18 +33,15 @@ export default function RecipePage() {
   const router = useRouter();
 
   /* TODO handle exception if saving fails, show red alert! */
-  const handlePress = (e: PressEvent) => {
-    const buttonId = e.target.id;
+  const handlePress = () => {
     if (!user) {
       onOpen(); // Trigger modal if the user is not logged in
     } else {
-      // Update alert content based on button id
-      if (buttonId === "shopping") {
         setSuccessAlertContent({
-          title: "Hozzáadva",
+          title: "In development",
           description: "A recept összetevői bekerültek a bevásárlólistába",
         });
-      }
+      
       /* exception handling needed! */
       setSuccessAlertVisible(true); // Show the alert
     }
@@ -128,7 +125,7 @@ export default function RecipePage() {
               id='shopping'
               className={buttonStyles({ variant: "bordered", radius: "full" })}
               href={`/`}
-              onPress={handlePress}
+              onClick={handlePress}
             >
               <HeroShoppingCart />Bevásárlólista készítése
             </Button>

@@ -67,11 +67,11 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger"
-                                    onPress={onConfirm}>
+                                    onClick={onConfirm}>
                                     Igen
                                 </Button>
                                 <Button color="primary" variant="light"
-                                    onPress={() => onOpenChange(false)}>
+                                    onClick={() => onOpenChange(false)}>
                                     Mégsem
                                 </Button>
                             </ModalFooter>

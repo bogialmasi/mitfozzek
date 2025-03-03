@@ -29,7 +29,7 @@ export const MyBackToTopButton: React.FC = () => {
                     radius: "full",
                     variant: "shadow",
                 })}
-                onPress={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
                 <HeroArrowUp />
             </Button>
