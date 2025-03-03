@@ -57,8 +57,8 @@ export const siteConfig = {
     github: "https://github.com/bogialmasi/mitfozzek"
   },
   profileMenuItems: {
-    modifyProfile: "profile/edit",
-    modifyPantry: "profile/editpantry",
+    modifyProfile: "/profile/edit",
+    modifyPantry: "/profile/editpantry",
     favRecipes: "/profile/favorites",
     addRecipe: "/recipe/add",
     myRecipes: "/recipe/myrecipes",

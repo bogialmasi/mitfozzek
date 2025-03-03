@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import {
     Modal,
     ModalContent,
@@ -30,10 +31,10 @@ export const MyLoginModal: React.FC<MyLoginModalProps> = ({ isOpen, onOpenChange
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="primary">
-                                    <a href="/login">Bejelentkezés</a>
+                                    <a href={siteConfig.links.login}>Bejelentkezés</a>
                                 </Button>
                                 <Button color="primary">
-                                    <a href="/register">Regisztráció</a>
+                                    <a href={siteConfig.links.register}>Regisztráció</a>
                                 </Button>
                                 <Button color="danger" variant="light" onPress={onClose}>
                                     Bezárás

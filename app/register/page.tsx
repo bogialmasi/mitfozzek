@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { title } from "@/components/primitives";
 import { Button, Form, Input } from "@heroui/react";
 import { Link } from "@heroui/link";
+import { siteConfig } from "@/config/site";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
@@ -34,7 +35,7 @@ export default function RegisterPage() {
 
         if (data.success) {
             // Redirect to login or dashboard after successful registration
-            router.push('/login');
+            router.push(siteConfig.links.search);
         } else {
             setError(data.message || 'Registration failed.');
         }

@@ -1,11 +1,12 @@
 'use client'
 import * as React from "react";
 import { title } from "@/components/primitives";
-import { Button, Form, Input, Spinner } from "@heroui/react";
+import { Button, Form, Input, Skeleton, Spinner } from "@heroui/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from "@heroui/link";
 import { useAuthentication } from "../context/authenticationContext";
+import { siteConfig } from "@/config/site";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -33,7 +34,7 @@ export default function LoginPage() {
                 // Redirect to /search after successful login
                 setLoading(false);
                 login(data.token);
-                router.push('/search');
+                router.push(siteConfig.links.search);
             } else {
                 setLoading(false);
                 setError(data.message || 'Hiba történt a bejelentkezéskor');
@@ -78,7 +79,7 @@ export default function LoginPage() {
                 </Button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <div>
-                    <h3>Nincs fiókja? <Link href="/register">Regisztráció</Link></h3>
+                    <h3>Nincs fiókja? <Link href={siteConfig.links.register}>Regisztráció</Link></h3>
                 </div>
                 {loading &&
                     <div className="flex justify-center items-center h-screen">

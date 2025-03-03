@@ -1,5 +1,6 @@
 
 import { useAuthentication } from "@/app/context/authenticationContext";
+import { siteConfig } from "@/config/site";
 import { Button } from "@heroui/button";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { button as buttonStyles } from "@heroui/theme";
@@ -17,10 +18,10 @@ export const MyUserLoginLogout = () => {
                         })}>Helló, {user.username}!</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
-                        <DropdownItem key="profile" href="/profile" textValue="Profilom">
+                        <DropdownItem key="profile" href={siteConfig.links.profile} textValue="Profilom">
                             Profilom
                         </DropdownItem>
-                        <DropdownItem key="search" href="/search" textValue="Profilom">
+                        <DropdownItem key="search" href={siteConfig.links.search} textValue="Keresés">
                             Keresés
                         </DropdownItem>
                         <DropdownItem key="logout" onPress={logout} textValue="Kijelentkezés">
@@ -38,13 +39,13 @@ export const MyUserLoginLogout = () => {
                         })}>Bejelentkezés</Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Static Actions">
-                        <DropdownItem key="login" href="/login" textValue="Bejelentkezés">
+                        <DropdownItem key="login" href={siteConfig.links.login} textValue="Bejelentkezés">
                             Bejelentkezés
                         </DropdownItem>
-                        <DropdownItem key="register" href="/register" textValue="Bejelentkezés">
+                        <DropdownItem key="register" href={siteConfig.links.register} textValue="Bejelentkezés">
                             Regisztráció
                         </DropdownItem>
-                        <DropdownItem key="search" href="/search" textValue="Profilom">
+                        <DropdownItem key="search" href={siteConfig.links.search} textValue="Keresés">
                             Keresés
                         </DropdownItem>
                     </DropdownMenu>
