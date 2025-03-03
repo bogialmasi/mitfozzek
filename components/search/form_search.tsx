@@ -57,6 +57,27 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
         });
     };
 
+    const deleteFilters = () => {
+        setSearchQuery('');
+        setPantryIngredientsOnly(false);
+        setSelectedFilters({
+            ingredients: new Set<number>(),
+            dishType: new Set<number>(),
+            dishCategory: new Set<number>(),
+            dishCuisine: new Set<number>(),
+            pantryIngredient: new Set<number>(),
+        });
+        onSearch({
+            searchQuery: '',
+            ingredients: [],
+            dishType: [],
+            dishCategory: [],
+            dishCuisine: [],
+            onlyPantryIngredients: false,
+            pantryIngredients: [],
+        });
+    }
+
 
     return (
         <div className="w-full">
@@ -111,25 +132,26 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         showSelection={true}
                     />
                 </div>
-                    <div>
-                        <div className='flex flex-col space-y-1 w-md'>
-                            <p className="text-sm py-2">Reggeli, ebéd, vacsora, vagy valami különleges?</p>
-                            <MyDropdown
-                                list={dishType}
-                                selectedKeys={selectedFilters.dishType}
-                                onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
-                            />
-                        </div>
-                        <div className='flex flex-col space-y-1 w-md'>
-                            <p className="text-sm py-2">Keresés ételérzékenységek, speciális diéták alapján</p>
-                            <MyDropdown
-                                list={dishCategory}
-                                selectedKeys={selectedFilters.dishCategory}
-                                onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
-                            />
-                        </div>
+                <div>
+                    <div className='flex flex-col space-y-1 w-md'>
+                        <p className="text-sm py-2">Reggeli, ebéd, vacsora, vagy valami különleges?</p>
+                        <MyDropdown
+                            list={dishType}
+                            selectedKeys={selectedFilters.dishType}
+                            onSelectionChange={(keys: number[]) => updateFilter('dishType', keys)}
+                        />
+                    </div>
+                    <div className='flex flex-col space-y-1 w-md'>
+                        <p className="text-sm py-2">Keresés ételérzékenységek, speciális diéták alapján</p>
+                        <MyDropdown
+                            list={dishCategory}
+                            selectedKeys={selectedFilters.dishCategory}
+                            onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
+                        />
+                    </div>
 
-                        <br />
+                    <br />
+                    <div className='flex flex-row items-center space-x-6'>
                         <Button className={buttonStyles({
                             color: "primary",
                             radius: "full",
@@ -137,7 +159,15 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                         })} type="submit">
                             Keresés <HeroSearch />
                         </Button>
+                        <Button className={buttonStyles({
+                            color: "default",
+                            radius: "full",
+                            variant: "shadow",
+                        })} onClick={deleteFilters}>
+                            Keresési feltételek törlése
+                        </Button>
                     </div>
+                </div>
             </Form>
         </div>
     );
