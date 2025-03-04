@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Jan 06. 12:18
+-- Létrehozás ideje: 2025. Már 04. 17:57
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.0.28
 
@@ -24,14 +24,108 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `con_recipe_ingredients_lists`
+-- Tábla szerkezet ehhez a táblához `con_recipe_category`
 --
 
-CREATE TABLE `con_recipe_ingredients_lists` (
-  `recipe_ingredients_list_id` int(11) NOT NULL,
+CREATE TABLE `con_recipe_category` (
   `recipe_id` int(11) NOT NULL,
-  `ingredientlist_id` int(11) NOT NULL
+  `category_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_recipe_category`
+--
+
+INSERT INTO `con_recipe_category` (`recipe_id`, `category_id`) VALUES
+(2, 5),
+(3, 1),
+(3, 7);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `con_recipe_cuisine`
+--
+
+CREATE TABLE `con_recipe_cuisine` (
+  `recipe_id` int(11) NOT NULL,
+  `cuisine_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_recipe_cuisine`
+--
+
+INSERT INTO `con_recipe_cuisine` (`recipe_id`, `cuisine_id`) VALUES
+(2, 14);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `con_recipe_dish_type`
+--
+
+CREATE TABLE `con_recipe_dish_type` (
+  `recipe_id` int(11) NOT NULL,
+  `dishtype_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_recipe_dish_type`
+--
+
+INSERT INTO `con_recipe_dish_type` (`recipe_id`, `dishtype_id`) VALUES
+(2, 4),
+(3, 5),
+(3, 7);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `con_recipe_ingredients`
+--
+
+CREATE TABLE `con_recipe_ingredients` (
+  `recipe_id` int(11) NOT NULL,
+  `ingredient_id` int(11) NOT NULL,
+  `ingredient_quantity` int(11) NOT NULL,
+  `measurement_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_recipe_ingredients`
+--
+
+INSERT INTO `con_recipe_ingredients` (`recipe_id`, `ingredient_id`, `ingredient_quantity`, `measurement_id`) VALUES
+(2, 1, 1000, 1),
+(2, 2, 2, 5),
+(3, 1, 500, 1),
+(3, 231, 250, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `con_shopping_ingredients`
+--
+
+CREATE TABLE `con_shopping_ingredients` (
+  `shopping_id` int(11) NOT NULL,
+  `ingredient_id` int(11) NOT NULL,
+  `ingredient_quantity` int(11) NOT NULL,
+  `measurement_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_shopping_ingredients`
+--
+
+INSERT INTO `con_shopping_ingredients` (`shopping_id`, `ingredient_id`, `ingredient_quantity`, `measurement_id`) VALUES
+(6, 1, 1000, 1),
+(6, 2, 2, 5),
+(7, 30, 2, 1),
+(7, 500, 3, 2),
+(10, 30, 2, 1),
+(10, 500, 3, 2);
 
 -- --------------------------------------------------------
 
@@ -40,22 +134,120 @@ CREATE TABLE `con_recipe_ingredients_lists` (
 --
 
 CREATE TABLE `con_user_pantry` (
-  `user_pantry_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `pantry_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- A tábla adatainak kiíratása `con_user_pantry`
+--
+
+INSERT INTO `con_user_pantry` (`user_id`, `pantry_id`) VALUES
+(2, 2),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8);
+
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `con_user_shopping_list`
+-- Tábla szerkezet ehhez a táblához `con_user_shopping`
 --
 
-CREATE TABLE `con_user_shopping_list` (
-  `user_shopping_list_id` int(11) NOT NULL,
+CREATE TABLE `con_user_shopping` (
   `user_id` int(11) NOT NULL,
-  `shopping_list_id` int(11) NOT NULL
+  `shopping_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `con_user_shopping`
+--
+
+INSERT INTO `con_user_shopping` (`user_id`, `shopping_id`) VALUES
+(6, 6),
+(6, 7),
+(6, 10);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `dish_category`
+--
+
+CREATE TABLE `dish_category` (
+  `category_id` int(11) NOT NULL,
+  `category_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `dish_category`
+--
+
+INSERT INTO `dish_category` (`category_id`, `category_name`) VALUES
+(1, 'Vegán'),
+(2, 'Vegetariánus'),
+(3, 'Kóser'),
+(4, 'Halal'),
+(5, 'Laktózmentes'),
+(6, 'Gluténmentes'),
+(7, 'Diabetikus'),
+(8, 'FODMAP Diéta');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `dish_cuisine`
+--
+
+CREATE TABLE `dish_cuisine` (
+  `cuisine_id` int(11) NOT NULL,
+  `cuisine_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `dish_cuisine`
+--
+
+INSERT INTO `dish_cuisine` (`cuisine_id`, `cuisine_name`) VALUES
+(1, 'olasz'),
+(2, 'kínai'),
+(3, 'japán'),
+(4, 'francia'),
+(5, 'mexikói'),
+(6, 'indiai'),
+(7, 'thai'),
+(8, 'spanyol'),
+(9, 'mediterrán'),
+(10, 'amerikai'),
+(11, 'görög'),
+(12, 'orosz'),
+(13, 'lengyel'),
+(14, 'magyar');
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `dish_type`
+--
+
+CREATE TABLE `dish_type` (
+  `dishtype_id` int(11) NOT NULL,
+  `dishtype_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `dish_type`
+--
+
+INSERT INTO `dish_type` (`dishtype_id`, `dishtype_name`) VALUES
+(1, 'Hors d\'oeuvre'),
+(2, 'Előétel'),
+(3, 'Leves'),
+(4, 'Főétel'),
+(5, 'Desszert'),
+(6, 'Saláta'),
+(7, 'Egyéb');
 
 -- --------------------------------------------------------
 
@@ -1533,16 +1725,22 @@ INSERT INTO `ingredients` (`ingredient_id`, `ingredient_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `ingredients_list`
+-- Tábla szerkezet ehhez a táblához `measurements`
 --
 
-CREATE TABLE `ingredients_list` (
-  `ingredientlist_id` int(11) NOT NULL,
-  `ingredient_id` int(11) NOT NULL,
-  `ingredient_quantity` int(11) NOT NULL,
-  `ingredient_measure` varchar(255) NOT NULL,
-  `recipe_id` int(11) NOT NULL
+CREATE TABLE `measurements` (
+  `measurement_id` int(11) NOT NULL,
+  `measurement_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `measurements`
+--
+
+INSERT INTO `measurements` (`measurement_id`, `measurement_name`) VALUES
+(1, 'g'),
+(2, 'ml'),
+(5, 'db');
 
 -- --------------------------------------------------------
 
@@ -1551,11 +1749,28 @@ CREATE TABLE `ingredients_list` (
 --
 
 CREATE TABLE `pantry` (
+  `pantry_item_id` int(11) NOT NULL,
   `pantry_id` int(11) NOT NULL,
   `ingredient_id` int(11) NOT NULL,
   `ingredient_quantity` int(11) NOT NULL,
-  `ingredient_measure` varchar(255) NOT NULL
+  `measurement_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `pantry`
+--
+
+INSERT INTO `pantry` (`pantry_item_id`, `pantry_id`, `ingredient_id`, `ingredient_quantity`, `measurement_id`) VALUES
+(1, 2, 1, 2000, 1),
+(2, 2, 2, 5, 5),
+(6, 6, 65, 250, 1),
+(28, 6, 857, 1000, 1),
+(29, 6, 295, 1000, 1),
+(30, 6, 44, 1000, 1),
+(31, 6, 740, 1000, 1),
+(33, 6, 1, 1500, 1),
+(34, 6, 1371, 100, 1),
+(35, 6, 2, 1, 5);
 
 -- --------------------------------------------------------
 
@@ -1566,38 +1781,40 @@ CREATE TABLE `pantry` (
 CREATE TABLE `recipes` (
   `recipe_id` int(11) NOT NULL,
   `recipe_name` varchar(255) NOT NULL,
-  `recipe_description` varchar(765) NOT NULL,
+  `recipe_description` text NOT NULL,
   `recipe_time` int(11) NOT NULL,
   `recipe_headcount` int(11) NOT NULL,
-  `ingredientlist_id` int(11) NOT NULL,
-  `recipesteps_id` int(11) NOT NULL
+  `source_user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `recipes`
+--
+
+INSERT INTO `recipes` (`recipe_id`, `recipe_name`, `recipe_description`, `recipe_time`, `recipe_headcount`, `source_user_id`) VALUES
+(2, 'MY TEST RECIPE', 'This is a test recipe used for testing. - \r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 5, 2, 2),
+(3, 'Another Test Recipe!', 'This is another test recipe for testing\r\náÁéÉóÓöÖúÚüÜűŰ@@@@????', 15, 1, 2);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `recipe_steps`
+-- Tábla szerkezet ehhez a táblához `shopping`
 --
 
-CREATE TABLE `recipe_steps` (
-  `recipesteps_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `step_num` int(11) NOT NULL,
-  `step_desc` varchar(765) NOT NULL
+CREATE TABLE `shopping` (
+  `shopping_id` int(11) NOT NULL,
+  `shopping_name` varchar(255) NOT NULL,
+  `recipe_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Tábla szerkezet ehhez a táblához `shopping_lists`
+-- A tábla adatainak kiíratása `shopping`
 --
 
-CREATE TABLE `shopping_lists` (
-  `shopping_list_id` int(11) NOT NULL,
-  `ingredient_id` int(11) NOT NULL,
-  `ingredient_quantity` int(11) NOT NULL,
-  `ingredient_measure` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `shopping` (`shopping_id`, `shopping_name`, `recipe_id`) VALUES
+(6, 'Postman test shopping list with recipe id', 2),
+(7, 'Postman test shopping list ingredient list', NULL),
+(10, 'Postman test shopping list ingredient list', NULL);
 
 -- --------------------------------------------------------
 
@@ -1610,15 +1827,40 @@ CREATE TABLE `users` (
   `username` varchar(40) NOT NULL,
   `password` varchar(255) NOT NULL,
   `user_desc` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL
+  `email` varchar(255) DEFAULT NULL,
+  `inactive` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- A tábla adatainak kiíratása `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`) VALUES
-(2, 'testing1', '$argon2id$v=19$m=65536,t=3,p=4$q91l86TEPo6e50s6QPigpA$xejaAV9CjSk/iPCm0gBRqLrUf4m3+VBXmpT6ASmcQAo', NULL, 'testing1@email.com');
+INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`, `inactive`) VALUES
+(2, '', '', '', 'updated@email.com', 0),
+(3, 'test1', '$argon2id$v=19$m=65536,t=3,p=4$r63wxYyuhTzsiCn/eMrYJA$e0t9/tA5QqCTYnTiLs5uhSlnO3PWcB49/Ph/EqZQHss', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor i', 'test1email@email.com', 0),
+(4, 'test2', '$argon2id$v=19$m=65536,t=3,p=4$hfMfFDD3L4JB0yui+Cuhzg$wdszDTveDIPQCZ/4FnzvGdDl3vphD/x9RA9NkmFWSmg', ' This is test1 user\'s description. Hello hello. ABC. Cats Dogs Cats Dogs', 'test2@email.com', 1),
+(5, '3test', '$argon2id$v=19$m=65536,t=3,p=4$8uiLJi14tlrHYPoH/qqQfQ$fsMiUiIe9U1kjAMVpi3raQuEDmysIbCopXCdNje9cao', 'This is where i test deactivation', '3test@emailcom', 1),
+(6, 'test', '$argon2id$v=19$m=65536,t=3,p=4$1jU97p3bUbP945mcn0yL1A$dA9xyHEvhOI/5J2XHvtIgohPLEfdvM39MGqCZjUM57Y', ' Ez itt a leírásom. Itt tesztelek heló beló....', 'test@test.hu', 0),
+(7, 'sanyi', '$argon2i$v=19$m=65536,t=4,p=1$AuIhlb14FAU3hI0s3V1lJQ$nLoIV/1gF8sbqkaHbtK8CI0AnUEzp+qOw42y9d6kJUM', NULL, 'sanyi@email.hu', 0),
+(8, 'postman', '$argon2i$v=19$m=65536,t=4,p=1$hG0jM+FXvHyF313JKTzX9w$/Qatx0i03ATW+3D5QJTt5NqbvrrvsHHh5gX6Dn2nR4c', NULL, 'post@man.com', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `user_dish_category`
+--
+
+CREATE TABLE `user_dish_category` (
+  `user_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `user_dish_category`
+--
+
+INSERT INTO `user_dish_category` (`user_id`, `category_id`) VALUES
+(6, 1);
 
 -- --------------------------------------------------------
 
@@ -1627,10 +1869,16 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`) VA
 --
 
 CREATE TABLE `user_fav_recipes` (
-  `fav_recipe_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `recipe_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `user_fav_recipes`
+--
+
+INSERT INTO `user_fav_recipes` (`user_id`, `recipe_id`) VALUES
+(6, 3);
 
 -- --------------------------------------------------------
 
@@ -1639,7 +1887,6 @@ CREATE TABLE `user_fav_recipes` (
 --
 
 CREATE TABLE `user_own_recipes` (
-  `own_recipe_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `recipe_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -1649,28 +1896,72 @@ CREATE TABLE `user_own_recipes` (
 --
 
 --
--- A tábla indexei `con_recipe_ingredients_lists`
+-- A tábla indexei `con_recipe_category`
 --
-ALTER TABLE `con_recipe_ingredients_lists`
-  ADD PRIMARY KEY (`recipe_ingredients_list_id`),
+ALTER TABLE `con_recipe_category`
+  ADD PRIMARY KEY (`recipe_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- A tábla indexei `con_recipe_cuisine`
+--
+ALTER TABLE `con_recipe_cuisine`
   ADD KEY `recipe_id` (`recipe_id`),
-  ADD KEY `ingredientlist_id` (`ingredientlist_id`);
+  ADD KEY `cuisine_id` (`cuisine_id`) USING BTREE;
+
+--
+-- A tábla indexei `con_recipe_dish_type`
+--
+ALTER TABLE `con_recipe_dish_type`
+  ADD PRIMARY KEY (`recipe_id`,`dishtype_id`),
+  ADD KEY `dishtype_id` (`dishtype_id`);
+
+--
+-- A tábla indexei `con_recipe_ingredients`
+--
+ALTER TABLE `con_recipe_ingredients`
+  ADD PRIMARY KEY (`recipe_id`,`ingredient_id`),
+  ADD KEY `measurement_id` (`measurement_id`),
+  ADD KEY `ingredient_id` (`ingredient_id`);
+
+--
+-- A tábla indexei `con_shopping_ingredients`
+--
+ALTER TABLE `con_shopping_ingredients`
+  ADD PRIMARY KEY (`shopping_id`,`ingredient_id`),
+  ADD KEY `ingredient_id` (`ingredient_id`);
 
 --
 -- A tábla indexei `con_user_pantry`
 --
 ALTER TABLE `con_user_pantry`
-  ADD PRIMARY KEY (`user_pantry_id`),
-  ADD KEY `user_id` (`user_id`),
+  ADD PRIMARY KEY (`user_id`,`pantry_id`),
   ADD KEY `pantry_id` (`pantry_id`);
 
 --
--- A tábla indexei `con_user_shopping_list`
+-- A tábla indexei `con_user_shopping`
 --
-ALTER TABLE `con_user_shopping_list`
-  ADD PRIMARY KEY (`user_shopping_list_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `shopping_list_id` (`shopping_list_id`);
+ALTER TABLE `con_user_shopping`
+  ADD PRIMARY KEY (`user_id`,`shopping_id`),
+  ADD KEY `shopping_id` (`shopping_id`);
+
+--
+-- A tábla indexei `dish_category`
+--
+ALTER TABLE `dish_category`
+  ADD PRIMARY KEY (`category_id`);
+
+--
+-- A tábla indexei `dish_cuisine`
+--
+ALTER TABLE `dish_cuisine`
+  ADD PRIMARY KEY (`cuisine_id`);
+
+--
+-- A tábla indexei `dish_type`
+--
+ALTER TABLE `dish_type`
+  ADD PRIMARY KEY (`dishtype_id`);
 
 --
 -- A tábla indexei `ingredients`
@@ -1679,41 +1970,31 @@ ALTER TABLE `ingredients`
   ADD PRIMARY KEY (`ingredient_id`);
 
 --
--- A tábla indexei `ingredients_list`
+-- A tábla indexei `measurements`
 --
-ALTER TABLE `ingredients_list`
-  ADD PRIMARY KEY (`ingredientlist_id`),
-  ADD KEY `ingredient_id` (`ingredient_id`),
-  ADD KEY `recipe_id` (`recipe_id`);
+ALTER TABLE `measurements`
+  ADD PRIMARY KEY (`measurement_id`);
 
 --
 -- A tábla indexei `pantry`
 --
 ALTER TABLE `pantry`
-  ADD PRIMARY KEY (`pantry_id`),
-  ADD KEY `ingredient_id` (`ingredient_id`);
+  ADD PRIMARY KEY (`pantry_item_id`),
+  ADD KEY `measurement_id` (`measurement_id`);
 
 --
 -- A tábla indexei `recipes`
 --
 ALTER TABLE `recipes`
   ADD PRIMARY KEY (`recipe_id`),
-  ADD KEY `ingredientlist_id` (`ingredientlist_id`),
-  ADD KEY `recipesteps_id` (`recipesteps_id`);
+  ADD KEY `source_user_id` (`source_user_id`);
 
 --
--- A tábla indexei `recipe_steps`
+-- A tábla indexei `shopping`
 --
-ALTER TABLE `recipe_steps`
-  ADD PRIMARY KEY (`recipesteps_id`),
+ALTER TABLE `shopping`
+  ADD PRIMARY KEY (`shopping_id`),
   ADD KEY `recipe_id` (`recipe_id`);
-
---
--- A tábla indexei `shopping_lists`
---
-ALTER TABLE `shopping_lists`
-  ADD PRIMARY KEY (`shopping_list_id`),
-  ADD KEY `ingredient_id` (`ingredient_id`);
 
 --
 -- A tábla indexei `users`
@@ -1722,19 +2003,23 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
 
 --
+-- A tábla indexei `user_dish_category`
+--
+ALTER TABLE `user_dish_category`
+  ADD PRIMARY KEY (`user_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
 -- A tábla indexei `user_fav_recipes`
 --
 ALTER TABLE `user_fav_recipes`
-  ADD PRIMARY KEY (`fav_recipe_id`),
-  ADD KEY `recipe_id` (`recipe_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD PRIMARY KEY (`user_id`,`recipe_id`);
 
 --
 -- A tábla indexei `user_own_recipes`
 --
 ALTER TABLE `user_own_recipes`
-  ADD PRIMARY KEY (`own_recipe_id`),
-  ADD KEY `user_id` (`user_id`),
+  ADD PRIMARY KEY (`user_id`,`recipe_id`),
   ADD KEY `recipe_id` (`recipe_id`);
 
 --
@@ -1742,22 +2027,22 @@ ALTER TABLE `user_own_recipes`
 --
 
 --
--- AUTO_INCREMENT a táblához `con_recipe_ingredients_lists`
+-- AUTO_INCREMENT a táblához `dish_category`
 --
-ALTER TABLE `con_recipe_ingredients_lists`
-  MODIFY `recipe_ingredients_list_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `dish_category`
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT a táblához `con_user_pantry`
+-- AUTO_INCREMENT a táblához `dish_cuisine`
 --
-ALTER TABLE `con_user_pantry`
-  MODIFY `user_pantry_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `dish_cuisine`
+  MODIFY `cuisine_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT a táblához `con_user_shopping_list`
+-- AUTO_INCREMENT a táblához `dish_type`
 --
-ALTER TABLE `con_user_shopping_list`
-  MODIFY `user_shopping_list_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `dish_type`
+  MODIFY `dishtype_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT a táblához `ingredients`
@@ -1766,123 +2051,127 @@ ALTER TABLE `ingredients`
   MODIFY `ingredient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1457;
 
 --
--- AUTO_INCREMENT a táblához `ingredients_list`
+-- AUTO_INCREMENT a táblához `measurements`
 --
-ALTER TABLE `ingredients_list`
-  MODIFY `ingredientlist_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `measurements`
+  MODIFY `measurement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT a táblához `pantry`
 --
 ALTER TABLE `pantry`
-  MODIFY `pantry_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pantry_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT a táblához `recipes`
 --
 ALTER TABLE `recipes`
-  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT a táblához `recipe_steps`
+-- AUTO_INCREMENT a táblához `shopping`
 --
-ALTER TABLE `recipe_steps`
-  MODIFY `recipesteps_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT a táblához `shopping_lists`
---
-ALTER TABLE `shopping_lists`
-  MODIFY `shopping_list_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `shopping`
+  MODIFY `shopping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT a táblához `user_fav_recipes`
---
-ALTER TABLE `user_fav_recipes`
-  MODIFY `fav_recipe_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT a táblához `user_own_recipes`
---
-ALTER TABLE `user_own_recipes`
-  MODIFY `own_recipe_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Megkötések a kiírt táblákhoz
 --
 
 --
--- Megkötések a táblához `con_recipe_ingredients_lists`
+-- Megkötések a táblához `con_recipe_category`
 --
-ALTER TABLE `con_recipe_ingredients_lists`
-  ADD CONSTRAINT `con_recipe_ingredients_lists_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
-  ADD CONSTRAINT `con_recipe_ingredients_lists_ibfk_2` FOREIGN KEY (`ingredientlist_id`) REFERENCES `ingredients_list` (`ingredientlist_id`);
+ALTER TABLE `con_recipe_category`
+  ADD CONSTRAINT `con_recipe_category_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `dish_category` (`category_id`),
+  ADD CONSTRAINT `con_recipe_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `dish_category` (`category_id`),
+  ADD CONSTRAINT `con_recipe_category_ibfk_3` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+
+--
+-- Megkötések a táblához `con_recipe_cuisine`
+--
+ALTER TABLE `con_recipe_cuisine`
+  ADD CONSTRAINT `con_recipe_cuisine_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
+  ADD CONSTRAINT `con_recipe_cuisine_ibfk_2` FOREIGN KEY (`cuisine_id`) REFERENCES `dish_cuisine` (`cuisine_id`);
+
+--
+-- Megkötések a táblához `con_recipe_dish_type`
+--
+ALTER TABLE `con_recipe_dish_type`
+  ADD CONSTRAINT `con_recipe_dish_type_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
+  ADD CONSTRAINT `con_recipe_dish_type_ibfk_2` FOREIGN KEY (`dishtype_id`) REFERENCES `dish_type` (`dishtype_id`),
+  ADD CONSTRAINT `con_recipe_dish_type_ibfk_3` FOREIGN KEY (`dishtype_id`) REFERENCES `dish_type` (`dishtype_id`),
+  ADD CONSTRAINT `con_recipe_dish_type_ibfk_4` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+
+--
+-- Megkötések a táblához `con_recipe_ingredients`
+--
+ALTER TABLE `con_recipe_ingredients`
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_1` FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`measurement_id`),
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`);
+
+--
+-- Megkötések a táblához `con_shopping_ingredients`
+--
+ALTER TABLE `con_shopping_ingredients`
+  ADD CONSTRAINT `con_shopping_ingredients_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`),
+  ADD CONSTRAINT `con_shopping_ingredients_ibfk_2` FOREIGN KEY (`shopping_id`) REFERENCES `shopping` (`shopping_id`);
 
 --
 -- Megkötések a táblához `con_user_pantry`
 --
 ALTER TABLE `con_user_pantry`
-  ADD CONSTRAINT `con_user_pantry_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `con_user_pantry_ibfk_2` FOREIGN KEY (`pantry_id`) REFERENCES `pantry` (`pantry_id`);
-
---
--- Megkötések a táblához `con_user_shopping_list`
---
-ALTER TABLE `con_user_shopping_list`
-  ADD CONSTRAINT `con_user_shopping_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `con_user_shopping_list_ibfk_2` FOREIGN KEY (`shopping_list_id`) REFERENCES `shopping_lists` (`shopping_list_id`);
-
---
--- Megkötések a táblához `ingredients_list`
---
-ALTER TABLE `ingredients_list`
-  ADD CONSTRAINT `ingredients_list_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`),
-  ADD CONSTRAINT `ingredients_list_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+  ADD CONSTRAINT `con_user_pantry_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Megkötések a táblához `pantry`
 --
 ALTER TABLE `pantry`
-  ADD CONSTRAINT `pantry_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`);
+  ADD CONSTRAINT `pantry_ibfk_1` FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`measurement_id`);
 
 --
 -- Megkötések a táblához `recipes`
 --
 ALTER TABLE `recipes`
-  ADD CONSTRAINT `recipes_ibfk_1` FOREIGN KEY (`ingredientlist_id`) REFERENCES `ingredients_list` (`ingredientlist_id`),
-  ADD CONSTRAINT `recipes_ibfk_2` FOREIGN KEY (`recipesteps_id`) REFERENCES `recipe_steps` (`recipesteps_id`);
+  ADD CONSTRAINT `recipes_ibfk_3` FOREIGN KEY (`source_user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Megkötések a táblához `recipe_steps`
+-- Megkötések a táblához `shopping`
 --
-ALTER TABLE `recipe_steps`
-  ADD CONSTRAINT `recipe_steps_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+ALTER TABLE `shopping`
+  ADD CONSTRAINT `shopping_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
 
 --
--- Megkötések a táblához `shopping_lists`
+-- Megkötések a táblához `user_dish_category`
 --
-ALTER TABLE `shopping_lists`
-  ADD CONSTRAINT `shopping_lists_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`);
+ALTER TABLE `user_dish_category`
+  ADD CONSTRAINT `user_dish_category_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_dish_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `dish_category` (`category_id`);
 
 --
 -- Megkötések a táblához `user_fav_recipes`
 --
 ALTER TABLE `user_fav_recipes`
-  ADD CONSTRAINT `user_fav_recipes_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
-  ADD CONSTRAINT `user_fav_recipes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `user_fav_recipes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_fav_recipes_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
+  ADD CONSTRAINT `user_fav_recipes_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_fav_recipes_ibfk_4` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
 
 --
 -- Megkötések a táblához `user_own_recipes`
 --
 ALTER TABLE `user_own_recipes`
   ADD CONSTRAINT `user_own_recipes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `user_own_recipes_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+  ADD CONSTRAINT `user_own_recipes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_own_recipes_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_own_recipes_ibfk_4` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
+  ADD CONSTRAINT `user_own_recipes_ibfk_5` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_own_recipes_ibfk_6` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
