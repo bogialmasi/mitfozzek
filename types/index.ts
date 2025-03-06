@@ -43,3 +43,9 @@ export interface User {
   userDescription: string | null;
   email: string;
 }
+
+export interface Shopping{
+  shopping_id: number;
+  shopping_name: string;
+  shopping_items: Ingredient[]
+}
