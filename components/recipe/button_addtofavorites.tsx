@@ -87,6 +87,7 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
             <Button
                 className={buttonStyles({ variant: "bordered", radius: "full" })}
                 onClick={handleFavorites}
+                disabled={isAdding}
             >
                 <HeroEmptyHeart />Recept elmentése a kedvencek közé
                 {/* If succesful save -> HeroFilledHeart*/}
