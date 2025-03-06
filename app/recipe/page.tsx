@@ -15,6 +15,7 @@ import { MyLoginModal } from '@/components/login_check/modal_login';
 import { Recipe } from '@/types';
 import { MyDangerAlert } from '@/components/alert/alert_danger';
 import { MyAddToFavoritesButton } from '@/components/recipe/button_addtofavorites';
+import { MyAddToShoppingButton } from '@/components/recipe/button_addtoshoppinglist';
 
 export default function RecipePage() {
   const searchParams = useSearchParams();
@@ -120,15 +121,7 @@ export default function RecipePage() {
           <div className="flex gap-2 justify-center">
 
             <MyAddToFavoritesButton recipeId={resultRecipe.recipe_id}/>
-
-            <Button
-              id='shopping'
-              className={buttonStyles({ variant: "bordered", radius: "full" })}
-              href={`/`}
-              onClick={handlePress}
-            >
-              <HeroShoppingCart />Bevásárlólista készítése
-            </Button>
+            <MyAddToShoppingButton recipe={resultRecipe}/>
             {successAlertVisible && (
               <MySuccessAlert
                 title={successAlertContent.title}

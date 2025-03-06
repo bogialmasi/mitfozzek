@@ -46,7 +46,9 @@ export async function GET(req: NextRequest) {
             // Get the ingredients for this shopping list
             const [ingredients] = await con.query<RowDataPacket[]>(
                 `SELECT ingredients.ingredient_id, ingredients.ingredient_name, 
-                    con_shopping_ingredients.ingredient_quantity, measurements.measurement_name
+                    con_shopping_ingredients.ingredient_quantity, 
+                    con_shopping_ingredients.measurement_id, measurements.measurement_name,
+                    bought
                 FROM con_shopping_ingredients
                 JOIN ingredients ON con_shopping_ingredients.ingredient_id = ingredients.ingredient_id
                 JOIN measurements ON con_shopping_ingredients.measurement_id = measurements.measurement_id
@@ -61,14 +63,17 @@ export async function GET(req: NextRequest) {
                 recipe_id: shoppingList.recipe_id || null,
                 recipe_name: shoppingList.recipe_name || null,
                 ingredients: ingredients.map((ingredient) => ({
+                    ingredient_id: ingredient.ingredient_id,
                     ingredient_name: ingredient.ingredient_name,
                     ingredient_quantity: ingredient.ingredient_quantity,
-                    measurement_name: ingredient.measurement_name
+                    measurement_id: ingredient.measurement_id,
+                    measurement_name: ingredient.measurement_name,
+                    bought: ingredient.bought
                 }))
             });
         }
 
-        return NextResponse.json({ success: true, shoppingLists: shoppingListWithIngredients });
+        return NextResponse.json(shoppingListWithIngredients);
     } catch (error) {
         console.error("Error fetching shopping lists:", error);
         return NextResponse.json({ success: false, message: 'Database error' }, { status: 500 });

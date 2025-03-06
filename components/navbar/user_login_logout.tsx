@@ -24,6 +24,9 @@ export const MyUserLoginLogout = () => {
                         <DropdownItem key="search" href={siteConfig.links.search} textValue="Keresés">
                             Keresés
                         </DropdownItem>
+                        <DropdownItem key="shopping" href={siteConfig.profileMenuItems.shoppingLists} textValue="Bevásárlólistáim">
+                            Bevásárlólistáim
+                        </DropdownItem>
                         <DropdownItem key="logout" onPress={logout} textValue="Kijelentkezés">
                             <a href="/">Kijelentkezés</a>
                         </DropdownItem>

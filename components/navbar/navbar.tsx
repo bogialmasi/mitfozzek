@@ -18,6 +18,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { MyUserLoginLogout } from "./user_login_logout";
 import { useAuthentication } from "@/app/context/authenticationContext";
 import { useRouter } from "next/router";
+import { HeroUser } from "../icons";
 
 export const Navbar = () => {
   // Check if user is logged in by checking if JWT token exists
@@ -33,6 +34,7 @@ export const Navbar = () => {
     ? [
       { label: "Profil", href: "/profile" },
       { label: "Keresés", href: "/search" },
+      { label: "Bevásárlólistáim", href: "/shopping" },
     ]
     : [
       { label: "Főoldal", href: "/" },
