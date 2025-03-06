@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
 import { MySearch } from '@/components/search/form_search';
-import { Checkbox, Spinner } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { subtitle, title } from '@/components/primitives';
 import { MyListItem } from '@/components/search/card_searchresult_listitem';
 import { Recipe } from '@/types';
