@@ -73,7 +73,7 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                 <CardBody>
                     <div>
                         <p className="text-sm font-semibold">Hozzávalók:</p>
-                        <ul className="flex space-x-1">
+                        <ul className="flex flex-row space-x-1">
                             {recipe.ingredients.map((ingredient, index) => (
                                 <li key={index} className="text-sm text-default-500">
                                     {ingredient.ingredient_name}
@@ -101,7 +101,7 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                 <Divider />
                 <CardFooter>
                     <Button
-                        onPress={handleDelete}
+                        onClick={handleDelete}
                         disabled={isDeleting} // Disable the button while deleting
                         className={buttonStyles({ variant: "ghost", radius: "full", color: "danger" })}
                     >
