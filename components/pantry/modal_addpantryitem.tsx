@@ -29,21 +29,6 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
     const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
     const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "", });
 
-    useEffect(() => {
-        let timeout: NodeJS.Timeout;
-        if (successAlertVisible) {
-            timeout = setTimeout(() => {
-                setSuccessAlertVisible(false);
-            }, 3000);
-        }
-        if (dangerAlertVisible) {
-            timeout = setTimeout(() => {
-                setDangerAlertVisible(false);
-            }, 3000);
-        }
-        return () => clearTimeout(timeout);
-    }, [successAlertVisible, dangerAlertVisible]);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // handle input <= 0 value
         const newValue = Number(e.target.value);
         if (newValue <= 0) {
