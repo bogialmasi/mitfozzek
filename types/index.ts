@@ -44,8 +44,14 @@ export interface User {
   email: string;
 }
 
-export interface Shopping{
+export interface ShoppingIngredient extends Ingredient{
+  bought: boolean;
+}
+
+export interface Shopping {
   shopping_id: number;
   shopping_name: string;
-  shopping_items: Ingredient[]
+  recipe_id: number | null;
+  recipe_name: string | null;
+  ingredients: ShoppingIngredient[]
 }
