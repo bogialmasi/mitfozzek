@@ -3,18 +3,21 @@ import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import argon2 from 'argon2';
+import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 
 export async function PATCH(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
         // Get the token from the Authorization header
-        console.log(req.headers);
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
-        console.log('Token:', token);
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
 
@@ -23,7 +26,6 @@ export async function PATCH(req: NextRequest) {
         // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Get userId from the decoded token
-        console.log("userId:", userId);
 
         if (!userId) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -31,12 +33,13 @@ export async function PATCH(req: NextRequest) {
 
         const { username, email, description, password, newPassword } = await req.json();
 
+        con.beginTransaction();
         let query = `UPDATE users SET `;
         const conditions = [];
         const params = [];
 
         if (newPassword) {
-            const [result] = await pool.query<RowDataPacket[]>(`SELECT password FROM users WHERE user_id = ?`, [userId]);
+            const [result] = await con.query<RowDataPacket[]>(`SELECT password FROM users WHERE user_id = ?`, [userId]);
             if (result.length === 0) {
                 return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
             }
@@ -72,10 +75,9 @@ export async function PATCH(req: NextRequest) {
 
         query += conditions.join(', ') + " WHERE user_id = ?"
         params.push(userId);
-        console.log("query:", query);
-        console.log("params:", params);
 
-        const [result] = await pool.query<ResultSetHeader[]>(query, params);
+        await con.commit();
+        const [result] = await con.query<ResultSetHeader[]>(query, params);
 
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Profile edit failed' }, { status: 404 });
@@ -84,6 +86,9 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ status: 200 });
 
     } catch (error) {
+        if (con) {
+            await con.rollback();
+        }
         if (error instanceof jwt.TokenExpiredError) {
             return NextResponse.json({ message: 'Token expired' }, { status: 401 });
         }
@@ -92,6 +97,10 @@ export async function PATCH(req: NextRequest) {
         }
         console.error('Error editing profile:', error);
         return NextResponse.json({ message: 'Editing profile failed' }, { status: 500 });
-
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }

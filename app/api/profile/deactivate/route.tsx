@@ -2,10 +2,16 @@ import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function PATCH(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
         // Get the token from the Authorization header
         const authorization = req.headers.get('Authorization');
@@ -21,7 +27,7 @@ export async function PATCH(req: NextRequest) {
         if (!userId) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
-        const [userInactive] = await pool.query<RowDataPacket[]>('SELECT inactive FROM users WHERE user_id = ?', [userId]);
+        const [userInactive] = await con.query<RowDataPacket[]>('SELECT inactive FROM users WHERE user_id = ?', [userId]);
         if (userInactive.length === 0) {
             return NextResponse.json({ success: false, message: 'Nincs ilyen felhasználó' }, { status: 404 });
         }
@@ -32,16 +38,17 @@ export async function PATCH(req: NextRequest) {
         }
 
 
-        const [result] = await pool.query<ResultSetHeader[]>(`UPDATE users SET inactive = 1 WHERE user_id = ?`, [userId]);
-
+        con.beginTransaction();
+        const [result] = await con.query<ResultSetHeader[]>(`UPDATE users SET inactive = 1 WHERE user_id = ?`, [userId]);
+        con.commit();
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Deactivating profile failed' }, { status: 400 });
         }
-
         return NextResponse.json({ status: 200 });
-
-
     } catch (error) {
+        if(con){
+            con.rollback();
+        }
         if (error instanceof jwt.TokenExpiredError) {
             return NextResponse.json({ message: 'Token expired' }, { status: 401 });
         }
@@ -50,6 +57,10 @@ export async function PATCH(req: NextRequest) {
         }
         console.error('Error deactivating profile:', error);
         return NextResponse.json({ message: 'Deactivating profile failed' }, { status: 500 });
-
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }

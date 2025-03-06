@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 export async function POST(req: NextRequest) {
+  let con: PoolConnection | undefined;
+  con = await pool.getConnection();
+  if (!con) {
+    return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+  }
   try {
+ 
     const { username, password, email } = await req.json();
 
     if (!username || !password) {
@@ -11,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user already exists
-    const [existingUser] = await pool.query<RowDataPacket[]>(
+    const [existingUser] = await con.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE username = ?',
       [username]
     );
@@ -27,27 +34,37 @@ export async function POST(req: NextRequest) {
       parallelism: 1, // Parallelism: how many threads to use (higher increases security)
     });
     // Insert new user into the database
-    const [result] = await pool.query<ResultSetHeader>(
+    
+    await con.beginTransaction();
+    const [result] = await con.query<ResultSetHeader>(
       'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
       [username, hashedPassword, email]
     );
 
     const resultId = result.insertId
-    console.log('ResultId:', resultId); // Auto increment id from insertion
     if (result.insertId != null) {
-      const [resultPantry] = await pool.query<ResultSetHeader>(
+      const [resultPantry] = await con.query<ResultSetHeader>(
         'INSERT INTO con_user_pantry (user_id, pantry_id) VALUES (?, ?)',
         [resultId, resultId] // Both user_id and pantry_id match
       )
     }
 
+    await con.commit();
     if ((result as any).affectedRows) {
       return NextResponse.json({ success: true, message: 'Registration successful' });
     } else {
       return NextResponse.json({ success: false, message: 'Registration failed' }, { status: 500 });
     }
   } catch (error) {
+    if (con) {
+      await con.rollback();
+    }
     console.error('Registration failed:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+  finally {
+    if (con) {
+      con.release();
+    }
   }
 }

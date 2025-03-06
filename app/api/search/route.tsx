@@ -1,15 +1,17 @@
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
+import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(req: NextRequest) {
-  if (req.method !== 'GET') {
-    return NextResponse.json({ success: false }, { status: 405 });
+  let con: PoolConnection | undefined;
+  con = await pool.getConnection();
+  if (!con) {
+    return NextResponse.json({ error: 'No database connection' }, { status: 500 });
   }
-
   try {
     const { searchParams } = req.nextUrl;
 
@@ -27,7 +29,7 @@ export async function GET(req: NextRequest) {
     // */
     if (id) {
       const recipeId = Number(id);
-      const [recipes] = await pool.query('SELECT * FROM recipes WHERE recipe_id = ?', [recipeId]);
+      const [recipes] = await con.query('SELECT * FROM recipes WHERE recipe_id = ?', [recipeId]);
       const recipeResults = recipes as RowDataPacket[];
 
       if (recipeResults.length === 0) {
@@ -35,7 +37,7 @@ export async function GET(req: NextRequest) {
       }
 
       // Ingredients of the recipe, with measurements
-      const [ingredientsData] = await pool.query<RowDataPacket[]>(
+      const [ingredientsData] = await con.query<RowDataPacket[]>(
         `SELECT ingredients.ingredient_id, ingredients.ingredient_name,
          con_recipe_ingredients.ingredient_quantity, 
          measurements.measurement_id, measurements.measurement_name
@@ -56,7 +58,6 @@ export async function GET(req: NextRequest) {
           measurement_name: ingredient.measurement_name,
         })),
       };
-
       return NextResponse.json(fullRecipe);
     }
 
@@ -68,19 +69,10 @@ export async function GET(req: NextRequest) {
     // */
 
     if (pantryIngredientsOnly === 'true') {
-      console.log('headers: ',req.headers);
-      console.log('Authorization header:', req.headers.get('Authorization'));
       const authorization = req.headers.get('Authorization');
       const token = authorization?.split(' ')[1];
-      console.log('Token:', token);
       if (!token) {
         return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
-
-      }
-
-      if (!token) {
-        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
-
       }
       const decoded: any = jwt.verify(token, JWT_SECRET);
       const userId = decoded.userId;
@@ -124,7 +116,7 @@ export async function GET(req: NextRequest) {
         query += ' AND ' + filters.join(' AND ');
       }
 
-      const [recipes] = await pool.query<RowDataPacket[]>(query, params);
+      const [recipes] = await con.query<RowDataPacket[]>(query, params);
 
       if (recipes.length === 0) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
@@ -133,7 +125,7 @@ export async function GET(req: NextRequest) {
       // Ingredients of the recipes
       const recipesWithIngredients = await Promise.all(
         recipes.map(async (recipe) => {
-          const [ingredientsData] = await pool.query<RowDataPacket[]>(
+          const [ingredientsData] = await con.query<RowDataPacket[]>(
             `SELECT ingredients.ingredient_id, ingredients.ingredient_name
            FROM ingredients
            JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
@@ -196,11 +188,7 @@ export async function GET(req: NextRequest) {
       query += ' WHERE ' + filters.join(' AND ');
     }
 
-    console.log('----------------------------------------------------------------')
-    console.log("Final SQL Query:", query);
-    console.log("Filters:", filters)
-    console.log("Final Query Params:", params);
-    const [recipes] = await pool.query<RowDataPacket[]>(query, params);
+    const [recipes] = await con.query<RowDataPacket[]>(query, params);
 
     if (recipes.length === 0) {
       return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
@@ -209,7 +197,7 @@ export async function GET(req: NextRequest) {
     // Ingredients of the recipes
     const recipesWithIngredients = await Promise.all(
       recipes.map(async (recipe) => {
-        const [ingredientsData] = await pool.query<RowDataPacket[]>(
+        const [ingredientsData] = await con.query<RowDataPacket[]>(
           `SELECT ingredients.ingredient_id, ingredients.ingredient_name
            FROM ingredients
            JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
@@ -230,5 +218,10 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching data:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+  finally {
+    if (con) {
+      con.release();
+    }
   }
 }

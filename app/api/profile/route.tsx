@@ -1,17 +1,20 @@
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 import { NextRequest, NextResponse } from 'next/server';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
         //Get the token from the Authorization header
-        console.log(req.headers);
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
-        console.log('Token:', token);
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
 
@@ -20,7 +23,6 @@ export async function GET(req: NextRequest) {
         //Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Get userId from the decoded token
-        console.log("userId:", userId);
 
         if (!userId) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Use the userId to query the database for user-specific data, not including the password
-        const [result] = await pool.query<RowDataPacket[]>(
+        const [result] = await con.query<RowDataPacket[]>(
             'SELECT user_id, username, user_desc, email FROM users WHERE user_id = ?',
             [userId]
         );
@@ -61,6 +63,10 @@ export async function GET(req: NextRequest) {
         }
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
-
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }

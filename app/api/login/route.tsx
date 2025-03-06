@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
+import { PoolConnection } from 'mysql2/promise';
 
 interface User {
   user_id: number;
@@ -11,6 +12,11 @@ interface User {
 }
 
 export async function POST(req: NextRequest) {
+  let con: PoolConnection | undefined;
+  con = await pool.getConnection();
+  if (!con) {
+    return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+  }
   try {
     const { username, password } = await req.json();
 
@@ -18,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Felhasználónév és jelszó megadása kötelező' }, { status: 400 });
     }
 
-    const [result] = await pool.query(
+    const [result] = await con.query(
       'SELECT user_id, username, password, inactive FROM users WHERE username = ?',
       [username]
     );
@@ -56,5 +62,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Login failed:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+  finally {
+    if (con) {
+      con.release();
+    }
   }
 }

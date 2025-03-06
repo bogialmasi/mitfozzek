@@ -2,18 +2,23 @@ import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Gives back a list of pantry items based on the user token
 export async function GET(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
         //Get the token from the Authorization header
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
         if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
 
         //Verify and decode the token
@@ -25,7 +30,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Check if the user has a pantry
-        const [pantry] = await pool.query<RowDataPacket[]>(
+        const [pantry] = await con.query<RowDataPacket[]>(
             'SELECT pantry_id FROM con_user_pantry WHERE user_id = ?',
             [userId]
         );
@@ -38,7 +43,7 @@ export async function GET(req: NextRequest) {
         const pantryId = pantry[0].pantry_id;
 
         // Query to get pantry items for the user
-        const [pantryItems] = await pool.query<RowDataPacket[]>(
+        const [pantryItems] = await con.query<RowDataPacket[]>(
             `SELECT 
                 pantry.ingredient_id,
                 ingredients.ingredient_name AS ingredient_name,
@@ -77,15 +82,19 @@ export async function GET(req: NextRequest) {
         console.error('Error fetching user data:', error);
         return NextResponse.json({ success: false, message: 'Fetching failed' }, { status: 500 });
     }
+    finally {
+        if (con) {
+            con.release();
+        }
+    }
 }
 
 export async function POST(req: NextRequest) {
     //Get the token from the Authorization header
-    console.log('Authorization header:', req.headers.get('Authorization'));
     const authorization = req.headers.get('Authorization');
     const token = authorization?.split(' ')[1];
     if (!token) {
-        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+        return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
     }
 
     //Verify and decode the token
@@ -96,7 +105,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
     }
 
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
+
         const { ingredient_id, ingredient_quantity, measurement_id } = await req.json();
 
         // cannot insert without all three fields being filled in
@@ -104,7 +119,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
         }
 
-        const [existingItem] = await pool.query<RowDataPacket[]>(
+        const [existingItem] = await con.query<RowDataPacket[]>(
             "SELECT * FROM pantry WHERE pantry_id = ? AND ingredient_id = ?",
             [userId, ingredient_id]
         );
@@ -113,30 +128,44 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Item already exists in pantry' }, { status: 400 });
         }
 
-        await pool.query<ResultSetHeader[]>(
+        await con.beginTransaction();
+
+        await con.query<ResultSetHeader[]>(
             "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity, measurement_id) VALUES (?, ?, ?, ?)",
             [userId, ingredient_id, ingredient_quantity, measurement_id]
         );
 
+        await con.commit();
         return NextResponse.json({ success: true });
     } catch (error) {
+        if (con) {
+            await con.rollback();
+        }
         console.error("Error inserting pantry item:", error);
         return NextResponse.json({ success: false, message: "Database error" }, { status: 500 });
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }
 
 
 
 export async function PATCH(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
+
         // Get the token from the Authorization header
-        console.log(req.headers);
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
-        console.log('Token:', token);
         if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
 
         }
 
@@ -150,6 +179,8 @@ export async function PATCH(req: NextRequest) {
         }
 
         const { ingredient_id, ingredient_quantity, measurement_id } = await req.json();
+
+        await con.beginTransaction();
 
         let query = `UPDATE pantry SET `;
         const conditions = [];
@@ -180,18 +211,18 @@ export async function PATCH(req: NextRequest) {
         query += conditions.join(', ') + " WHERE pantry_id = ? AND ingredient_id = ?"
         params.push(userId); // pantry_id is same number as user_id
         params.push(ingredient_id);
-        console.log("query:", query);
-        console.log("params:", params);
 
-        const [result] = await pool.query<ResultSetHeader[]>(query, params);
+        const [result] = await con.query<ResultSetHeader[]>(query, params);
 
+        await con.commit();
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Pantry edit failed' }, { status: 404 });
         }
-
         return NextResponse.json({ status: 200 });
-
     } catch (error) {
+        if (con) {
+            con.rollback();
+        }
         if (error instanceof jwt.TokenExpiredError) {
             return NextResponse.json({ message: 'Token expired' }, { status: 401 });
         }
@@ -200,18 +231,27 @@ export async function PATCH(req: NextRequest) {
         }
         console.error('Error editing pantry:', error);
         return NextResponse.json({ message: 'Editing pantry failed' }, { status: 500 });
-
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }
 
 export async function DELETE(req: NextRequest) {
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
     try {
+
         // Get the token from the Authorization header
-        console.log('Authorization header:', req.headers.get('Authorization'));
         const authorization = req.headers.get('Authorization');
         const token = authorization?.split(' ')[1];
         if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
         // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
@@ -224,17 +264,22 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No ingredient_id found' }, { status: 400 });
         }
 
-        const [result] = await pool.query<ResultSetHeader[]>(
+        await con.beginTransaction();
+
+        const [result] = await con.query<ResultSetHeader[]>(
             "DELETE FROM pantry WHERE pantry_id = ? AND ingredient_id = ?",
             [userId, ingredient_id]
         );
+        await con.commit();
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Error deleting item' }, { status: 404 });
         }
-
         return NextResponse.json({ status: 200 });
     }
     catch (error) {
+        if (con) {
+            con.rollback();
+        }
         if (error instanceof jwt.TokenExpiredError) {
             return NextResponse.json({ message: 'Token expired' }, { status: 401 });
         }
@@ -243,6 +288,10 @@ export async function DELETE(req: NextRequest) {
         }
         console.error('Error editing profile:', error);
         return NextResponse.json({ message: 'Editing profile failed' }, { status: 500 });
-
+    }
+    finally {
+        if (con) {
+            con.release();
+        }
     }
 }

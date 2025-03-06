@@ -2,6 +2,7 @@ import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
+import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -37,9 +38,6 @@ export async function GET(req: NextRequest) {
     case 'dish_type':
       query = 'SELECT dishtype_id AS "key", dishtype_name AS "value" FROM dish_type;';
       break;
-    /*case 'user_dish_category':
-      query = `SELECT dish_category.category_id AS "key", dish_category.category_name AS "value" FROM dish_category JOIN user_dish_category ON user_dish_category.category_id = dish_category.category_id WHERE user_dish_category.user_id = ${userId};`
-      break;*/
     case 'dish_category':
       query = 'SELECT category_id AS "key", category_name AS "value" FROM dish_category;';
       break;
@@ -67,8 +65,13 @@ export async function GET(req: NextRequest) {
       );
   }
 
+  let con: PoolConnection | undefined;
+  con = await pool.getConnection();
+  if (!con) {
+    return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+  }
   try {
-    const [result] = await pool.query<RowDataPacket[]>(query, params);
+    const [result] = await con.query<RowDataPacket[]>(query, params);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -76,5 +79,9 @@ export async function GET(req: NextRequest) {
       { error: 'Database error' },
       { status: 500 }
     );
+  } finally {
+    if (con) {
+      con.release();
+    }
   }
 }
