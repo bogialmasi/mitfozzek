@@ -1,4 +1,4 @@
-import { Shopping } from "@/types"
+import { Shopping, ShoppingIngredient } from "@/types"
 import { useState } from "react";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
@@ -21,9 +21,67 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
     const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
     const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
+    const [isChanging, setIsChanging] = useState(false);
 
-    const deleteFromFavorites = async (shoppingId: number) => {
+    // for the checkbox group
+    const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
+        shoppingList.ingredients.filter((ingredient) => ingredient.bought).map((ingredient) => String(ingredient.ingredient_id))
+    );
+    const handleCheckboxChange = async (updatedIngredients: string[]) => {
+        setSelectedIngredients(updatedIngredients);
+        shoppingList.ingredients.forEach(async (ingredient) => {
+            const bought = updatedIngredients.includes(String(ingredient.ingredient_id));
+            await updateIngredientBoughtStatus(ingredient, bought);
+        });
+    };
+
+    const updateIngredientBoughtStatus = async (ingredient: ShoppingIngredient, bought: boolean) => {
+        setIsChanging(true);
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authorization token is missing');
+            }
+
+            const res = await fetch(`/api/shopping?shoppingId=${shoppingList.shopping_id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ingredient_id: ingredient.ingredient_id,
+                    bought: bought ? 1 : 0,
+                }),
+            });
+
+            const response = await res.json();
+            if (res.ok) {
+                setSuccessAlertContent({
+                    title: "Változtatás elmentve",
+                    description: "A bevásárlólista frissítve",
+                });
+                setSuccessAlertVisible(true);
+            } else {
+                setDangerAlertContent({
+                    title: "Hiba történt",
+                    description: "Az összetevő állapotának frissítése sikertelen. Próbálja újra.",
+                });
+                setDangerAlertVisible(true);
+            }
+        } catch (error) {
+            setDangerAlertContent({
+                title: "Hiba történt",
+                description: "Az összetevő állapotának frissítése sikertelen. Próbálja újra.",
+            });
+            setDangerAlertVisible(true);
+        } finally {
+            setIsChanging(false);
+        }
+    };
+
+    const deleteShopping = async (shoppingId: number) => {
+        setIsDeleting(true)
         try {
             const res = await fetch(`/api/shopping?shoppingId=${shoppingId}`, {
                 method: 'DELETE',
@@ -50,15 +108,16 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
             console.error('Error deleting shopping list:', error);
             return false;
         }
+        finally {
+            setIsDeleting(false)
+        }
     };
 
     const handleDelete = async () => {
-        setIsDeleting(true);
-        const success = await deleteFromFavorites(shoppingList.shopping_id);
+        const success = await deleteShopping(shoppingList.shopping_id);
         if (success) {
             onDelete(shoppingList.shopping_id);
         }
-        setIsDeleting(false);
     };
 
     return (
@@ -76,9 +135,14 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
                 </CardHeader>
                 <Divider />
                 <CardBody>
-                    <CheckboxGroup label="Hozzávalók:">
+                    <CheckboxGroup label="Hozzávalók:"
+                        value={selectedIngredients}
+                        onValueChange={handleCheckboxChange}>
                         {shoppingList.ingredients.map((ingredient, index) => (
-                            <Checkbox value={String(ingredient.ingredient_id)} key={ingredient.ingredient_id} >
+                            <Checkbox
+                                value={String(ingredient.ingredient_id)}
+                                key={index}
+                                checked={selectedIngredients.includes(String(ingredient.ingredient_id))}>
                                 {ingredient.ingredient_name}, {ingredient.ingredient_quantity} {ingredient.measurement_name}
                             </Checkbox>
                         ))}
@@ -92,7 +156,7 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
                             disabled={isDeleting} // Disable the button while deleting
                             className={buttonStyles({ variant: "ghost", radius: "full", color: "danger" })}
                         >
-                            {isDeleting ? 'Törlés folyamatban' : 'Törlés'}
+                            {isDeleting ? 'Törlés...' : 'Törlés'}
                         </Button>
                         <MyAddToPantryButton ingredients={shoppingList.ingredients} />
                     </div>

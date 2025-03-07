@@ -43,7 +43,7 @@ export default function ShoppingPage() {
             ingredient_quantity: ingredient.ingredient_quantity,
             measurement_name: ingredient.measurement_name,
             measurement_id: ingredient.measurement_id,
-            bought: ingredient.bought,
+            bought: ingredient.bought
           })) || []
         }));
         setShopping(formattedShopping);
@@ -88,13 +88,14 @@ export default function ShoppingPage() {
       <h1 className={title()}>Bevásárlólistáim</h1>
       <div>
         {shopping && shopping.length > 0 ? (
-          <ul className="flex flex-row justify-center items-center gap-4 py-6">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 py-10 px-8 lg:px-32">
             {shopping.map((list, index) => (
-              <li key={index} className="flex-shrink-0">
+              <li key={index}>
                 <MyShoppingList shoppingList={list} onDelete={handleDelete} />
               </li>
             ))}
           </ul>
+
         ) : (
           <div className="py-4">
             <p>Nincsenek bevásárlólisták</p>

@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
                     ingredient_quantity: ingredient.ingredient_quantity,
                     measurement_id: ingredient.measurement_id,
                     measurement_name: ingredient.measurement_name,
-                    bought: ingredient.bought
+                    bought: !!ingredient.bought // check if 1 or 0
                 }))
             });
         }
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        const { shopping_name, recipe_id, ingredients } = await req.json();
+        const { recipe_id, shopping_name, add_all } = await req.json();
 
         // Validate required fields
         if (!shopping_name) {
@@ -127,8 +127,9 @@ export async function POST(req: NextRequest) {
             );
 
             if (recipeIngredients.length === 0) {
-                return NextResponse.json({ success: false, message: 'No ingredients found for this recipe' }, { status: 400 });
+                return NextResponse.json({ success: false, message: "No ingredients found for this recipe, or recipe doens't exist" }, { status: 400 });
             }
+
 
             // Map the fetched ingredients into the required format
             ingredientsList = recipeIngredients.map((ingredient) => ({
@@ -136,54 +137,79 @@ export async function POST(req: NextRequest) {
                 ingredient_quantity: ingredient.ingredient_quantity,
                 measurement_id: ingredient.measurement_id
             }));
-        } else {
-            if (!ingredients || ingredients.length === 0) {
-                return NextResponse.json({ success: false, message: 'No ingredients' }, { status: 400 });
-            }
-            ingredientsList = ingredients;
-        }
 
-        con.beginTransaction();
-        // Insert into shopping table
-        const [shoppingResult] = await con.query<ResultSetHeader>(
-            `INSERT INTO shopping (shopping_name, recipe_id) VALUES (?, ?)`,
-            [shopping_name, recipe_id || null]
-        );
+            if (add_all === "false") {
+                // filter out the ingredients already in the pantry
+                const missingIngredients = [];
+                for (const ingredient of recipeIngredients) {
+                    const { ingredient_id } = ingredient;
 
-        const shoppingId = shoppingResult.insertId;
+                    // check if the ingredient is already in the pantry
+                    const [pantryItem] = await con.query<RowDataPacket[]>(`
+                        SELECT * FROM pantry 
+                        WHERE pantry_id = ? AND ingredient_id = ?`,
+                        [userId, ingredient_id]
+                    );
 
-        // Insert into con_user_shopping table
-        await con.query(
-            `INSERT INTO con_user_shopping (user_id, shopping_id) VALUES (?, ?)`,
-            [userId, shoppingId]
-        );
+                    // if the ingredient is not in pantry
+                    if (pantryItem.length === 0) {
+                        missingIngredients.push(ingredient);
+                    }
+                }
 
-        // Insert ingredients
-        for (const ingredient of ingredientsList) {
-            const { ingredient_id, ingredient_quantity, measurement_id } = ingredient;
+                // all ingredients are in pantry
+                if (missingIngredients.length === 0) {
+                    return NextResponse.json({ success: false, message: 'All ingredients are already in the pantry' }, { status: 400 });
+                }
 
-            const [existingIngredient] = await con.query<RowDataPacket[]>(
-                `SELECT * FROM ingredients WHERE ingredient_id = ?`,
-                [ingredient_id]
-            );
-            const [existingMeasurement] = await con.query<RowDataPacket[]>(
-                `SELECT * FROM measurements WHERE measurement_id = ?`,
-                [measurement_id]
-            );
-
-            if (existingIngredient.length === 0 || existingMeasurement.length === 0) {
-                await con.rollback();
-                return NextResponse.json({ success: false, message: 'Invalid ingredient or measurement' }, { status: 400 });
+                // ingredientsList stores only the missing ings
+                ingredientsList = missingIngredients;
             }
 
-            // Insert the ingredients
+
+            con.beginTransaction();
+            // Insert into shopping table
+            const [shoppingResult] = await con.query<ResultSetHeader>(
+                `INSERT INTO shopping (shopping_name, recipe_id) VALUES (?, ?)`,
+                [shopping_name, recipe_id || null]
+            );
+
+            const shoppingId = shoppingResult.insertId;
+
+            // Insert into con_user_shopping table
             await con.query(
-                `INSERT INTO con_shopping_ingredients (shopping_id, ingredient_id, ingredient_quantity, measurement_id) 
-                VALUES (?, ?, ?, ?)`,
-                [shoppingId, ingredient_id, ingredient_quantity, measurement_id]
+                `INSERT INTO con_user_shopping (user_id, shopping_id) VALUES (?, ?)`,
+                [userId, shoppingId]
             );
-        }
 
+            // Insert ingredients
+            for (const ingredient of ingredientsList) {
+                const { ingredient_id, ingredient_quantity, measurement_id } = ingredient;
+
+                const [existingIngredient] = await con.query<RowDataPacket[]>(
+                    `SELECT * FROM ingredients WHERE ingredient_id = ?`,
+                    [ingredient_id]
+                );
+                const [existingMeasurement] = await con.query<RowDataPacket[]>(
+                    `SELECT * FROM measurements WHERE measurement_id = ?`,
+                    [measurement_id]
+                );
+
+                if (existingIngredient.length === 0 || existingMeasurement.length === 0) {
+                    await con.rollback();
+                    return NextResponse.json({ success: false, message: 'Invalid ingredient or measurement' }, { status: 400 });
+                }
+
+                // Insert the ingredients
+                await con.query(
+                    `INSERT INTO con_shopping_ingredients (shopping_id, ingredient_id, ingredient_quantity, measurement_id) 
+                VALUES (?, ?, ?, ?)`,
+                    [shoppingId, ingredient_id, ingredient_quantity, measurement_id]
+                );
+            }
+        } else {
+            return NextResponse.json({ success: false, message: 'No recipe ID' }, { status: 400 });
+        }
         await con.commit();
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -192,6 +218,87 @@ export async function POST(req: NextRequest) {
         }
         console.error("Error inserting shopping list:", error);
         return NextResponse.json({ success: false, message: 'Database error' }, { status: 500 });
+    } finally {
+        if (con) {
+            con.release();
+        }
+    }
+}
+
+
+export async function PATCH(req: NextRequest) {
+    let con;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ error: 'No database connection' }, { status: 500 });
+    }
+
+    try {
+        // Get the token from the Authorization header
+        const authorization = req.headers.get('Authorization');
+        const token = authorization?.split(' ')[1];
+        if (!token) {
+            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
+        }
+
+        // Verify and decode the token
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+        const userId = decoded.userId;
+
+        if (!userId) {
+            return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
+        }
+
+        const { ingredient_id, bought } = await req.json();
+
+        if (!ingredient_id || bought === undefined) {
+            return NextResponse.json({ success: false, message: 'Missing ingredient_id or bought' }, { status: 400 });
+        }
+
+        const { searchParams } = req.nextUrl;
+        const id = searchParams.get('shoppingId') || null;
+        if (!id) {
+            return NextResponse.json({ success: false, message: 'No shoppingId provided' }, { status: 400 });
+        }
+        const shoppingId = Number(id);
+        if (isNaN(shoppingId)) {
+            return NextResponse.json({ success: false, message: 'Invalid shoppingId' }, { status: 400 });
+        }
+
+        const [shoppingList] = await con.query<RowDataPacket[]>(
+            'SELECT * FROM con_user_shopping WHERE shopping_id = ? AND user_id = ?',
+            [shoppingId, userId]);
+
+        if (shoppingList.length === 0) {
+            return NextResponse.json({ success: false, message: 'Shopping list not found' }, { status: 404 });
+        }
+
+        await con.beginTransaction();
+
+        const [result] = await con.query<ResultSetHeader[]>(
+            `UPDATE con_shopping_ingredients SET bought = ? WHERE ingredient_id = ? AND shopping_id = ?`,
+            [bought, ingredient_id, shoppingId]
+        );
+
+        if (result.length === 0) {
+            await con.rollback()
+            return NextResponse.json({ success: false, message: `Failed to update ingredient bought: ${ingredient_id}` }, { status: 500 });
+        }
+
+        await con.commit();
+        return NextResponse.json({ success: true }, { status: 200 });
+    } catch (error) {
+        if (con) {
+            await con.rollback();
+        }
+        if (error instanceof jwt.TokenExpiredError) {
+            return NextResponse.json({ message: 'Token expired' }, { status: 401 });
+        }
+        if (error instanceof jwt.JsonWebTokenError) {
+            return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
+        }
+        console.error('Error updating shopping list item:', error);
+        return NextResponse.json({ message: 'Shoppign list item update failed' }, { status: 500 });
     } finally {
         if (con) {
             con.release();
@@ -236,15 +343,15 @@ export async function DELETE(req: NextRequest) {
 
         con.beginTransaction();
         // TODO delete from all with one constraint
-        const [conUserShopping] = await con.query<RowDataPacket[]>(
+        const [conUserShopping] = await con.query<ResultSetHeader[]>(
             'DELETE FROM con_user_shopping WHERE user_id = ? AND shopping_id = ?',
             [userId, shoppingId]
         );
-        const [conShoppingIngredients] = await con.query<RowDataPacket[]>(
+        const [conShoppingIngredients] = await con.query<ResultSetHeader[]>(
             'DELETE FROM con_shopping_ingredients WHERE shopping_id = ?',
             [shoppingId]
         );
-        const [shopping] = await con.query<RowDataPacket[]>(
+        const [shopping] = await con.query<ResultSetHeader[]>(
             'DELETE FROM shopping WHERE shopping_id = ?',
             [shoppingId]
         );
