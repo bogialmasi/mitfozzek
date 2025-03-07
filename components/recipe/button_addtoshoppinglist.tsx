@@ -26,7 +26,14 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
     const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
     const [shoppingName, setShoppingName] = useState(recipe.recipe_name);
 
-    const handleFavorites = async () => {
+    const handleClick = async (addValue: string) => {
+        console.log("HandleClick addAll:", addValue);
+        await handleAddShopping(addValue);
+        
+    }
+
+    const handleAddShopping = async (addValue: string) => {
+        console.log("handleAddShopping addAll:", addValue);
         if (!user) {
             onOpen();
         }
@@ -45,7 +52,7 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ "recipe_id": recipe.recipe_id, "shopping_name": shoppingName }),
+                    body: JSON.stringify({ "recipe_id": recipe.recipe_id, "shopping_name": shoppingName, "add_all": addValue}),
                 });
 
                 const result = await response.json();
@@ -57,16 +64,16 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                     });
                     setSuccessAlertVisible(true);
                 } else {
-                    if (result.message === 'Item already in favorites') {
+                    if (result.message === 'All ingredients are already in the pantry') {
                         setSuccessAlertContent({
-                            title: "Ez a recept a kedvencek között van",
-                            description: "A recept már korábban a kedvencek közé került.",
+                            title: "Már minden hozzávaló a spájzban van",
+                            description: "Nincs szükség bevásárlólista írására",
                         });
                         setSuccessAlertVisible(true);
                     } else {
                         setDangerAlertContent({
                             title: "Sikertelen mentés",
-                            description: "A recept mentése sikertelen. Próbálja újra.",
+                            description: "A bevásárlólista mentése sikertelen. Próbálja újra.",
                         });
                         setDangerAlertVisible(true);
                     }
@@ -75,7 +82,7 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                 console.error('Error adding to favorites:', error);
                 setDangerAlertContent({
                     title: "Sikertelen mentés",
-                    description: "A hálózati hiba miatt a recept mentése sikertelen.",
+                    description: "A hálózati hiba miatt a bevásárlólista mentése sikertelen.",
                 });
                 setDangerAlertVisible(true);
             } finally {
@@ -86,7 +93,6 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
 
     return (
         <div>
-
             <Popover showArrow offset={10} placement="bottom">
                 <PopoverTrigger>
                     <Button
@@ -96,7 +102,7 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                         <HeroShoppingCart />Bevásárlólista készítése az összetevőkból
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[240px]">
+                <PopoverContent className="w-md">
                     {(titleProps) => (
                         <div className="px-1 py-2 w-full">
                             <p className="text-small font-bold text-foreground" {...titleProps}>
@@ -114,8 +120,14 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                                 <Button
                                     className={buttonStyles({ variant: "bordered", radius: "full" })}
                                     disabled={isAdding}
-                                    onClick={handleFavorites}>
-                                    Mentés <HeroCheck />
+                                    onClick={() => handleClick("true")}>
+                                    Minden összetevő mentése
+                                </Button>
+                                <Button
+                                    className={buttonStyles({ variant: "bordered", radius: "full" })}
+                                    disabled={isAdding}
+                                    onClick={() => handleClick("false")}>
+                                    Csak a spájzból hiányzó összetevők mentése
                                 </Button>
                             </div>
                         </div>
