@@ -48,8 +48,8 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
                 setSuccessAlertVisible(true);
             } else if (response.message === 'Item already exists in pantry') {
                 setSuccessAlertContent({
-                    title: "Már van ilyen összetevő a spájzban",
-                    description: "Az újbóli hozzáadás nem szükséges.",
+                    title: "Néhány összetevő már benne van a spájzban",
+                    description: "Ezen összetevők újbóli hozzáadása nem szükséges.",
                 });
                 setSuccessAlertVisible(true);
             }
