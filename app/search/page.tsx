@@ -72,7 +72,7 @@ export default function SearchPage() {
         if (!ingredientsRes.ok || !dishTypeRes.ok || !dishCategoryRes.ok || !dishCuisineRes.ok) {
           setError("Hiba a keresési filterek betöltése közben");
         }
-        if (!pantryIngredientsRes.ok) {
+        if (token && !pantryIngredientsRes.ok) {
           setError('A spájz betöltése sikertelen');
         }
 
