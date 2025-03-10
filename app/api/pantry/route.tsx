@@ -42,6 +42,54 @@ export async function GET(req: NextRequest) {
 
         const pantryId = pantry[0].pantry_id;
 
+        /**
+         * 
+         * ONE ingredient based on ID
+         * 
+         */
+        const { searchParams } = req.nextUrl;
+        const id = searchParams.get('id');
+        if (id) {
+            const ingreidentId = Number(id);
+
+            const [ingredient] = await con.query<RowDataPacket[]>(
+                `SELECT 
+                    pantry.ingredient_id,
+                    ingredients.ingredient_name AS ingredient_name,
+                    pantry.ingredient_quantity,
+                    measurements.measurement_id,
+                    measurements.measurement_name AS measurement_name
+                FROM pantry
+                JOIN ingredients ON pantry.ingredient_id = ingredients.ingredient_id
+                JOIN measurements ON pantry.measurement_id = measurements.measurement_id
+                WHERE pantry.pantry_id = ? AND pantry.ingredient_id = ?`,
+                [pantryId, ingreidentId]
+            );
+
+
+            // If no pantry items found, return an empty array
+            if (ingredient.length === 0) {
+                return NextResponse.json({ success: false, message: 'Ingredient not found in pantry' }, { status: 404 });
+            }
+
+            // Format and return pantry items
+            const formattedIngredient = ingredient.map((item) => ({
+                ingredient_id: item.ingredient_id,
+                ingredient_name: item.ingredient_name,
+                ingredient_quantity: item.ingredient_quantity,
+                measurement_id: item.measurement_id,
+                measurement_name: item.measurement_name
+            }));
+
+            return NextResponse.json(formattedIngredient[0]); // only one ingredient
+        }
+
+        /*
+        //
+        // ALL ingredients of the user
+        //
+        */
+
         // Query to get pantry items for the user
         const [pantryItems] = await con.query<RowDataPacket[]>(
             `SELECT 

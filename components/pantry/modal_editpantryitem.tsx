@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
 import { MyPantryDropdown } from './dropdown_measurements';
-import { HeroCancel, HeroPlus, HeroSearch, HeroSettings, HeroTrash } from '../icons';
+import { HeroCancel, HeroSettings, HeroTrash } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
@@ -24,12 +24,50 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });
 
     const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
     const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "", });
+
+    useEffect(() => {
+        if (!ingredient) return;
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Bejelentkezés szükséges');
+            setLoading(false);
+            return;
+        }
+        const fetchIngredient = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch(`/api/pantry?id=${ingredient}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setQuantity(data.ingredient_quantity)
+                    setMeasurement(data.measurement_id)
+                } else {
+                    setError(data.message || 'Az elem betöltése sikertelen');
+                    return;
+                }
+            }
+            catch (err) {
+                setError('Something went wrong.');
+                setLoading(false);
+            }
+            finally {
+                setLoading(false);
+            }
+        }; fetchIngredient();
+    }, [ingredient])
 
     useEffect(() => {
         let timeout: NodeJS.Timeout;
