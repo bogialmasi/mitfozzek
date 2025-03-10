@@ -5,7 +5,6 @@ import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Input, Textarea } from "@heroui/input";
 import { Spinner } from "@heroui/react";
-import { PressEvent } from "@react-types/shared";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
