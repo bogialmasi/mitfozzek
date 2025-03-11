@@ -1,6 +1,7 @@
 'use client'
 import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useEffect, useState } from "react";
+import cookie from 'cookie';
 
 type User = {
   userId: number;
@@ -28,64 +29,66 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
 
   const isTokenExpired = (token: string): boolean => {
     const decoded: any = jwtDecode(token);
-    return decoded.exp * 1000 < Date.now(); // Expiration time is in seconds, convert to milliseconds
+    return decoded.exp * 1000 < Date.now(); // seconds, convert to milliseconds
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    setLoading(true);
+    const cookies = document.cookie ? cookie.parse(document.cookie) : {};
+    const token = cookies.token;
+  
     if (token) {
-      // If token is expired, log out the user
       if (isTokenExpired(token)) {
         console.log("Token has expired, logging out.");
-        logout();
+        logout(); 
       } else {
         try {
           const decodedUser = jwtDecode<User>(token);
           setUser({
             userId: decodedUser.userId,
             username: decodedUser.username,
-          })
-          console.log("Decoded User:", decodedUser, "\n userId:", decodedUser.userId, "\n username:", decodedUser.username);
+          });
         } catch (error) {
           console.error('Token is invalid', error);
           logout();
         }
       }
+    } else {
+      setUser(null);
     }
+  
     setLoading(false);
   }, []);
 
-  
-  // Run expiration check every 5 seconds to see if the token has expired
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const token = localStorage.getItem('token');
-      if (token && isTokenExpired(token)) {
-        localStorage.removeItem('token');
-        setUser(null); // Clear the user state
-      }
-    }, 5000); // Check every 5 seconds
+  const logout = async () => {
+    try {
+      await fetch('/api/logout',
+        {
+          method: 'POST',
+          credentials: 'include'
+        });
 
-    // Cleanup the interval when the component is unmounted
-    return () => clearInterval(interval);
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('session');
-    setUser(null);
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
-  const login = (token: string) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('session', 'true') // session has started when user logged in
-    const decodedUser = jwtDecode<User>(token);
-    if (isTokenExpired(token)) {
-      console.log("Token expired on login, logging out.");
-      logout();
-    } else {
-      setUser(decodedUser);
-    };
+
+  const login = async () => {
+    try {
+      const res = await fetch('/api/authcheck', { credentials: 'include' });
+      const data = await res.json();
+
+      if (data.success) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Error fetching user data after login:", error);
+      setUser(null);
+    }
   };
 
 

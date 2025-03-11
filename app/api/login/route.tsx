@@ -3,6 +3,7 @@ import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
 import { PoolConnection } from 'mysql2/promise';
+import cookie from 'cookie';
 
 interface User {
   user_id: number;
@@ -50,12 +51,16 @@ export async function POST(req: NextRequest) {
       // generateToken comes from /lib/jwt's function, is a 'sign'
       const token = generateToken({ userId: user.user_id, username: user.username });
 
-      return NextResponse.json({
-        success: true,
-        token,
-        message: 'Sikeres bejelentkezés'
-      });
+      const response = NextResponse.json({ success: true, message: 'Sikeres bejelentkezés' });
 
+      response.cookies.set('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60, // 24 hours
+        path: '/',
+        sameSite: 'lax', // Ensures it works across subdomains
+      });
+      return response;
     } else {
       return NextResponse.json({ success: false, message: 'Sikertelen bejelentkezés' }, { status: 401 });
     }
