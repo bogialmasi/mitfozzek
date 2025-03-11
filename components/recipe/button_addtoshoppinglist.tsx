@@ -29,7 +29,7 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
     const handleClick = async (addValue: string) => {
         console.log("HandleClick addAll:", addValue);
         await handleAddShopping(addValue);
-        
+
     }
 
     const handleAddShopping = async (addValue: string) => {
@@ -48,11 +48,9 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
             try {
                 const response = await fetch('/api/shopping', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                    body: JSON.stringify({ "recipe_id": recipe.recipe_id, "shopping_name": shoppingName, "add_all": addValue}),
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ "recipe_id": recipe.recipe_id, "shopping_name": shoppingName, "add_all": addValue }),
                 });
 
                 const result = await response.json();

@@ -1,7 +1,7 @@
 'use client'
 import * as React from "react";
 import { title } from "@/components/primitives";
-import { Button, Form, Input, Skeleton, Spinner } from "@heroui/react";
+import { Button, Form, Input, Spinner } from "@heroui/react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from "@heroui/link";
@@ -23,13 +23,12 @@ export default function LoginPage() {
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ username, password })
             });
             const data = await response.json();
-
+            console.log("response:", data);
             if (data.success) {
                 // Redirect to /search after successful login
                 setLoading(false);

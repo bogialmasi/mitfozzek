@@ -47,12 +47,33 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const checkLogin = async () => {
+    try {
+      const res = await fetch('/api/authcheck', {
+        method: 'GET',
+        credentials: 'include', // Use cookies for authentication
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError('Bejelentkezés szükséges');
+        setLoading(false);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      setError('Bejelentkezés szükséges');
+      setLoading(false);
+      return false;
+    }
+  };
 
   // Fetch filters 
   useEffect(() => {
     const fetchFilters = async () => {
       setLoading(true);
       setError(null);
+
+
       try {
         // Fetch all dropdown data
         const [ingredientsRes, dishTypeRes, dishCategoryRes, dishCuisineRes] = await Promise.all([
@@ -61,18 +82,18 @@ export default function SearchPage() {
           fetch('/api/data?type=dish_category'),
           fetch('/api/data?type=dish_cuisine')
         ]);
-        const token = localStorage.getItem('token');
+
         const pantryIngredientsRes = await fetch('/api/data?type=user_pantry', {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        })
+          credentials: 'include',
+        });
 
         if (!ingredientsRes.ok || !dishTypeRes.ok || !dishCategoryRes.ok || !dishCuisineRes.ok) {
           setError("Hiba a keresési filterek betöltése közben");
         }
-        if (token && !pantryIngredientsRes.ok) {
+
+        const isLoggedIn = await checkLogin();
+        if (isLoggedIn && !pantryIngredientsRes.ok) {
           setError('A spájz betöltése sikertelen');
         }
 
@@ -80,7 +101,6 @@ export default function SearchPage() {
         setDishType(await dishTypeRes.json());
         setDishCategory(await dishCategoryRes.json());
         setDishCuisine(await dishCuisineRes.json());
-
         setPantryIngredients(await pantryIngredientsRes.json());
 
       } catch (error) {
@@ -94,11 +114,13 @@ export default function SearchPage() {
   }, []);
 
 
-  // Fetch results
+  // Fetch results based on filters
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
       setError(null);
+      const isLoggedIn = await checkLogin(); // Ensure the user is logged in
+
       try {
         const params = new URLSearchParams();
         filters.searchQuery && params.append('searchQuery', filters.searchQuery);
@@ -107,16 +129,14 @@ export default function SearchPage() {
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
         filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
         filters.dishCuisine.forEach((id) => params.append('dishCuisine', id.toString()));
-        if (filters.onlyPantryIngredients) {
-          const token = localStorage.getItem('token');
+
+
+        if (filters.onlyPantryIngredients && isLoggedIn) {
           params.append('pantryIngredientsOnly', 'true');
-          const response = await fetch(`/api/search?${params.toString()}`,
-            {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
-            });
+          const response = await fetch(`/api/search?${params.toString()}`, {
+            method: 'GET',
+            credentials: 'include',
+          });
           if (!response.ok) {
             if (response.status === 404) {
               setResults([]); // empty result set
@@ -128,12 +148,11 @@ export default function SearchPage() {
           const data = await response.json();
           setResults(data);
         } else {
-          console.log("params:", params.toString())
           const response = await fetch(`/api/search?${params.toString()}`);
           if (!response.ok) {
             if (response.status === 404) {
               setResults([]); // empty result set
-              setError('Nincs a keresésnek megfelelő elem');
+              setError('Nincs a keresési találat');
             } else {
               setError(`Hiba a keresés során: ${response.status}`);
             }
@@ -150,7 +169,6 @@ export default function SearchPage() {
     };
     fetchResults();
   }, [filters]);
-
 
 
   return (

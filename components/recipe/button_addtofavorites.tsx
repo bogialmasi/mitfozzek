@@ -39,10 +39,7 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
             try {
                 const response = await fetch('/api/favrecipes', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
+                    credentials: 'include',
                     body: JSON.stringify({ userId, recipeId }),
                 });
 

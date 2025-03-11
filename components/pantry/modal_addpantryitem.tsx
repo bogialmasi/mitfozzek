@@ -49,17 +49,9 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
             };
 
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Bejelentkezés szükséges');
-                    return;
-                }
                 const res = await fetch('/api/pantry', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    credentials: 'include',
                     body: JSON.stringify(newItem),
                 });
                 const response = await res.json();

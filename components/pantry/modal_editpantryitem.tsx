@@ -35,20 +35,12 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     useEffect(() => {
         if (!ingredient) return;
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('Bejelentkezés szükséges');
-            setLoading(false);
-            return;
-        }
         const fetchIngredient = async () => {
             setLoading(true);
             try {
                 const response = await fetch(`/api/pantry?id=${ingredient}`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    credentials: 'include'
                 });
                 const data = await response.json();
                 if (response.ok) {
@@ -104,17 +96,10 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
             };
 
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Bejelentkezés szükséges');
-                    return;
-                }
                 const res = await fetch('/api/pantry', {
                     method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify(editItem),
                 });
                 const response = await res.json();
@@ -160,17 +145,10 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
             };
 
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Bejelentkezés szükséges');
-                    return;
-                }
                 const res = await fetch('/api/pantry', {
                     method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify(deleteItem),
                 });
                 onDeleteItem(ingredient); // deleting from pantry table

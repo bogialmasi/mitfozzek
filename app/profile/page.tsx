@@ -15,67 +15,75 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [pantryItems, setPantryItems] = useState<any[]>([]);
 
-  useEffect(() => {
+  const fetchProfile = async () => {
     setLoading(true);
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Bejelentkezés szükséges');
-      setLoading(false);
-      return;
-    }
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/profile', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'GET',
+        credentials: 'include'
+      });
 
-        if (!response.ok) {
-          setError(`Hiba: ${response.statusText} (${response.status})`);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (data.success && data.user_id && data.username) {
-          setProfile({
-            userId: data.user_id,
-            username: data.username,
-            userDescription: data.user_desc || 'Nincs megadva leírás.',
-            email: data.email,
-          });
-        } else {
-          setError(data.message || 'Az adatok betöltése sikertelen.');
-        }
-
-        const pantryResponse = await fetch('/api/pantry', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!pantryResponse.ok) {
-          setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
-          return;
-        }
-
-        const pantryData = await pantryResponse.json();
-        setPantryItems(pantryData.pantry_items || []);
-        setLoading(false);
-      } catch (err) {
-        console.error('Hiba a spájz feltöltése közben:', err);
-        setError('Something went wrong.');
-        setLoading(false);
+      if (!response.ok) {
+        setError(`Hiba: ${response.statusText} (${response.status})`);
+        return;
       }
-      finally {
+
+      const data = await response.json();
+
+      if (data.success && data.user_id && data.username) {
+        setProfile({
+          userId: data.user_id,
+          username: data.username,
+          userDescription: data.user_desc || 'Nincs megadva leírás.',
+          email: data.email,
+        });
+      } else {
+        setError(data.message || 'Az adatok betöltése sikertelen.');
+      }
+
+      const pantryResponse = await fetch('/api/pantry', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!pantryResponse.ok) {
+        setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
+        return;
+      }
+
+      const pantryData = await pantryResponse.json();
+      setPantryItems(pantryData.pantry_items || []);
+    } catch (err) {
+      console.error('Hiba a spájz feltöltése közben:', err);
+      setError('Something went wrong.');
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const res = await fetch('/api/authcheck', {
+          method: 'GET',
+          credentials: 'include', // Use cookies for authentication
+        });
+        const data = await res.json();
+        if (!data.success) {
+          setError('Bejelentkezés szükséges');
+          setLoading(false);
+          return;
+        }
+        fetchProfile(); // Fetch favorites if the user is logged in
+      } catch (err) {
+        setError('Bejelentkezés szükséges');
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, []);
+    checkLogin();
+  }, [])
 
   if (loading) return (
     <div>
@@ -127,7 +135,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <div className={subtitle({ class: "mt-4" })}>
-                  <h3>{profile?.userDescription}</h3>
+                  <p>{profile?.userDescription}</p>
                 </div>
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}

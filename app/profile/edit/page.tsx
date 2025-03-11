@@ -24,21 +24,35 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     setLoading(true);
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Bejelentkezés szükséges');
-      setLoading(false);
-      return;
-    }
+  
+    const checkLogin = async () => {
+      try {
+        const res = await fetch('/api/authcheck', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!data.success) {
+          setError('Bejelentkezés szükséges');
+          setLoading(false);
+          return;
+        }
+  
+        // If logged in, fetch user profile
+        fetchProfile();
+      } catch (err) {
+        setError('Bejelentkezés szükséges');
+        setLoading(false);
+      }
+    };
+  
     const fetchProfile = async () => {
-      setLoading(true);
       try {
         const response = await fetch('/api/profile', {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         });
+  
         const data = await response.json();
         if (data.success && data.user_id && data.username) {
           setUsername(data.username);
@@ -46,66 +60,55 @@ export default function EditProfilePage() {
           setDescription(data.user_desc || ' ');
         } else {
           setError(data.message || 'A profil módosítása sikertelen');
-          return;
         }
-      }
-      catch (err) {
+      } catch (err) {
         setError('Something went wrong.');
+      } finally {
         setLoading(false);
       }
-      finally {
-        setLoading(false);
-      }
-    }; fetchProfile();
-  }, [])
-
+    };
+  
+    checkLogin();
+  }, []);
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (newPassword !== newPasswordAgain) { // check before updatedData is set
+
+    if (newPassword !== newPasswordAgain) {
       setError('A jelszavak nem egyeznek');
       return;
     }
     setLoading(true);
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Bejelentkezés szükséges');
-      setLoading(false);
-      return;
-    }
 
-    /* Profile editing */
     const updatedData: any = {};
     if (username) updatedData.username = username;
     if (email) updatedData.email = email;
     if (description) updatedData.description = description;
     if (password) updatedData.password = password;
     if (password && newPassword && newPasswordAgain) {
-      updatedData.newPassword = newPassword; // only if all three are filled in
+      updatedData.newPassword = newPassword;
     }
-    console.log(updatedData);
+
     try {
       const response = await fetch('/api/profile/edit', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedData)
+        credentials: 'include', // Ensure cookies are sent
+        body: JSON.stringify(updatedData),
       });
-
       const res = await response.json();
       if (!response.ok) {
         if (res.message === 'Old password is incorrect') {
           setError('A megadott jelszó helytelen');
+        } else {
+          setError(res.message || 'Hiba történt a módosítás során.');
         }
         return;
       }
-      if (response.ok) {
-        console.log('data:', res);
-        setLoading(false);
-        router.push(siteConfig.links.profile);
-      }
+      router.push(siteConfig.links.profile);
     } catch (err) {
       console.error('Módosítás közben hiba lépett fel:', err);
       setError('Something went wrong.');
@@ -113,7 +116,7 @@ export default function EditProfilePage() {
       setLoading(false);
     }
   };
-  // Does not save any of the changes
+
   function handleCancel() {
     router.push(siteConfig.links.profile);
   }
@@ -121,6 +124,7 @@ export default function EditProfilePage() {
   function handleDeactivate() {
     setIsModalOpen(true);
   }
+
   if (loading) return (
     <div>
       <div className="flex justify-center items-center h-screen">

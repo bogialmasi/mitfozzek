@@ -1,25 +1,27 @@
 'use client';
-
 import { useAuthentication } from '@/app/context/authenticationContext';
 import { useEffect, useState } from 'react';
 import { Alert, Button } from '@heroui/react';
-
+import cookie from 'cookie';
+import { siteConfig } from '@/config/site';
 
 export const MyLogoutAlert = () => {
   const { user, logout } = useAuthentication();
   const [showAlert, setShowAlert] = useState(false);
-  
+
   useEffect(() => {
-    const session = localStorage.getItem('session');
-    if (session === 'true' && user === null) { // 'true' is string, user is logged out
-      console.log("User got logged out");
+    const cookies = document.cookie ? cookie.parse(document.cookie) : {};
+    const token = cookies.token; // Get token from cookie
+    
+    // If there's no token and user is logged out, show the alert
+    if (!token && user === null) {
+      console.log('User got logged out');
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 5000); // Alert shown for 5 sec
-      logout(); // Clear session and user state
+      logout(); // Logout the user by clearing the cookie and user state
     }
   }, [user, logout]);
 
-  
   // Apply the opacity transition to fade in/out
   const alertClasses = showAlert
     ? 'opacity-100 transition-opacity duration-500'
@@ -35,7 +37,7 @@ export const MyLogoutAlert = () => {
         description="Jelentkezzen be újra"
         endContent={
           <Button color="warning" size="sm" variant="flat">
-            <a href="/login">Bejelentkezés</a>
+            <a href={siteConfig.links.login}>Bejelentkezés</a>
           </Button>
         }
         variant="faded"

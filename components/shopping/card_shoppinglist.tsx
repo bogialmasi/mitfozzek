@@ -38,17 +38,10 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
     const updateIngredientBoughtStatus = async (ingredient: ShoppingIngredient, bought: boolean) => {
         setIsChanging(true);
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authorization token is missing');
-            }
-
             const res = await fetch(`/api/shopping?shoppingId=${shoppingList.shopping_id}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     ingredient_id: ingredient.ingredient_id,
                     bought: bought ? 1 : 0,
@@ -85,9 +78,7 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
         try {
             const res = await fetch(`/api/shopping?shoppingId=${shoppingId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
+                credentials: 'include'
             });
             if (res.ok) {
                 setSuccessAlertContent({

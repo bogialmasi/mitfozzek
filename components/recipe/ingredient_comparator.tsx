@@ -14,20 +14,11 @@ export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparator
 
     useEffect(() => {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('Bejelentkezés szükséges');
-            setPantryItems([]); //empty
-            setLoading(false);
-            return;
-        }
         const fetchPantry = async () => {
             try {
                 const pantryResponse = await fetch('/api/pantry', {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    credentials: 'include'
                 });
 
                 if (!pantryResponse.ok) {

@@ -22,16 +22,9 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
     const { logout } = useAuthentication();
 
     const onConfirm = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('Bejelentkezés szükséges');
-            return;
-        }
         const response = await fetch('/api/profile/deactivate', {
             method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
+            credentials: 'include'
         });
         const data = await response.json();
         if (response.status === 200) {

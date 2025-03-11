@@ -18,17 +18,9 @@ export default function FavoritesPage() {
   const fetchFavorites = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Token missing. Please login again.');
-        setLoading(false);
-        return;
-      }
       const response = await fetch('/api/favrecipes', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (!response.ok) {
         throw new Error('Hiba történt a receptek betöltésekor');
@@ -39,7 +31,7 @@ export default function FavoritesPage() {
         const formattedRecipe = data.map((recipe: Recipe) => ({
           ...recipe,
           ingredients: (recipe.ingredients as Ingredient[])?.map((ingredient: Ingredient) => ({
-            ingredient_id : ingredient.ingredient_id,
+            ingredient_id: ingredient.ingredient_id,
             ingredient_name: ingredient.ingredient_name,
           })) || []
         }));
@@ -66,7 +58,26 @@ export default function FavoritesPage() {
 
   // Fetch the favorite recipes data whenever the list changes
   useEffect(() => {
-    fetchFavorites();
+    const checkLogin = async () => {
+      try {
+        const res = await fetch('/api/authcheck', {
+          method: 'GET',
+          credentials: 'include', // Use cookies
+        });
+        const data = await res.json();
+        if (!data.success) {
+          setError('Bejelentkezés szükséges');
+          setLoading(false);
+          return;
+        }
+
+        fetchFavorites();
+      } catch (err) {
+        setError('Bejelentkezés szükséges');
+        setLoading(false);
+      }
+    };
+    checkLogin();
   }, []);
 
   if (loading) return (

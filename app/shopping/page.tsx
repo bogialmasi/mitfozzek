@@ -17,17 +17,9 @@ export default function ShoppingPage() {
   const fetchShopping = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Token missing. Please login again.');
-        setLoading(false);
-        return;
-      }
       const response = await fetch('/api/shopping', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (!response.ok) {
         throw new Error('Hiba történt a beváráslólisták betöltésekor');
@@ -58,12 +50,28 @@ export default function ShoppingPage() {
   };
 
   useEffect(() => {
-    fetchShopping();
+    const checkLogin = async () => {
+      try {
+        const res = await fetch('/api/authcheck', {
+          method: 'GET',
+          credentials: 'include', // Use cookies
+        });
+        const data = await res.json();
+        if (!data.success) {
+          setError('Bejelentkezés szükséges');
+          setLoading(false);
+          return;
+        }
+
+        fetchShopping();
+      } catch (err) {
+        setError('Bejelentkezés szükséges');
+        setLoading(false);
+      }
+    };
+    checkLogin();
   }, []);
 
-  useEffect(() => {
-    console.log("shopping lists: ", shopping);
-  }, [shopping])
 
   // Remove the deleted shoppinglist
   const handleDelete = async (shoppingId: number) => {

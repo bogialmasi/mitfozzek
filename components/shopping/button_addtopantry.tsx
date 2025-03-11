@@ -10,7 +10,7 @@ interface MyAddToPantryProps {
 }
 
 export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients }) => {
-    const [isAdding, setIsAdding] = useState(false); 
+    const [isAdding, setIsAdding] = useState(false);
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
 
@@ -32,10 +32,8 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
             }
             const res = await fetch('/api/pantry', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(newItem),
             });
 
@@ -68,7 +66,7 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
         for (const ingredient of ingredients) {
             await handleAddItem(ingredient);
         }
-        setIsAdding(false); 
+        setIsAdding(false);
     };
 
     return (

@@ -25,9 +25,7 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
         try {
             const res = await fetch(`/api/favrecipes?recipeId=${recipeId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Make sure to use the correct token source
-                },
+                credentials: 'include'
             });
 
             if (res.ok) {

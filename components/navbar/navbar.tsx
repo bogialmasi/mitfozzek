@@ -17,18 +17,35 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { MyUserLoginLogout } from "./user_login_logout";
 import { useAuthentication } from "@/app/context/authenticationContext";
-import { useRouter } from "next/router";
-import { HeroUser } from "../icons";
 
 export const Navbar = () => {
-  // Check if user is logged in by checking if JWT token exists
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { user, logout } = useAuthentication();
+  const [loading, setLoading] = useState(false);
+/*
+  const checkLogin = async () => {
+    try {
+      const res = await fetch('/api/authcheck', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setIsLoggedIn(false);
+        setLoading(false);
+        return;
+      }
+      setIsLoggedIn(true);
+    } catch (err) {
+      setIsLoggedIn(false); // If error occurs, consider the user as logged out
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
-    setIsLoggedIn(!!token);  // true if token exists, false otherwise
-  }, []);
+    checkLogin(); // Check login status on mount
+  }, []);*/
+
 
   const navItems = user
     ? [
@@ -46,7 +63,7 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1 space-x-2" href="/">
-        
+
             <p className="font-bold text-inherit">Mit főzzek?</p>
           </NextLink>
         </NavbarBrand>
