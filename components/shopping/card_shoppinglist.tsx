@@ -141,11 +141,11 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
                 </CardBody>
                 <Divider />
                 <CardFooter>
-                    <div className="flex flex-row gap-4 py-4">
+                    <div className="flex flex-row gap-4 py-4 flex-wrap">
                         <Button
                             onClick={handleDelete}
                             disabled={isDeleting} // Disable the button while deleting
-                            className={buttonStyles({ variant: "ghost", radius: "full", color: "danger" })}
+                            className={`${buttonStyles({ variant: "ghost", radius: "full", color: "danger" })} w-full`}
                         >
                             {isDeleting ? 'Törlés...' : 'Törlés'}
                         </Button>

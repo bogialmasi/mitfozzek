@@ -70,9 +70,9 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
     };
 
     return (
-        <div>
+        <div className='w-full'>
             <Button
-                className={buttonStyles({ variant: "bordered", radius: "full" })}
+                className={`${buttonStyles({ variant: "bordered", radius: "full" })} w-full`}
                 onClick={handleAddAllItems}
                 disabled={isAdding}
             >
