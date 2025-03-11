@@ -8,17 +8,15 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const getUserId = (req: NextRequest): number | null => {
   try {
-    const authorization = req.headers.get('Authorization');
-    const token = authorization?.split(' ')[1];
+    const token = req.cookies.get('token')?.value; // Get token from cookies
     if (!token) {
       return null;
     }
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId || null;  // Return userId if present
-    return userId;
+    return decoded.userId || null;
   } catch (error) {
     console.error('Invalid token:', error);
-    return null;  // Return null if token verification fails
+    return null;
   }
 };
 

@@ -14,9 +14,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        //Get the token from the Authorization header
-        const authorization = req.headers.get('Authorization');
-        const token = authorization?.split(' ')[1];
+        const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
@@ -138,9 +136,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    //Get the token from the Authorization header
-    const authorization = req.headers.get('Authorization');
-    const token = authorization?.split(' ')[1];
+    const token = req.cookies.get('token')?.value;
     if (!token) {
         return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
     }
@@ -208,10 +204,7 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-
-        // Get the token from the Authorization header
-        const authorization = req.headers.get('Authorization');
-        const token = authorization?.split(' ')[1];
+        const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
 
@@ -294,10 +287,7 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-
-        // Get the token from the Authorization header
-        const authorization = req.headers.get('Authorization');
-        const token = authorization?.split(' ')[1];
+        const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }

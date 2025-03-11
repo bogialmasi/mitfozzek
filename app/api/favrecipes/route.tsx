@@ -9,9 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 // GET method gives back the FULL favorite recipe of the user including ingredients
 export async function GET(req: NextRequest) {
-    //Get the token from the Authorization header
-    const authorization = req.headers.get('Authorization');
-    const token = authorization?.split(' ')[1];
+    const token = req.cookies.get('token')?.value;
     if (!token) {
         return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
     }
@@ -95,9 +93,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        // Get the token from the Authorization header
-        const authorization = req.headers.get('Authorization');
-        const token = authorization?.split(' ')[1];
+        const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
 
@@ -163,9 +159,7 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        // Get the token from the Authorization header
-        const authorization = req.headers.get('Authorization');
-        const token = authorization?.split(' ')[1];
+        const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing (Possibly expired)' }, { status: 404 });
 
