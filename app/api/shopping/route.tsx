@@ -103,11 +103,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        const { recipe_id, shopping_name, add_all } = await req.json();
+        const { recipe_id, shopping_name, add_all, headcount } = await req.json();
 
         // Validate required fields
-        if (!shopping_name) {
-            return NextResponse.json({ success: false, message: 'Missing shopping name' }, { status: 400 });
+        if (!shopping_name || !headcount) {
+            return NextResponse.json({ success: false, message: 'Missing shopping name or head conut' }, { status: 400 });
         }
 
         // Initialize ingredients array
@@ -115,6 +115,19 @@ export async function POST(req: NextRequest) {
 
         // If recipe_id is provided, fetch ingredients for that recipe
         if (recipe_id) {
+
+            const [recipeHeadcount] = await pool.query<RowDataPacket[]>(`
+                SELECT recipe_headcount
+                FROM recipes
+                WHERE recipe_id = ?`, [recipe_id]
+            );
+
+            if (recipeHeadcount.length === 0) {
+                return NextResponse.json({ success: false, message: "No recipe found" }, { status: 400 });
+            }
+
+            const recipe_headcount = recipeHeadcount[0].recipe_headcount;
+
             const [recipeIngredients] = await pool.query<RowDataPacket[]>(
                 `SELECT ingredient_id, ingredient_quantity, measurement_id
                 FROM con_recipe_ingredients
@@ -130,7 +143,7 @@ export async function POST(req: NextRequest) {
             // Map the fetched ingredients into the required format
             ingredientsList = recipeIngredients.map((ingredient) => ({
                 ingredient_id: ingredient.ingredient_id,
-                ingredient_quantity: ingredient.ingredient_quantity,
+                ingredient_quantity: (ingredient.ingredient_quantity * headcount/ recipe_headcount),
                 measurement_id: ingredient.measurement_id
             }));
 

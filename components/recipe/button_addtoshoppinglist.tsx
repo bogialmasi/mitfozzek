@@ -13,9 +13,10 @@ import { Recipe } from '@/types';
 
 interface MyAddToShoppingProps {
     recipe: Recipe;
+    headcount: number;
 }
 
-export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }) => {
+export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount: number }> = ({ recipe, headcount }) => {
     const { user } = useAuthentication();
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
     const [isAdding, setIsAdding] = useState(false); // To manage loading state
@@ -25,12 +26,6 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
     const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
     const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
     const [shoppingName, setShoppingName] = useState(recipe.recipe_name);
-
-    const handleClick = async (addValue: string) => {
-        console.log("HandleClick addAll:", addValue);
-        await handleAddShopping(addValue);
-
-    }
 
     const handleAddShopping = async (addValue: string) => {
         console.log("handleAddShopping addAll:", addValue);
@@ -44,13 +39,20 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                 console.error('Missing userId or recipeId');
                 return;
             }
-            setIsAdding(true);
+
             try {
+                setIsAdding(true);
+
                 const response = await fetch('/api/shopping', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ "recipe_id": recipe.recipe_id, "shopping_name": shoppingName, "add_all": addValue }),
+                    body: JSON.stringify({
+                        "recipe_id": recipe.recipe_id,
+                        "shopping_name": shoppingName,
+                        "add_all": addValue,
+                        "headcount": headcount,
+                    }),
                 });
 
                 const result = await response.json();
@@ -118,13 +120,13 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps> = ({ recipe }
                                 <Button
                                     className={buttonStyles({ variant: "bordered", radius: "full" })}
                                     disabled={isAdding}
-                                    onClick={() => handleClick("true")}>
+                                    onClick={() => handleAddShopping("true")}>
                                     Minden összetevő mentése
                                 </Button>
                                 <Button
                                     className={buttonStyles({ variant: "bordered", radius: "full" })}
                                     disabled={isAdding}
-                                    onClick={() => handleClick("false")}>
+                                    onClick={() => handleAddShopping("false")}>
                                     Csak a spájzból hiányzó összetevők mentése
                                 </Button>
                             </div>
