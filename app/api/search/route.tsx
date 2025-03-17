@@ -29,7 +29,10 @@ export async function GET(req: NextRequest) {
     // */
     if (id) {
       const recipeId = Number(id);
-      const [recipes] = await con.query('SELECT * FROM recipes WHERE recipe_id = ?', [recipeId]);
+      const [recipes] = await con.query(
+        `SELECT recipes.*, users.username FROM recipes 
+        LEFT JOIN users ON recipes.source_user_id = users.user_id 
+        WHERE recipe_id = ? `, [recipeId]);
       const recipeResults = recipes as RowDataPacket[];
 
       if (recipeResults.length === 0) {
