@@ -6,11 +6,11 @@ import { HeroPlus, HeroSettings } from "../icons";
 import { button as buttonStyles } from "@heroui/theme";
 import { MyAddPantryModal } from "./modal_addpantryitem";
 import { MyEditPantryModal } from "./modal_editpantryitem";
-import { PantryItem } from "@/types";
+import { Ingredient } from "@/types";
 
 
 interface MyPantryTableProps {
-    pantryIngredients: PantryItem[];
+    pantryIngredients: Ingredient[];
 }
 
 
@@ -19,7 +19,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); // add modal form
     const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); // edit modal form
     const [searchQuery, setSearchQuery] = useState('');
-    const [pantryItems, setPantryItems] = useState<PantryItem[]>(pantryIngredients);
+    const [pantryItems, setPantryItems] = useState<Ingredient[]>(pantryIngredients);
     const [error, setError] = useState<string>('');
 
     const filteredPantryItems = pantryItems.filter((item) =>
@@ -58,7 +58,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
         if (selectedIngredient && selectedMeasurement) {
             const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); // item is already in the list
             if (!alreadyExistingItem) {
-                const newItem: PantryItem = {
+                const newItem: Ingredient = {
                     ingredient_id: selectedIngredient.key,
                     ingredient_name: selectedIngredient.value,
                     ingredient_quantity: quantity,
@@ -113,7 +113,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
     };
 
 
-    const getKeyValue = (item: PantryItem, columnKey: string) => {
+    const getKeyValue = (item: Ingredient, columnKey: string) => {
         switch (columnKey) {
             case "ingredient_name":
                 return item.ingredient_name;

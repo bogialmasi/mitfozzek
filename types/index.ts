@@ -18,14 +18,6 @@ export interface Measurement {
 }
 
 
-export interface PantryItem {
-  ingredient_id: number;
-  ingredient_name: string;
-  ingredient_quantity: number;
-  measurement_id: number;
-  measurement_name: string;
-}
-
 export interface Recipe {
   recipe_id: number;
   recipe_name: string;
