@@ -62,7 +62,6 @@ export default function LoginPage() {
                 <Input
                     value={username} onChange={(e) => setUsername(e.target.value)}
                     isRequired
-                    errorMessage="Adjon meg felhasználónevet!"
                     label="Felhasználónév"
                     labelPlacement="outside"
                     name="username"

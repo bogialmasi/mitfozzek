@@ -24,7 +24,7 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     setLoading(true);
-  
+
     const checkLogin = async () => {
       try {
         const res = await fetch('/api/authcheck', {
@@ -37,7 +37,7 @@ export default function EditProfilePage() {
           setLoading(false);
           return;
         }
-  
+
         // If logged in, fetch user profile
         fetchProfile();
       } catch (err) {
@@ -45,14 +45,14 @@ export default function EditProfilePage() {
         setLoading(false);
       }
     };
-  
+
     const fetchProfile = async () => {
       try {
         const response = await fetch('/api/profile', {
           method: 'GET',
           credentials: 'include',
         });
-  
+
         const data = await response.json();
         if (data.success && data.user_id && data.username) {
           setUsername(data.username);
@@ -67,10 +67,10 @@ export default function EditProfilePage() {
         setLoading(false);
       }
     };
-  
+
     checkLogin();
   }, []);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -194,7 +194,7 @@ export default function EditProfilePage() {
           type="text"
           variant="bordered"
           maxLength={250}
-          errorMessage="Maximum 250 karakter megengedett"
+          errorMessage="A bemutatkozás maximális hossza: 250 karakter"
           isClearable
           onClear={() => setDescription('')}
           isInvalid={description.length >= 250}

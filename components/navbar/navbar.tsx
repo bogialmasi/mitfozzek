@@ -49,8 +49,8 @@ export const Navbar = () => {
 
   const navItems = user
     ? [
-      { label: "Profil", href: "/profile" },
       { label: "Keresés", href: "/search" },
+      { label: "Profilom", href: "/profile" },
       { label: "Bevásárlólistáim", href: "/shopping" },
     ]
     : [
