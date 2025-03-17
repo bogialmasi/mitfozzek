@@ -19,9 +19,9 @@ import { MyUserLoginLogout } from "./user_login_logout";
 import { useAuthentication } from "@/app/context/authenticationContext";
 
 export const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { user, logout } = useAuthentication();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 /*
   const checkLogin = async () => {
     try {

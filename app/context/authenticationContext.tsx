@@ -25,7 +25,7 @@ const UserAuthenticationContext = createContext<UserAuthenticationContextType | 
 // Provider
 export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const isTokenExpired = (token: string): boolean => {
     const decoded: any = jwtDecode(token);

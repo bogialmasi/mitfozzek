@@ -20,11 +20,11 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
   onAddItem,
   onRemove,
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure();
   const [ingredients, setIngredients] = useState<{ key: number; value: string }[]>([]);
   const [measurements, setMeasurements] = useState<{ key: number; value: string }[]>([]);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {

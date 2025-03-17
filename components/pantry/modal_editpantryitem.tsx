@@ -22,9 +22,9 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     const [ingredient, setIngredient] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [measurement, setMeasurement] = useState<number | null>(null);
-    const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [ingredientSearchOpen, setIngredientSearchOpen] = useState<boolean>(true);
+    const [error, setError] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });

@@ -18,7 +18,7 @@ interface MyDeactivateModalProps {
 
 export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, onOpenChange }) => {
     const router = useRouter();
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string>('');
     const { logout } = useAuthentication();
 
     const onConfirm = async () => {

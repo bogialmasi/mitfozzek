@@ -8,11 +8,11 @@ import { Link } from "@heroui/link";
 import { siteConfig } from "@/config/site";
 
 export default function RegisterPage() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordAgain, setPasswordAgain] = useState('');
-    const [email, setEmail] = useState('');
-    const [error, setError] = useState('');
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [passwordAgain, setPasswordAgain] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {

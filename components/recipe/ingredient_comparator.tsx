@@ -1,5 +1,5 @@
 'use client'
-import { Ingredient, PantryItem, Recipe } from "@/types";
+import { Ingredient, Recipe } from "@/types";
 import { HeroCancel, HeroCheck } from "../icons";
 import { useState, useEffect } from "react";
 
@@ -8,7 +8,7 @@ interface MyPantryIngredientComparatorProps {
     ingredient: Ingredient;
 }
 export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparatorProps> = ({ ingredient }) => {
-    const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
+    const [pantryItems, setPantryItems] = useState<Ingredient[]>([]);
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -27,7 +27,7 @@ export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparator
                 }
 
                 const pantryData = await pantryResponse.json();
-                const formattedPantryItems: PantryItem[] = (pantryData.pantry_items || []).map((item: any) => ({
+                const formattedPantryItems: Ingredient[] = (pantryData.pantry_items || []).map((item: any) => ({
                     ingredient_id: item.ingredient_id,
                     ingredient_name: item.ingredient_name,
                     ingredient_quantity: item.ingredient_quantity,

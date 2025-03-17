@@ -22,7 +22,7 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
     const [quantity, setQuantity] = useState<number>(1);
     const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string>('');
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "", });

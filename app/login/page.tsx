@@ -9,11 +9,11 @@ import { useAuthentication } from "../context/authenticationContext";
 import { siteConfig } from "@/config/site";
 
 export default function LoginPage() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const { login } = useAuthentication();
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {

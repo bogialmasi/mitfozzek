@@ -11,8 +11,8 @@ import { siteConfig } from "@/config/site";
 
 export default function ShoppingPage() {
   const [shopping, setShopping] = useState<Shopping[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   const fetchShopping = async () => {
     try {

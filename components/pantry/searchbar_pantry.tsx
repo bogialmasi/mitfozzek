@@ -11,7 +11,7 @@ interface MySearchBarProps {
 }
 
 export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKey, onSelectionChange, isOpen, setIsOpen }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

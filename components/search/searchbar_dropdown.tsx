@@ -14,7 +14,7 @@ interface MySearchBarProps {
 
 
 export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, selectedKeys, onSelectionChange, showSelection }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLUListElement>(null);
     const [isOpen, setIsOpen] = useState(false);

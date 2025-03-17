@@ -19,8 +19,8 @@ import { MyAddToShoppingButton } from '@/components/recipe/button_addtoshoppingl
 export default function RecipePage() {
   const searchParams = useSearchParams();
   const [resultRecipe, setResultRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
   const { user } = useAuthentication();
   const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
 
@@ -37,7 +37,7 @@ export default function RecipePage() {
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
-      setError(null);
+      setError('');
 
       const id = searchParams.get('id');
       if (!id) {

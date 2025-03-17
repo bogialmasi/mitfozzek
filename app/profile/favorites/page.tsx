@@ -12,7 +12,7 @@ export default function FavoritesPage() {
 
   const [favorites, setFavorites] = useState<Recipe[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
 
   // get data from /api/favrecipes
   const fetchFavorites = async () => {

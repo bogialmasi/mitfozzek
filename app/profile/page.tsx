@@ -12,7 +12,7 @@ import { User } from "@/types";
 export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
   const [pantryItems, setPantryItems] = useState<any[]>([]);
 
   const fetchProfile = async () => {
@@ -38,7 +38,7 @@ export default function ProfilePage() {
           email: data.email,
         });
       } else {
-        setError(data.message || 'Az adatok betöltése sikertelen.');
+        setError('Az adatok betöltése sikertelen.');
       }
 
       const pantryResponse = await fetch('/api/pantry', {

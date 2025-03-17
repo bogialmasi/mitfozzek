@@ -15,8 +15,8 @@ interface MyAddToFavoritesProps {
 export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipeId }) => {
     const { user } = useAuthentication();
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
-    const [isAdding, setIsAdding] = useState(false); // To manage loading state
-    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [isAdding, setIsAdding] = useState<boolean>(false); // To manage loading state
+    const [successAlertVisible, setSuccessAlertVisible] = useState<boolean>(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
 
     const [dangerAlertVisible, setDangerAlertVisible] = useState(false);

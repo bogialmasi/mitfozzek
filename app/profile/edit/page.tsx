@@ -11,16 +11,16 @@ import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
 import { siteConfig } from "@/config/site";
 
 export default function EditProfilePage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState(''); // current
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordAgain, setNewPasswordAgain] = useState('');
-  const [email, setEmail] = useState('');
-  const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>(''); // current
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [newPasswordAgain, setNewPasswordAgain] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
