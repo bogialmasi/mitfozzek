@@ -25,6 +25,7 @@ export default function RecipePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
 
   const [headcount, setHeadcount] = useState(1);
+  const [username, setUsername] = useState<string | null>(null);
 
   const [successAlertVisible, setSuccessAlertVisible] = useState(false);
   const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
@@ -53,6 +54,7 @@ export default function RecipePage() {
         const data = await response.json();
         setResultRecipe(data);
         setHeadcount(data.recipe_headcount);
+        setUsername(data.username);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -120,7 +122,12 @@ export default function RecipePage() {
             )}
           </div>
           <div className="justify-center py-8">
+            <p className='text-md'>Elkészítési idő: {resultRecipe.recipe_time} perc</p>
             <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
+            {username &&
+              <p>
+                Feltöltötte: {username}
+              </p>}
           </div>
           <div className="justify-center py-8">
             <Link
