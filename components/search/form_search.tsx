@@ -12,27 +12,27 @@ interface MySearchProps {
         searchQuery: string;
         ingredients: number[];
         dishType: number[];
-        dishCategory: number[];
+        dietCategory: number[];
         dishCuisine: number[];
         onlyPantryIngredients: boolean;
         pantryIngredients: number[];
     }) => void;
     ingredients: any[];
     dishType: any[];
-    dishCategory: any[];
+    dietCategory: any[];
     dishCuisine: any[];
     pantryIngredients: any[];
 }
 
-export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dishCategory, dishCuisine, pantryIngredients }) => {
+export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dietCategory, dishCuisine, pantryIngredients }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { user } = useAuthentication();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState({
         ingredients: new Set<number>(),
         dishType: new Set<number>(),
-        dishCategory: new Set<number>(),
+        dietCategory: new Set<number>(),
         dishCuisine: new Set<number>(),
         pantryIngredient: new Set<number>(),
     });
@@ -50,7 +50,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
             searchQuery,
             ingredients: Array.from(selectedFilters.ingredients),
             dishType: Array.from(selectedFilters.dishType),
-            dishCategory: Array.from(selectedFilters.dishCategory),
+            dietCategory: Array.from(selectedFilters.dietCategory),
             dishCuisine: Array.from(selectedFilters.dishCuisine),
             onlyPantryIngredients: pantryIngredientsOnly,
             pantryIngredients: Array.from(selectedFilters.pantryIngredient),
@@ -63,7 +63,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
         setSelectedFilters({
             ingredients: new Set<number>(),
             dishType: new Set<number>(),
-            dishCategory: new Set<number>(),
+            dietCategory: new Set<number>(),
             dishCuisine: new Set<number>(),
             pantryIngredient: new Set<number>(),
         });
@@ -135,9 +135,9 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                     <div className='flex flex-col space-y-1 w-md'>
                         <p className="text-sm py-2">Keresés ételérzékenységek, speciális diéták alapján</p>
                         <MyDropdown
-                            list={dishCategory}
-                            selectedKeys={selectedFilters.dishCategory}
-                            onSelectionChange={(keys: number[]) => updateFilter('dishCategory', keys)}
+                            list={dietCategory}
+                            selectedKeys={selectedFilters.dietCategory}
+                            onSelectionChange={(keys: number[]) => updateFilter('dietCategory', keys)}
                         />
                     </div>
 

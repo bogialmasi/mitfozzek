@@ -10,7 +10,7 @@ interface SearchFilters {
   searchQuery: string;
   ingredients: number[];
   dishType: number[];
-  dishCategory: number[];
+  dietCategory: number[];
   dishCuisine: number[];
   onlyPantryIngredients: boolean;
   pantryIngredients: number[];
@@ -27,7 +27,7 @@ export default function SearchPage() {
 
   const [ingredients, setIngredients] = useState([]);
   const [dishType, setDishType] = useState([]);
-  const [dishCategory, setDishCategory] = useState([]);
+  const [dietCategory, setDietCategory] = useState([]);
   const [dishCuisine, setDishCuisine] = useState([]);
   const [pantryIngredients, setPantryIngredients] = useState([]);
   // search filters, grouped
@@ -35,7 +35,7 @@ export default function SearchPage() {
     searchQuery: '',
     ingredients: [],
     dishType: [],
-    dishCategory: [],
+    dietCategory: [],
     dishCuisine: [],
     onlyPantryIngredients: false,
     pantryIngredients: [],
@@ -44,8 +44,8 @@ export default function SearchPage() {
 
   // results are an array of recipes
   const [results, setResults] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   const checkLogin = async () => {
     try {
@@ -71,15 +71,15 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchFilters = async () => {
       setLoading(true);
-      setError(null);
+      setError('');
 
 
       try {
         // Fetch all dropdown data
-        const [ingredientsRes, dishTypeRes, dishCategoryRes, dishCuisineRes] = await Promise.all([
+        const [ingredientsRes, dishTypeRes, dietCategoryRes, dishCuisineRes] = await Promise.all([
           fetch('/api/data?type=ingredients'),
           fetch('/api/data?type=dish_type'),
-          fetch('/api/data?type=dish_category'),
+          fetch('/api/data?type=diet_category'),
           fetch('/api/data?type=dish_cuisine')
         ]);
 
@@ -88,7 +88,7 @@ export default function SearchPage() {
           credentials: 'include',
         });
 
-        if (!ingredientsRes.ok || !dishTypeRes.ok || !dishCategoryRes.ok || !dishCuisineRes.ok) {
+        if (!ingredientsRes.ok || !dishTypeRes.ok || !dietCategoryRes.ok || !dishCuisineRes.ok) {
           setError("Hiba a keresési filterek betöltése közben");
         }
 
@@ -99,7 +99,7 @@ export default function SearchPage() {
 
         setIngredients(await ingredientsRes.json());
         setDishType(await dishTypeRes.json());
-        setDishCategory(await dishCategoryRes.json());
+        setDietCategory(await dietCategoryRes.json());
         setDishCuisine(await dishCuisineRes.json());
         setPantryIngredients(await pantryIngredientsRes.json());
 
@@ -118,7 +118,7 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
-      setError(null);
+      setError('');
       const isLoggedIn = await checkLogin(); // Ensure the user is logged in
 
       try {
@@ -127,7 +127,7 @@ export default function SearchPage() {
         filters.ingredients.forEach((id) => params.append('ingredients', id.toString()));
         filters.pantryIngredients.forEach((id) => params.append('ingredients', id.toString())); // pantry ingredients are also ingredients for search
         filters.dishType.forEach((id) => params.append('dishType', id.toString()));
-        filters.dishCategory.forEach((id) => params.append('dishCategory', id.toString()));
+        filters.dietCategory.forEach((id) => params.append('dietCategory', id.toString()));
         filters.dishCuisine.forEach((id) => params.append('dishCuisine', id.toString()));
 
 
@@ -182,7 +182,7 @@ export default function SearchPage() {
           }}
           ingredients={ingredients}
           dishType={dishType}
-          dishCategory={dishCategory}
+          dietCategory={dietCategory}
           dishCuisine={dishCuisine}
           pantryIngredients={pantryIngredients}
         />

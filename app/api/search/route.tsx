@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const searchQuery = searchParams.get('searchQuery') || null;
     const selectedIngredients = searchParams.getAll('ingredients').map(Number);
     const selectedDishType = searchParams.getAll('dishType').map(Number);
-    const selectedDishCategory = searchParams.getAll('dishCategory').map(Number);
+    const selectedDietCategory = searchParams.getAll('dietCategory').map(Number);
     const selectedCuisine = searchParams.getAll('dishCuisine').map(Number);
     const pantryIngredientsOnly = searchParams.get('pantryIngredientsOnly');
     const id = searchParams.get('id');
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
       FROM recipes
       LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
-      LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
       LEFT JOIN pantry ON pantry.ingredient_id = con_recipe_ingredients.ingredient_id
       WHERE NOT EXISTS (
@@ -106,9 +106,9 @@ export async function GET(req: NextRequest) {
         filters.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
         params.push(...selectedDishType);
       }
-      if (selectedDishCategory.length > 0) {
-        filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
-        params.push(...selectedDishCategory);
+      if (selectedDietCategory.length > 0) {
+        filters.push(`con_recipe_diet_category.category_id IN (${selectedDietCategory.map(() => '?').join(',')})`);
+        params.push(...selectedDietCategory);
       }
       if (selectedCuisine.length > 0) {
         filters.push(`con_recipe_cuisine.cuisine_id IN (${selectedCuisine.map(() => '?').join(',')})`);
@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
       FROM recipes
       LEFT JOIN con_recipe_ingredients ON con_recipe_ingredients.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
-      LEFT JOIN con_recipe_category ON con_recipe_category.recipe_id = recipes.recipe_id
+      LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
     `;
 
@@ -178,9 +178,9 @@ export async function GET(req: NextRequest) {
       filters.push(`con_recipe_dish_type.dishtype_id IN (${selectedDishType.map(() => '?').join(',')})`);
       params.push(...selectedDishType);
     }
-    if (selectedDishCategory.length > 0) {
-      filters.push(`con_recipe_category.category_id IN (${selectedDishCategory.map(() => '?').join(',')})`);
-      params.push(...selectedDishCategory);
+    if (selectedDietCategory.length > 0) {
+      filters.push(`con_recipe_diet_category.category_id IN (${selectedDietCategory.map(() => '?').join(',')})`);
+      params.push(...selectedDietCategory);
     }
     if (selectedCuisine.length > 0) {
       filters.push(`con_recipe_cuisine.cuisine_id IN (${selectedCuisine.map(() => '?').join(',')})`);

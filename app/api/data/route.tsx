@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
     case 'dish_type':
       query = 'SELECT dishtype_id AS "key", dishtype_name AS "value" FROM dish_type;';
       break;
-    case 'dish_category':
-      query = 'SELECT category_id AS "key", category_name AS "value" FROM dish_category;';
+    case 'diet_category':
+      query = 'SELECT category_id AS "key", category_name AS "value" FROM diet_category;';
       break;
     case 'dish_cuisine':
       query = 'SELECT cuisine_id AS "key", cuisine_name AS "value" FROM dish_cuisine;';
