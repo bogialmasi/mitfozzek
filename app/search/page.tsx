@@ -48,19 +48,21 @@ export default function SearchPage() {
   const [error, setError] = useState<string>('');
 
   const checkLogin = async () => {
+    console.log('checkLogin')
     try {
       const res = await fetch('/api/authcheck', {
         method: 'GET',
         credentials: 'include', // Use cookies for authentication
       });
       const data = await res.json();
-      if (!data.success) {
-        setError('Bejelentkezés szükséges');
+      if (!res.ok) {
+        console.log('User is not logged in')
         setLoading(false);
         return false;
       }
       return true;
     } catch (err) {
+      console.log('Err')
       setError('Bejelentkezés szükséges');
       setLoading(false);
       return false;
@@ -83,25 +85,29 @@ export default function SearchPage() {
           fetch('/api/data?type=dish_cuisine')
         ]);
 
-        const pantryIngredientsRes = await fetch('/api/data?type=user_pantry', {
-          method: 'GET',
-          credentials: 'include',
-        });
 
         if (!ingredientsRes.ok || !dishTypeRes.ok || !dietCategoryRes.ok || !dishCuisineRes.ok) {
           setError("Hiba a keresési filterek betöltése közben");
         }
 
         const isLoggedIn = await checkLogin();
-        if (isLoggedIn && !pantryIngredientsRes.ok) {
-          setError('A spájz betöltése sikertelen');
+        if (isLoggedIn) {
+          const pantryIngredientsRes = await fetch('/api/data?type=user_pantry', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (!pantryIngredientsRes.ok) {
+            setError('A spájz betöltése sikertelen');
+          } else {
+            setPantryIngredients(await pantryIngredientsRes.json());
+          }
         }
 
         setIngredients(await ingredientsRes.json());
         setDishType(await dishTypeRes.json());
         setDietCategory(await dietCategoryRes.json());
         setDishCuisine(await dishCuisineRes.json());
-        setPantryIngredients(await pantryIngredientsRes.json());
 
       } catch (error) {
         console.error('Hiba a filterek betöltése közben:', error);
@@ -119,7 +125,6 @@ export default function SearchPage() {
     const fetchResults = async () => {
       setLoading(true);
       setError('');
-      const isLoggedIn = await checkLogin(); // Ensure the user is logged in
 
       try {
         const params = new URLSearchParams();
@@ -130,7 +135,7 @@ export default function SearchPage() {
         filters.dietCategory.forEach((id) => params.append('dietCategory', id.toString()));
         filters.dishCuisine.forEach((id) => params.append('dishCuisine', id.toString()));
 
-
+        const isLoggedIn = await checkLogin(); // Ensure the user is logged in
         if (filters.onlyPantryIngredients && isLoggedIn) {
           params.append('pantryIngredientsOnly', 'true');
           const response = await fetch(`/api/search?${params.toString()}`, {
@@ -148,7 +153,10 @@ export default function SearchPage() {
           const data = await response.json();
           setResults(data);
         } else {
-          const response = await fetch(`/api/search?${params.toString()}`);
+          const response = await fetch(`/api/search?${params.toString()}`, {
+            method: 'GET',
+            credentials: isLoggedIn ? 'include' : 'omit',
+          });
           if (!response.ok) {
             if (response.status === 404) {
               setResults([]); // empty result set
