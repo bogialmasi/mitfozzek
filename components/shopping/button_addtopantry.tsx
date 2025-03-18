@@ -21,7 +21,7 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
         const newItem = {
             ingredient_id: ing.ingredient_id,
             ingredient_quantity: ing.ingredient_quantity,
-            measurement_id: ing.measurement_id,
+            ingredient_measurement: ing.ingredient_measurement
         };
 
         console.log(newItem);

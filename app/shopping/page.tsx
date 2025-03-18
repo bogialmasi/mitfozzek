@@ -33,8 +33,7 @@ export default function ShoppingPage() {
             ingredient_id: ingredient.ingredient_id,
             ingredient_name: ingredient.ingredient_name,
             ingredient_quantity: ingredient.ingredient_quantity,
-            measurement_name: ingredient.measurement_name,
-            measurement_id: ingredient.measurement_id,
+            ingredient_measurement: ingredient.ingredient_measurement,
             bought: ingredient.bought
           })) || []
         }));

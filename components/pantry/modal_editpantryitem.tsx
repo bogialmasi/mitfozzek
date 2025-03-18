@@ -2,26 +2,25 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
-import { MyPantryDropdown } from './dropdown_measurements';
+//import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroSettings, HeroTrash } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
+import { Ingredient } from '@/types';
 
 interface MyEditPantryModalProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    ingredients: { key: number; value: string }[];
-    measurements: { key: number; value: string }[];
-    onEditItem: (ingredientId: number, quantity: number, measurementId: number) => void;
+    ingredients: Ingredient[];
+    onEditItem: (ingredientId: number, quantity: number) => void;
     onDeleteItem: (ingredientId: number) => void;
 }
 
 
-export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, onOpenChange, ingredients, measurements, onEditItem, onDeleteItem }) => {
-    const [ingredient, setIngredient] = useState<number | null>(null);
+export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, onOpenChange, ingredients, onEditItem, onDeleteItem }) => {
+    const [ingredient, setIngredient] = useState<Ingredient | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -38,14 +37,13 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
         const fetchIngredient = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/pantry?id=${ingredient}`, {
+                const response = await fetch(`/api/pantry?id=${ingredient.ingredient_id}`, {
                     method: 'GET',
                     credentials: 'include'
                 });
                 const data = await response.json();
                 if (response.ok) {
                     setQuantity(data.ingredient_quantity)
-                    setMeasurement(data.measurement_id)
                 } else {
                     setError(data.message || 'Az elem betöltése sikertelen');
                     return;
@@ -88,11 +86,10 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     };
 
     const handleEditItem = async () => {
-        if (ingredient && quantity > 0 && measurement) {
+        if (ingredient && quantity) {
             const editItem = {
-                ingredient_id: ingredient,
+                ingredient_id: ingredient.ingredient_id,
                 ingredient_quantity: quantity,
-                measurement_id: measurement,
             };
 
             try {
@@ -103,7 +100,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     body: JSON.stringify(editItem),
                 });
                 const response = await res.json();
-                onEditItem(ingredient, quantity, measurement); // updating pantry table
+                onEditItem(ingredient.ingredient_id, quantity); // updating pantry table
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
@@ -139,9 +136,9 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     };
 
     const handleDeleteItem = async () => {
-        if (ingredient && quantity > 0 && measurement) {
+        if (ingredient && quantity > 0) {
             const deleteItem = {
-                ingredient_id: ingredient
+                ingredient_id: ingredient.ingredient_id
             };
 
             try {
@@ -151,7 +148,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     credentials: 'include',
                     body: JSON.stringify(deleteItem),
                 });
-                onDeleteItem(ingredient); // deleting from pantry table
+                onDeleteItem(ingredient.ingredient_id); // deleting from pantry table
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
@@ -183,10 +180,12 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     <ModalBody>
                         <MyPantrySearchBar
                             list={ingredients}
-                            selectedKey={ingredient}
-                            onSelectionChange={setIngredient}
+                            onSelectionChange={(key: number) => {
+                                const selectedIng = ingredients.find(ing => ing.ingredient_id === key) || null;
+                                setIngredient(selectedIng);
+                            }}
                             isOpen={ingredientSearchOpen}
-                            setIsOpen={(e) => setIngredientSearchOpen(e)}
+                            setIsOpen={setIngredientSearchOpen}
                         />
                         <div className='flex items-center justify-center w-full space-x-4'>
                             <Input
@@ -195,11 +194,12 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                                 placeholder="Mennyiség"
                                 type="number"
                                 variant="bordered"
-                            />
-                            <MyPantryDropdown
-                                list={measurements}
-                                selectedKeys={new Set(measurement !== null ? [measurement] : [])}
-                                onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
+                                endContent={
+                                    ingredient && (
+                                        <div className="pointer-events-none flex items-center">
+                                            <span className="text-default-400 text-small">{ingredient.ingredient_measurement}</span>
+                                        </div>)
+                                }
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

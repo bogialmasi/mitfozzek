@@ -11,15 +11,17 @@ import { Ingredient } from "@/types";
 
 interface MyPantryTableProps {
     pantryIngredients: Ingredient[];
+    allIngredients: Ingredient[];
 }
 
 
-export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients: pantryIngredients }) => {
+export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients, allIngredients }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); // add modal form
     const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); // edit modal form
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [pantryItems, setPantryItems] = useState<Ingredient[]>(pantryIngredients);
+    const [ingredients, setIngredients] = useState<Ingredient[]>(allIngredients);
     const [error, setError] = useState<string>('');
 
     const filteredPantryItems = pantryItems.filter((item) =>
@@ -27,43 +29,17 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
     );
 
 
-    const [ingredients, setIngredients] = useState<{ key: number; value: string }[]>([]);
-    const [measurements, setMeasurements] = useState<{ key: number; value: string }[]>([]);
+    const handleAddItem = (ingredientId: number, quantity: number) => {
+        const selectedIngredient = ingredients.find((ing) => ing.ingredient_id === ingredientId);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const [ingredientsRes, measurementsRes] = await Promise.all([
-                    fetch('/api/data?type=ingredients'),
-                    fetch('/api/data?type=measurement')
-                ]);
-                setIngredients(await ingredientsRes.json());
-                setMeasurements(await measurementsRes.json());
-            } catch (error) {
-                console.error('Dropdown adatok betöltése sikertelen:', error);
-            }
-            finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
-
-    const handleAddItem = (ingredientId: number, quantity: number, measurementId: number) => {
-        console.log('handleAddItem')
-        const selectedIngredient = ingredients.find((ing) => ing.key === ingredientId);
-        const selectedMeasurement = measurements.find((measure) => measure.key === measurementId);
-
-        if (selectedIngredient && selectedMeasurement) {
+        if (selectedIngredient) {
             const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); // item is already in the list
             if (!alreadyExistingItem) {
                 const newItem: Ingredient = {
-                    ingredient_id: selectedIngredient.key,
-                    ingredient_name: selectedIngredient.value,
+                    ingredient_id: selectedIngredient.ingredient_id,
+                    ingredient_name: selectedIngredient.ingredient_name,
                     ingredient_quantity: quantity,
-                    measurement_id: selectedMeasurement.key,
-                    measurement_name: selectedMeasurement.value,
+                    ingredient_measurement: selectedIngredient.ingredient_measurement
                 };
                 try {
                     setPantryItems((prev) => [...prev, newItem]);
@@ -76,15 +52,14 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
         }
     };
 
-    const handleEditItem = (ingredientId: number, quantity: number, measurementId: number) => {
-        console.log('handleEditItem')
+    const handleEditItem = (ingredientId: number, quantity: number) => {
         try {
             const ingredient = pantryItems.find(item => item.ingredient_id === ingredientId);
             if (ingredient) {
                 setPantryItems((prevItems) =>
                     prevItems.map((item) =>
                         item.ingredient_id === ingredientId
-                            ? { ...item, ingredient_quantity: quantity, measurement_id: measurementId }
+                            ? { ...item, ingredient_quantity: quantity }
                             : item
                     )
 
@@ -99,7 +74,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
 
 
     const handleDeleteItem = (ingredientId: number) => {
-        console.log('handleDeleteItem')
         try {
             const ingredient = pantryItems.find(item => item.ingredient_id === ingredientId);
             if (ingredient) {
@@ -120,11 +94,16 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
             case "ingredient_quantity":
                 return item.ingredient_quantity;
             case "measurement_name":
-                return item.measurement_name;
+                return item.ingredient_measurement;
             default:
                 return '';
         }
     };
+
+    useEffect(() => {
+        console.log("in table: Pantry item:", pantryItems[0]);
+        console.log("in table: Ingredient:", ingredients[0]);
+      }, [pantryItems, ingredients])
 
     if (loading) return (
         <div>
@@ -172,15 +151,10 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients:
                         <HeroPlus /> Hozzáadás
                     </Button>
                     <MyAddPantryModal isOpen={isAddOpen} onOpenChange={onAddOpenChange}
-                        ingredients={ingredients} measurements={measurements} // all ingredients
+                        ingredients={ingredients} // all ingredients
                         onAddItem={handleAddItem} />
                     <MyEditPantryModal isOpen={isEditOpen} onOpenChange={onEditOpenChange}
-                        ingredients={ // only the ingredients from pantry, formatted
-                            pantryItems.map(item => ({
-                                key: item.ingredient_id,
-                                value: item.ingredient_name,
-                            }))
-                        } measurements={measurements}
+                        ingredients={pantryItems}
                         onEditItem={handleEditItem} onDeleteItem={handleDeleteItem}
                     />
                 </div>

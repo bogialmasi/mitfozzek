@@ -2,25 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
-import { MyPantryDropdown } from './dropdown_measurements';
+// import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroPlus } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
+import { Ingredient } from '@/types';
 
 interface MyAddPantryModalProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    ingredients: { key: number; value: string }[];
-    measurements: { key: number; value: string }[];
-    onAddItem: (ingredientId: number, quantity: number, measurementId: number) => void;
+    ingredients: Ingredient[];
+    onAddItem: (ingredientId: number, quantity: number) => void;
 }
 
-export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOpenChange, ingredients, measurements, onAddItem }) => {
-    const [ingredient, setIngredient] = useState<number | null>(null);
+export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOpenChange, ingredients, onAddItem }) => {
+    const [ingredient, setIngredient] = useState<Ingredient | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [measurement, setMeasurement] = useState<number | null>(null);
-    const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
+    const [ingredientSearchOpen, setIngredientSearchOpen] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
@@ -41,11 +40,11 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
     };
 
     const handleAddItem = async () => {
-        if (ingredient && quantity > 0 && measurement) {
+        if (ingredient && quantity > 0) {
             const newItem = {
-                ingredient_id: ingredient,
+                ingredient_id: ingredient.ingredient_id, 
                 ingredient_quantity: quantity,
-                measurement_id: measurement,
+                ingredient_measurement: ingredient.ingredient_measurement
             };
 
             try {
@@ -55,7 +54,7 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                     body: JSON.stringify(newItem),
                 });
                 const response = await res.json();
-                onAddItem(ingredient, quantity, measurement); // updating pantry table
+                onAddItem(ingredient.ingredient_id, quantity); // updating pantry table
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
@@ -82,7 +81,6 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
         }
     };
 
-
     return (
         <div>
             <Modal isOpen={isOpen} placement="top-center"
@@ -94,10 +92,13 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                     <ModalBody>
                         <MyPantrySearchBar
                             list={ingredients}
-                            selectedKey={ingredient}
-                            onSelectionChange={setIngredient}
+                            onSelectionChange={(key: number) => {
+                                const selectedIng = ingredients.find(ing => ing.ingredient_id === key) || null;
+                                console.log('Selected:', selectedIng);
+                                setIngredient(selectedIng);
+                            }}
                             isOpen={ingredientSearchOpen}
-                            setIsOpen={(e) => setIngredientSearchOpen(e)}
+                            setIsOpen={setIngredientSearchOpen}
                         />
                         <div className='flex items-center justify-center w-full space-x-4'>
                             <Input
@@ -106,11 +107,12 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                                 placeholder="Mennyiség"
                                 type="number"
                                 variant="bordered"
-                            />
-                            <MyPantryDropdown
-                                list={measurements}
-                                selectedKeys={new Set(measurement !== null ? [measurement] : [])}
-                                onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
+                                endContent={
+                                    ingredient && (
+                                        <div className="pointer-events-none flex items-center">
+                                            <span className="text-default-400 text-small">{ingredient.ingredient_measurement}</span>
+                                        </div>)
+                                }
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

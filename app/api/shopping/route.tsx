@@ -44,12 +44,10 @@ export async function GET(req: NextRequest) {
             // Get the ingredients for this shopping list
             const [ingredients] = await con.query<RowDataPacket[]>(
                 `SELECT ingredients.ingredient_id, ingredients.ingredient_name, 
-                    con_shopping_ingredients.ingredient_quantity, 
-                    con_shopping_ingredients.measurement_id, measurements.measurement_name,
+                    con_shopping_ingredients.ingredient_quantity, ingredients.ingredient_measurement, 
                     bought
                 FROM con_shopping_ingredients
                 JOIN ingredients ON con_shopping_ingredients.ingredient_id = ingredients.ingredient_id
-                JOIN measurements ON con_shopping_ingredients.measurement_id = measurements.measurement_id
                 WHERE con_shopping_ingredients.shopping_id = ?`,
                 [shoppingId]
             );
@@ -64,8 +62,7 @@ export async function GET(req: NextRequest) {
                     ingredient_id: ingredient.ingredient_id,
                     ingredient_name: ingredient.ingredient_name,
                     ingredient_quantity: ingredient.ingredient_quantity,
-                    measurement_id: ingredient.measurement_id,
-                    measurement_name: ingredient.measurement_name,
+                    ingredient_measurement: ingredient.ingredient_measurement,
                     bought: !!ingredient.bought // check if 1 or 0
                 }))
             });
@@ -129,8 +126,9 @@ export async function POST(req: NextRequest) {
             const recipe_headcount = recipeHeadcount[0].recipe_headcount;
 
             const [recipeIngredients] = await pool.query<RowDataPacket[]>(
-                `SELECT ingredient_id, ingredient_quantity, measurement_id
+                `SELECT ingredient_id, ingredient_quantity, ingredient_measurement
                 FROM con_recipe_ingredients
+                JOIN ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
                 WHERE recipe_id = ?`,
                 [recipe_id]
             );
@@ -144,7 +142,7 @@ export async function POST(req: NextRequest) {
             ingredientsList = recipeIngredients.map((ingredient) => ({
                 ingredient_id: ingredient.ingredient_id,
                 ingredient_quantity: (ingredient.ingredient_quantity * headcount/ recipe_headcount),
-                measurement_id: ingredient.measurement_id
+                ingredient_measurement: ingredient.ingredient_measurement
             }));
 
             if (add_all === "false") {
@@ -193,27 +191,23 @@ export async function POST(req: NextRequest) {
 
             // Insert ingredients
             for (const ingredient of ingredientsList) {
-                const { ingredient_id, ingredient_quantity, measurement_id } = ingredient;
+                const { ingredient_id, ingredient_quantity} = ingredient;
 
                 const [existingIngredient] = await con.query<RowDataPacket[]>(
                     `SELECT * FROM ingredients WHERE ingredient_id = ?`,
                     [ingredient_id]
                 );
-                const [existingMeasurement] = await con.query<RowDataPacket[]>(
-                    `SELECT * FROM measurements WHERE measurement_id = ?`,
-                    [measurement_id]
-                );
 
-                if (existingIngredient.length === 0 || existingMeasurement.length === 0) {
+                if (existingIngredient.length === 0) {
                     await con.rollback();
-                    return NextResponse.json({ success: false, message: 'Invalid ingredient or measurement' }, { status: 400 });
+                    return NextResponse.json({ success: false, message: 'Invalid ingredient' }, { status: 400 });
                 }
 
                 // Insert the ingredients
                 await con.query(
-                    `INSERT INTO con_shopping_ingredients (shopping_id, ingredient_id, ingredient_quantity, measurement_id) 
-                VALUES (?, ?, ?, ?)`,
-                    [shoppingId, ingredient_id, ingredient_quantity, measurement_id]
+                    `INSERT INTO con_shopping_ingredients (shopping_id, ingredient_id, ingredient_quantity) 
+                VALUES (?, ?, ?)`,
+                    [shoppingId, ingredient_id, ingredient_quantity]
                 );
             }
         } else {

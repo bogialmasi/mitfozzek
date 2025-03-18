@@ -55,11 +55,9 @@ export async function GET(req: NextRequest) {
                     pantry.ingredient_id,
                     ingredients.ingredient_name AS ingredient_name,
                     pantry.ingredient_quantity,
-                    measurements.measurement_id,
-                    measurements.measurement_name AS measurement_name
+                    ingredients.ingredient_measurement
                 FROM pantry
                 JOIN ingredients ON pantry.ingredient_id = ingredients.ingredient_id
-                JOIN measurements ON pantry.measurement_id = measurements.measurement_id
                 WHERE pantry.pantry_id = ? AND pantry.ingredient_id = ?`,
                 [pantryId, ingreidentId]
             );
@@ -75,8 +73,7 @@ export async function GET(req: NextRequest) {
                 ingredient_id: item.ingredient_id,
                 ingredient_name: item.ingredient_name,
                 ingredient_quantity: item.ingredient_quantity,
-                measurement_id: item.measurement_id,
-                measurement_name: item.measurement_name
+                ingredient_measurement: item.ingredient_measurement
             }));
 
             return NextResponse.json(formattedIngredient[0]); // only one ingredient
@@ -94,11 +91,9 @@ export async function GET(req: NextRequest) {
                 pantry.ingredient_id,
                 ingredients.ingredient_name AS ingredient_name,
                 pantry.ingredient_quantity,
-                measurements.measurement_id,
-                measurements.measurement_name AS measurement_name
+                ingredients.ingredient_measurement
             FROM pantry
             JOIN ingredients ON pantry.ingredient_id = ingredients.ingredient_id
-            JOIN measurements ON pantry.measurement_id = measurements.measurement_id
             WHERE pantry.pantry_id = ?`,
             [pantryId]
         );
@@ -113,8 +108,7 @@ export async function GET(req: NextRequest) {
             ingredient_id: item.ingredient_id,
             ingredient_name: item.ingredient_name,
             ingredient_quantity: item.ingredient_quantity,
-            measurement_id: item.measurement_id,
-            measurement_name: item.measurement_name
+            ingredient_measurement: item.ingredient_measurement
         }));
 
         return NextResponse.json({ pantry_items: formattedPantryItems });
@@ -156,10 +150,9 @@ export async function POST(req: NextRequest) {
     }
     try {
 
-        const { ingredient_id, ingredient_quantity, measurement_id } = await req.json();
-
+        const { ingredient_id, ingredient_quantity } = await req.json();
         // cannot insert without all three fields being filled in
-        if (!ingredient_id || !ingredient_quantity || !measurement_id) {
+        if (!ingredient_id || !ingredient_quantity) {
             return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
         }
 
@@ -175,8 +168,8 @@ export async function POST(req: NextRequest) {
         await con.beginTransaction();
 
         await con.query<ResultSetHeader[]>(
-            "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity, measurement_id) VALUES (?, ?, ?, ?)",
-            [userId, ingredient_id, ingredient_quantity, measurement_id]
+            "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)",
+            [userId, ingredient_id, ingredient_quantity]
         );
 
         await con.commit();
@@ -219,41 +212,16 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        const { ingredient_id, ingredient_quantity, measurement_id } = await req.json();
+        const { ingredient_id, ingredient_quantity } = await req.json();
 
         await con.beginTransaction();
-
-        let query = `UPDATE pantry SET `;
-        const conditions = [];
-        const params = [];
-
-        if (ingredient_id) {
-            // ingredient itself can't be updated, only quantity or measurement
-            if (ingredient_quantity !== undefined) {
-                if (ingredient_quantity > 0) {
-                    conditions.push('ingredient_quantity = ?');
-                    params.push(ingredient_quantity);
-                }
-                else if (ingredient_quantity === 0) {
-                    return NextResponse.json({ success: false, message: 'Quantity cannot be zero' }, { status: 400 })
-                }
-            }
-            if (measurement_id) {
-                conditions.push('measurement_id = ?');
-                params.push(measurement_id);
-            }
+        let result;
+        if (ingredient_id !== undefined && ingredient_quantity !== undefined) {
+            const [queryResult] = await con.query<ResultSetHeader[]>(`UPDATE pantry SET ingredient_quantity = ? WHERE pantry_id = ? AND ingredient_id = ?`, [ingredient_quantity, userId, ingredient_id]);
+            result = queryResult;
+        } else {
+            return NextResponse.json({ success: false, message: 'Invalid query' }, { status: 400 });
         }
-
-
-        if (conditions.length === 0) {
-            return NextResponse.json({ success: false, message: 'No data to update' }, { status: 400 });
-        }
-
-        query += conditions.join(', ') + " WHERE pantry_id = ? AND ingredient_id = ?"
-        params.push(userId); // pantry_id is same number as user_id
-        params.push(ingredient_id);
-
-        const [result] = await con.query<ResultSetHeader[]>(query, params);
 
         await con.commit();
         if (result.length === 0) {

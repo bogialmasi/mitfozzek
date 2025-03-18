@@ -134,7 +134,7 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
                                 value={String(ingredient.ingredient_id)}
                                 key={index}
                                 checked={selectedIngredients.includes(String(ingredient.ingredient_id))}>
-                                {ingredient.ingredient_name}, {ingredient.ingredient_quantity} {ingredient.measurement_name}
+                                {ingredient.ingredient_name}, {ingredient.ingredient_quantity} {ingredient.ingredient_measurement}
                             </Checkbox>
                         ))}
                     </CheckboxGroup>

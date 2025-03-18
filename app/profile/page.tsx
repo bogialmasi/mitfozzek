@@ -7,13 +7,15 @@ import { useEffect, useState } from "react";
 import { MyPantryTable } from "@/components/pantry/table_pantry";
 import { HeroFilledHeart, HeroPlus, HeroSettings, HeroShoppingCart, HeroUser } from "@/components/icons";
 import { Spinner } from "@heroui/spinner";
-import { User } from "@/types";
+import { Ingredient, User } from "@/types";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [pantryItems, setPantryItems] = useState<any[]>([]);
+  const [pantryItems, setPantryItems] = useState<Ingredient[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([])
+
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -62,6 +64,29 @@ export default function ProfilePage() {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const ingredientsRes = await fetch('/api/data?type=pantry_ingredients');
+            const ingredients = await ingredientsRes.json();
+
+            const mappedIngredients = ingredients.map((ingredient: Ingredient) => ({
+                ingredient_id: ingredient.ingredient_id,  
+                ingredient_name: ingredient.ingredient_name,  
+                ingredient_measurement: ingredient.ingredient_measurement,  
+            }));
+
+            setIngredients(mappedIngredients);
+      } catch (error) {
+        console.error('Dropdown adatok betöltése sikertelen:', error);
+      }
+      finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -84,6 +109,12 @@ export default function ProfilePage() {
     };
     checkLogin();
   }, [])
+
+  useEffect(() => {
+    console.log("Pantry item:", pantryItems[0]);
+    console.log("Ingredient:", ingredients[0]);
+  }, [pantryItems, ingredients])
+
 
   if (loading) return (
     <div>
@@ -150,7 +181,7 @@ export default function ProfilePage() {
             </div>
             {/* Right Side*/}
             <div className=" col-span-12 md:col-span-6 flex flex-col gap-4 py-6">
-              <MyPantryTable pantryIngredients={pantryItems} />
+              <MyPantryTable pantryIngredients={pantryItems} allIngredients={ingredients} />
             </div>
           </section>
         </section>

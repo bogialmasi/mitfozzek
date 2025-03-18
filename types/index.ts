@@ -8,13 +8,7 @@ export interface Ingredient {
   ingredient_id: number;
   ingredient_name: string;
   ingredient_quantity: number;
-  measurement_id: number;
-  measurement_name: string;
-}
-
-export interface Measurement {
-  measurement_id: number;
-  measurement_name: string;
+  ingredient_measurement: string;
 }
 
 

@@ -1,3 +1,4 @@
+/*
 'use client'
 import React, { useMemo } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
@@ -21,7 +22,6 @@ export const MyPantryDropdown: React.FC<MyPantryDropdownProps> = ({ list, select
     onSelectionChange([key]);  // select the key as an array
   };
 
-  /* Same as dropdown searchfilters but single selection! */
   return (
     <div className='w-full'>
       <Dropdown>
@@ -50,3 +50,4 @@ export const MyPantryDropdown: React.FC<MyPantryDropdownProps> = ({ list, select
     </div>
   );
 };
+*/

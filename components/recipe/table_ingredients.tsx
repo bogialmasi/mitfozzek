@@ -85,7 +85,7 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
             <TableRow key={ingredient.ingredient_id}>
               <TableCell>{ingredient.ingredient_name}</TableCell>
               <TableCell>
-                {ingredient.ingredient_quantity} {ingredient.measurement_name}
+                {ingredient.ingredient_quantity} {ingredient.ingredient_measurement}
               </TableCell>
               <TableCell>
                 <MyPantryIngredientComparator ingredient={ingredient} />

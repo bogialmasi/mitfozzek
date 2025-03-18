@@ -31,7 +31,10 @@ export async function GET(req: NextRequest) {
   let params: any[] = [];
   switch (type) {
     case 'ingredients':
-      query = 'SELECT ingredient_id AS "key", ingredient_name AS "value" FROM ingredients;';
+      query = 'SELECT ingredient_id AS "key", ingredient_name AS "value", ingredient_measurement AS "measurement" FROM ingredients;';
+      break;
+      case 'pantry_ingredients':
+      query = 'SELECT ingredient_id, ingredient_name, ingredient_measurement FROM ingredients;';
       break;
     case 'dish_type':
       query = 'SELECT dishtype_id AS "key", dishtype_name AS "value" FROM dish_type;';

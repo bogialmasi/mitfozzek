@@ -31,8 +31,7 @@ export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparator
                     ingredient_id: item.ingredient_id,
                     ingredient_name: item.ingredient_name,
                     ingredient_quantity: item.ingredient_quantity,
-                    measurement_id: item.measurement_id,
-                    measurement_name: item.measurement_name
+                    ingredient_measurement: item.ingredient_measurement
                 }));
                 setPantryItems(formattedPantryItems);
             } catch (err) {

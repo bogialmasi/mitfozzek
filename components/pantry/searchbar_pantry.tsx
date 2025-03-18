@@ -1,38 +1,41 @@
 'use client'
+import { Ingredient } from "@/types";
 import { Input } from "@heroui/input";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 interface MySearchBarProps {
-    list: { key: number; value: string }[];
-    selectedKey: number | null;
+    list: Ingredient[];
     onSelectionChange: (key: number) => void;
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
 }
 
-export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKey, onSelectionChange, isOpen, setIsOpen }) => {
+export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectionChange, isOpen, setIsOpen }) => {
     const [searchQuery, setSearchQuery] = useState<string>('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);
         if (value.trim()) {
-            setIsOpen(true); // Open when typing
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
         }
     };
 
     const filteredList = useMemo(() => {
-            if (!searchQuery.trim()) return [];
-            return list.filter((item) =>
-                item.value.toLowerCase().startsWith(searchQuery.toLowerCase())
-            )
-                .slice(0, 6); // Limit to the first 6 items
-        }, [searchQuery, list]);
+        if (!searchQuery.trim()) return [];
+        return list
+            .filter((item) => item.ingredient_name && item.ingredient_name.toLowerCase().startsWith(searchQuery.toLowerCase()))
+            .slice(0, 6); 
+    }, [searchQuery, list]);
+    
+
 
     const handleSelectItem = (key: number) => {
-        const selectedItem = list.find(item => item.key === key);
+        const selectedItem = list.find(item => item.ingredient_id === key);
         if (selectedItem) {
-            setSearchQuery(selectedItem.value);
+            setSearchQuery(selectedItem.ingredient_name);
         }
         onSelectionChange(key);
         setIsOpen(false);
@@ -53,11 +56,11 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, selectedKe
                     <ul className="absolute z-50 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
                             <li
-                                key={item.key}
-                                onClick={() => handleSelectItem(item.key)}
+                                key={item.ingredient_id}
+                                onClick={() => handleSelectItem(item.ingredient_id)}
                                 className="p-2 cursor-pointer bg-white dark:bg-black"
                             >
-                                {item.value}
+                                {item.ingredient_name}
                             </li>
                         ))}
                     </ul>
