@@ -6,21 +6,20 @@ import { HeroCancel, HeroPlus } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
-import { MyPantryDropdown } from '../pantry/dropdown_measurements';
+// import { MyPantryDropdown } from '../pantry/dropdown_measurements';
 import { MyPantrySearchBar } from '../pantry/searchbar_pantry';
+import { Ingredient } from '@/types';
 
 interface MyAddNewRecipeIngredientsModalProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    ingredients: { key: number; value: string }[];
-    measurements: { key: number; value: string }[];
-    onAddItem: (ingredientId: number, quantity: number, measurementId: number) => void;
+    ingredients: Ingredient[];
+    onAddItem: (ingredientId: number, quantity: number) => void;
 }
 
-export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModalProps> = ({ isOpen, onOpenChange, ingredients, measurements, onAddItem }) => {
-    const [ingredient, setIngredient] = useState<number | null>(null);
+export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModalProps> = ({ isOpen, onOpenChange, ingredients, onAddItem }) => {
+    const [ingredient, setIngredient] = useState<Ingredient | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [measurement, setMeasurement] = useState<number | null>(null);
     const [ingredientSearchOpen, setIngredientSearchOpen] = useState(true);
     const [error, setError] = useState<string>('');
 
@@ -42,7 +41,7 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
     };
 
     const handleAddItem = () => {
-        if (!ingredient || !measurement || !quantity) {
+        if (!ingredient || !quantity) {
             setError('Minden mező kitöltése kötelező');
             return;
         }
@@ -50,13 +49,12 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
             setError('A mennyiségnek 0-nál nagyobbnak kell lennie');
             return;
         }
-        if (ingredient && quantity > 0 && measurement) {
+        if (ingredient && quantity > 0) {
             const newItem = {
-                ingredient_id: ingredient,
-                ingredient_quantity: quantity,
-                measurement_id: measurement,
+                ingredient_id: ingredient.ingredient_id,
+                ingredient_quantity: quantity
             };
-            onAddItem(ingredient, quantity, measurement);
+            onAddItem(newItem.ingredient_id, newItem.ingredient_quantity);
             setError('');
             onOpenChange(false);
             setSuccessAlertContent({
@@ -65,8 +63,6 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
             });
             setSuccessAlertVisible(true);
         }
-
-
     };
 
     return (
@@ -80,8 +76,11 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
                     <ModalBody>
                         <MyPantrySearchBar
                             list={ingredients}
-                            selectedKey={ingredient}
-                            onSelectionChange={setIngredient}
+                            onSelectionChange={(key: number) => {
+                                const selectedIng = ingredients.find(ing => ing.ingredient_id === key) || null;
+                                console.log('Selected:', selectedIng);
+                                setIngredient(selectedIng);
+                            }}
                             isOpen={ingredientSearchOpen}
                             setIsOpen={(e) => setIngredientSearchOpen(e)}
                         />
@@ -92,11 +91,12 @@ export const MyAddRecipeIngredientsModal: React.FC<MyAddNewRecipeIngredientsModa
                                 placeholder="Mennyiség"
                                 type="number"
                                 variant="bordered"
-                            />
-                            <MyPantryDropdown
-                                list={measurements}
-                                selectedKeys={new Set(measurement !== null ? [measurement] : [])}
-                                onSelectionChange={(keys) => setMeasurement(keys ? keys[0] : null)}  // only take the first element or null
+                                endContent={
+                                    ingredient && (
+                                        <div className="pointer-events-none flex items-center">
+                                            <span className="text-default-400 text-small">{ingredient.ingredient_measurement}</span>
+                                        </div>)
+                                }
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

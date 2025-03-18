@@ -22,20 +22,26 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure();
-  const [ingredients, setIngredients] = useState<{ key: number; value: string }[]>([]);
-  const [measurements, setMeasurements] = useState<{ key: number; value: string }[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [ingredientsRes, measurementsRes] = await Promise.all([
+        const [ingredientsRes] = await Promise.all([
           fetch("/api/data?type=ingredients"),
-          fetch("/api/data?type=measurement"),
         ]);
-        setIngredients(await ingredientsRes.json());
-        setMeasurements(await measurementsRes.json());
+        const ingredientsData = await ingredientsRes.json();
+
+        const mappedIngredients = ingredientsData.map((ingredient: { key: number, value: string, measurement: string }) => ({
+          ingredient_id: ingredient.key,
+          ingredient_name: ingredient.value,
+          ingredient_quantity: 0,  // quantity comes later
+          ingredient_measurement: ingredient.measurement,
+        }));
+
+        setIngredients(mappedIngredients);
       } catch (error) {
         console.error("Dropdown data loading failed:", error);
       } finally {
@@ -45,17 +51,15 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
     fetchData();
   }, []);
 
-  const handleAddIngredient = (ingredientId: number, quantity: number, measurementId: number) => {
-    const selectedIngredient = ingredients.find((ing) => ing.key === ingredientId);
-    const selectedMeasurement = measurements.find((measure) => measure.key === measurementId);
+  const handleAddIngredient = (ingredientId: number, quantity: number) => {
+    const selectedIngredient = ingredients.find((ing) => ing.ingredient_id === ingredientId);
 
-    if (selectedIngredient && selectedMeasurement) {
+    if (selectedIngredient) {
       const newItem: Ingredient = {
-        ingredient_id: selectedIngredient.key,
-        ingredient_name: selectedIngredient.value,
+        ingredient_id: selectedIngredient.ingredient_id,
+        ingredient_name: selectedIngredient.ingredient_name,
         ingredient_quantity: quantity,
-        measurement_id: selectedMeasurement.key,
-        measurement_name: selectedMeasurement.value,
+        ingredient_measurement: selectedIngredient.ingredient_measurement
       };
 
       onAddItem(newItem); // add ingredient to table
@@ -73,7 +77,7 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
       case "ingredient_quantity":
         return item.ingredient_quantity;
       case "measurement_name":
-        return item.measurement_name;
+        return item.ingredient_measurement;
       default:
         return "";
     }
@@ -131,7 +135,6 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
           isOpen={isAddOpen}
           onOpenChange={onAddOpenChange}
           ingredients={ingredients}
-          measurements={measurements}
           onAddItem={handleAddIngredient}
         />
       </div>
