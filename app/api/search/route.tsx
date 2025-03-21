@@ -6,6 +6,8 @@ import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+// TODO check that the recipes have approved status in the con_recipe_status?
+
 export async function GET(req: NextRequest) {
   let con: PoolConnection | undefined;
   con = await pool.getConnection();
@@ -32,7 +34,8 @@ export async function GET(req: NextRequest) {
       const [recipes] = await con.query(
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
-        WHERE recipe_id = ? `, [recipeId]);
+        JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
+        WHERE recipe_id = ? AND con_recipe_status.status = "approved"`, [recipeId]);
       const recipeResults = recipes as RowDataPacket[];
 
       if (recipeResults.length === 0) {
@@ -85,7 +88,9 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
       LEFT JOIN pantry ON pantry.ingredient_id = con_recipe_ingredients.ingredient_id
-      WHERE NOT EXISTS (
+      JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
+      WHERE con_recipe_status.status = "approved" 
+      AND NOT EXISTS (
             SELECT 1 FROM con_recipe_ingredients
             WHERE con_recipe_ingredients.recipe_id = recipes.recipe_id
             AND con_recipe_ingredients.ingredient_id NOT IN (
@@ -159,6 +164,8 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
+      JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
+      WHERE con_recipe_status.status = "approved"
     `;
 
     const filters = [];
@@ -186,7 +193,7 @@ export async function GET(req: NextRequest) {
       params.push(...selectedCuisine);
     }
     if (filters.length > 0) {
-      query += ' WHERE ' + filters.join(' AND ');
+      query += ' AND ' + filters.join(' AND ');
     }
 
     const [recipes] = await con.query<RowDataPacket[]>(query, params);
