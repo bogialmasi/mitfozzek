@@ -37,13 +37,14 @@ export async function POST(req: NextRequest) {
         }
 
         if (!newRecipe.recipe_name || !newRecipe.recipe_description || !newRecipe.ingredients || newRecipe.ingredients.length === 0) {
-            return NextResponse.json({ error: "Missing data" }, { status: 400 });
+            return NextResponse.json({ error: "Missing recipe data" }, { status: 400 });
         }
 
         await con.beginTransaction();
 
 
-        const recipeUserId = addUserId ? userId : null;
+        const recipeUserId = addUserId ? userId : null; 
+
         //Insert into the database
         const [result] = await con.query<ResultSetHeader>(
             'INSERT INTO recipes (recipe_name, recipe_description, recipe_time, recipe_headcount, source_user_id) VALUES (?, ?, ?, ?, ?)',
@@ -54,12 +55,16 @@ export async function POST(req: NextRequest) {
 
         // ingredients
         if (resultId != null) {
+            // first only add to pending, admin will approve of it
+            await con.query(`INSERT INTO con_recipe_status (recipe_id, status, changed) VALUES (?, "pending", NOW())`, [resultId]);
+
+
             const ingredients = newRecipe.ingredients as Ingredient[]
             if (Array.isArray(ingredients) && newRecipe.ingredients.length > 0) {
                 const recipeIngredients = ingredients.map(({ ingredient_id, ingredient_quantity}) =>
                     con.query(
                         `INSERT INTO con_recipe_ingredients (recipe_id, ingredient_id, ingredient_quantity) 
-                         VALUES (?, ?, ?, ?)`,
+                         VALUES (?, ?, ?)`,
                         [resultId, ingredient_id, ingredient_quantity]
                     )
                 );
