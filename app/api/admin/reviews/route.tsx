@@ -2,12 +2,14 @@ import pool from "@/lib/db";
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";
 import * as jwt from 'jsonwebtoken';
+import { isAdmin } from "@/middleware/admin";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // TODO check that userId is adminId!
 
 export async function GET(req: NextRequest) {
+
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
     if (!con) {
@@ -111,6 +113,7 @@ export async function GET(req: NextRequest) {
 
 
 export async function PATCH(req: NextRequest) {
+
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
     if (!con) {
@@ -132,11 +135,11 @@ export async function PATCH(req: NextRequest) {
         }
 
         const { recipe_id, status } = await req.json();
-        
+
         if (!recipe_id || !status) {
             return NextResponse.json({ success: false, message: 'Missing recipe_id or status' }, { status: 400 });
         }
-        
+
         con.beginTransaction();
 
         const [result] = await con.query<ResultSetHeader[]>(`UPDATE con_recipe_status SET status = ? WHERE recipe_id = ?`,
