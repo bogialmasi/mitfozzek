@@ -61,51 +61,6 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
-  /*try {
-    
-    const response = await fetch('/api/profile', {
-      method: 'GET',
-      credentials: 'include'
-    });
-
-    if (!response.ok) {
-      setError(`Hiba: ${response.statusText} (${response.status})`);
-      return;
-    }
-
-    const data = await response.json();
-
-    if (data.success && data.user_id && data.username) {
-      setProfile({
-        userId: data.user_id,
-        username: data.username,
-        userDescription: data.user_desc || 'Nincs megadva leírás.',
-        email: data.email,
-      });
-    } else {
-      setError('Az adatok betöltése sikertelen.');
-    }
-
-    const pantryResponse = await fetch('/api/pantry', {
-      method: 'GET',
-      credentials: 'include'
-    });
-
-    if (!pantryResponse.ok) {
-      setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
-      return;
-    }
-
-    const pantryData = await pantryResponse.json();
-    console.log("Fetched Pantry Data:", pantryData);
-    setPantryItems(pantryData.pantry_items || []);
-  } catch (err) {
-    console.error('Hiba a spájz feltöltése közben:', err);
-    setError('Something went wrong.');
-  }
-  finally {
-    setLoading(false);
-  }*/
 
   useEffect(() => {
     const fetchData = async () => {
