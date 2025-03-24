@@ -97,7 +97,6 @@ export default function RecipePage() {
         {/* Left Side: 40% */}
         <div className="col-span-12 md:col-span-5 flex flex-col items-center gap-4 py-6 ">
           <div className={subtitle({ class: "mt-2" })}>
-            <h3>Hozzávalók:</h3>
             <MyIngredientsTable recipe={resultRecipe} headcount={headcount} setHeadcount={setHeadcount} />
           </div>
         </div>

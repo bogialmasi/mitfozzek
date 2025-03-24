@@ -71,11 +71,10 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                 <CardBody>
                     <div>
                         <p className="text-sm font-semibold">Hozzávalók:</p>
-                        <ul className="flex flex-row space-x-1">
+                        <ul className="grid grid-flow-col auto-rows-auto grid-rows-3 gap-1">
                             {recipe.ingredients.map((ingredient, index) => (
-                                <li key={index} className="text-sm text-default-500">
+                                <li key={index} className="text-sm text-default-500 list-disc list-inside">
                                     {ingredient.ingredient_name}
-                                    {index < recipe.ingredients.length - 1 && ','}
                                 </li>
                             ))}
                         </ul>

@@ -11,37 +11,8 @@ interface MyIngredientsTableProps {
   setHeadcount: React.Dispatch<React.SetStateAction<number>>;
 }
 
-interface MyHeadcountCounterProps {
-  headcount: number;
-  setHeadcount: React.Dispatch<React.SetStateAction<number>>;
-}
-export const MyHeadcountCounter: React.FC<MyHeadcountCounterProps> = ({ headcount, setHeadcount }) => {
-  const increment = () => setHeadcount((prev) => Math.min(15, prev + 1)); // Max headcount = 15
-  const decrement = () => setHeadcount((prev) => Math.max(1, prev - 1)); // Min headcount = 1
-
-
-  return (
-    <div className="py-4 flex items-center justify-between w-32 h-10 border rounded-md py-6">
-      <button
-        className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
-        onClick={decrement}
-      >
-        <HeroMinus />
-      </button>
-      <div className="flex-1 text-center text-lg font-semibold">
-        {headcount}
-      </div>
-      <button
-        className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
-        onClick={increment}
-      >
-        <HeroPlus />
-      </button>
-    </div>
-  );
-};
 export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, headcount, setHeadcount }) => {
-  const increment = () => setHeadcount((prev) => Math.min(15, prev + 1)); // Max headcount = 15
+  const increment = () => setHeadcount((prev) => Math.min(99, prev + 1)); // Max headcount = 99
   const decrement = () => setHeadcount((prev) => Math.max(1, prev - 1)); // Min headcount = 1
 
   const formatNumber = (num: number): number => {
@@ -57,6 +28,7 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
     <div className="max-w-full">
       <div className="py-4 flex items-center justify-center">
         {/* Control the headcount changes */}
+        <h3>Összetevők</h3>
         <div className="py-4 flex items-center justify-between w-32 h-10 border rounded-md py-6">
           <button
             className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
@@ -64,7 +36,9 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
           >
             <HeroMinus />
           </button>
-          <div className="flex-1 text-center text-lg font-semibold">{headcount}</div>
+          <div className="flex-1 text-center text-lg font-semibold">
+            {headcount}
+          </div>
           <button
             className="w-10 h-full text-lg font-bold hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700 flex items-center justify-center"
             onClick={increment}
@@ -72,8 +46,8 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
             <HeroPlus />
           </button>
         </div>
+        <h3>  főre</h3>
       </div>
-
       <Table aria-label="Recept hozzávalói">
         <TableHeader>
           <TableColumn>Összetevők</TableColumn>

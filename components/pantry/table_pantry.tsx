@@ -115,12 +115,12 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
 
     return (
         <section className="flex justify-center w-full py-8">
-            <div className="w-full max-w-md mx-auto px-4 py-6 rounded-lg">
+            <div className="w-full mx-auto px-4 py-6 rounded-lg">
                 <div className={subtitle({ class: "mt-4" })}>
                     Spájzom
                 </div>
                 <Input
-                    className="form-control input max-w-md py-2"
+                    className="form-control input py-2"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
