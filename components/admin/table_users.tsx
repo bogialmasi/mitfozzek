@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { ActivityUser } from "@/types";
 import { MyDangerAlert } from "../alert/alert_danger";
@@ -15,7 +15,7 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [isChanging, setIsChanging] = useState<boolean>(false);
-    const [allUsers, setAllUsers] = useState<ActivityUser[]>(users);
+    const [allUsers, setAllUsers] = useState<ActivityUser[]>(users || []);
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
@@ -27,13 +27,36 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
         user.username.toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
 
+    useEffect(() => {
+        setLoading(true);
+        const fetchUsers = async () => {
+            try {
+                const res = await fetch(`/api/admin/users`);
+                const data = await res.json();
+                if (res.ok) {
+                    setAllUsers(data.users);
+                } else {
+                    setError(data.message);
+                }
+            } catch (error) {
+                setError("Failed to fetch users.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
     const handleActivityChange = async (user: ActivityUser) => {
+        console.log('handleActivityChange called', user);  // Debugging line
+
         setIsChanging(true);
 
-        // UI update
-        const updatedStatus = user.active === 0 ? 1 : 0;
+        // update for activity toggle
+        const updatedStatus = user.inactive === 0 ? 1 : 0;
+
         const updatedUsers = allUsers.map(item =>
-            item.userId === user.userId ? { ...item, active: updatedStatus } : item
+            item.userId === user.userId ? { ...item, inactive: updatedStatus } : item
         );
         setAllUsers(updatedUsers);
 
@@ -48,12 +71,13 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
 
             if (!res.ok) {
                 setError(data.message);
+            } else {
+                setSuccessAlertContent({
+                    title: 'Sikeres módosítás',
+                    description: 'Az aktivitás módosítása mentve.',
+                });
+                setSuccessAlertVisible(true);
             }
-            setSuccessAlertContent({
-                title: 'Sikeres módosítás',
-                description: 'Az aktivitás módosítása mentve.',
-            });
-            setSuccessAlertVisible(true);
         } catch (error) {
             setDangerAlertContent({
                 title: 'Sikertelen módosítás',
@@ -76,7 +100,7 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
 
     return (
         <section className="flex justify-center w-full py-8">
-            <div className="w-full max-w-md mx-auto px-4 py-6 rounded-lg">
+            <div className="w-full mx-auto px-4 py-6 rounded-lg">
                 <Input
                     className="form-control input max-w-md py-2"
                     type="text"
@@ -92,17 +116,22 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
                         <TableColumn>Aktivitás státusza</TableColumn>
                     </TableHeader>
                     <TableBody items={filteredUsers}>
-                        {filteredUsers.map((item, index) => (
+                        {filteredUsers.map((user, index) => (
                             <TableRow key={index}>
-                                <TableCell>{item.username}</TableCell>
-                                <TableCell>{item.email}</TableCell>
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.email}</TableCell>
                                 <TableCell>
-                                    <Switch isSelected={item.active === 1}
-                                        onValueChange={() => handleActivityChange(item)}>
+                                    <Switch
+                                        isSelected={user.inactive === 0}
+                                        onValueChange={() => {
+                                            console.log('switch clicked for user', user);
+                                            handleActivityChange(user);
+                                        }}
+                                    >
                                         {isChanging ? (
                                             <Spinner size="sm" />
                                         ) : (
-                                            <p>{item.active === 1 ? "Aktív" : "Inaktív"}</p>
+                                            <p>{user.inactive === 0 ? "Aktív" : "Inaktív"}</p>
                                         )}
                                     </Switch>
                                 </TableCell>

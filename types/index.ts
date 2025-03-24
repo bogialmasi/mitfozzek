@@ -31,7 +31,7 @@ export interface User {
 }
 
 export interface ActivityUser extends User {
-  active: number;
+  inactive: number;
 }
 
 export interface ShoppingIngredient extends Ingredient{
