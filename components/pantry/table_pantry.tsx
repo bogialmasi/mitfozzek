@@ -101,9 +101,11 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
     };
 
     useEffect(() => {
-        console.log("in table: Pantry item:", pantryItems[0]);
-        console.log("in table: Ingredient:", ingredients[0]);
-      }, [pantryItems, ingredients])
+        console.log("Updated pantryIngredients:", pantryIngredients[0]);
+        console.log("Updated allIngredients:", allIngredients[0]);
+        setPantryItems(pantryIngredients);
+        setIngredients(allIngredients);
+    }, [pantryIngredients, allIngredients]);
 
     if (loading) return (
         <div>

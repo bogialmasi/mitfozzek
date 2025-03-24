@@ -20,64 +20,107 @@ export default function ProfilePage() {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/profile', {
-        method: 'GET',
-        credentials: 'include'
-      });
+      const [profileRes, pantryRes, ingredientsRes] = await Promise.all([
+        fetch('/api/profile', { method: 'GET', credentials: 'include' }),
+        fetch('/api/pantry', { method: 'GET', credentials: 'include' }),
+        fetch('/api/data?type=pantry_ingredients', { method: 'GET' })
+      ]);
 
-      if (!response.ok) {
-        setError(`Hiba: ${response.statusText} (${response.status})`);
+      if (!profileRes.ok || !pantryRes.ok || !ingredientsRes.ok) {
+        setError('Az adatok betöltése sikertelen');
         return;
       }
 
-      const data = await response.json();
+      const profileData = await profileRes.json();
+      const pantryData = await pantryRes.json();
+      const ingredientsData = await ingredientsRes.json();
 
-      if (data.success && data.user_id && data.username) {
+      if (profileData.success) {
         setProfile({
-          userId: data.user_id,
-          username: data.username,
-          userDescription: data.user_desc || 'Nincs megadva leírás.',
-          email: data.email,
+          userId: profileData.user_id,
+          username: profileData.username,
+          userDescription: profileData.user_desc || '',
+          email: profileData.email,
         });
       } else {
-        setError('Az adatok betöltése sikertelen.');
+        setError('Az adatok betöltése sikertelen');
       }
 
-      const pantryResponse = await fetch('/api/pantry', {
-        method: 'GET',
-        credentials: 'include'
-      });
-
-      if (!pantryResponse.ok) {
-        setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
-        return;
-      }
-
-      const pantryData = await pantryResponse.json();
       setPantryItems(pantryData.pantry_items || []);
+
+      setIngredients(ingredientsData.map((ingredient: Ingredient) => ({
+        ingredient_id: ingredient.ingredient_id,
+        ingredient_name: ingredient.ingredient_name,
+        ingredient_measurement: ingredient.ingredient_measurement,
+      })));
+
     } catch (err) {
-      console.error('Hiba a spájz feltöltése közben:', err);
-      setError('Something went wrong.');
-    }
-    finally {
+      console.error('Error fetching data:', err);
+      setError('Az adatok betöltése sikertelen');
+    } finally {
       setLoading(false);
     }
   };
+  /*try {
+    
+    const response = await fetch('/api/profile', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      setError(`Hiba: ${response.statusText} (${response.status})`);
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.user_id && data.username) {
+      setProfile({
+        userId: data.user_id,
+        username: data.username,
+        userDescription: data.user_desc || 'Nincs megadva leírás.',
+        email: data.email,
+      });
+    } else {
+      setError('Az adatok betöltése sikertelen.');
+    }
+
+    const pantryResponse = await fetch('/api/pantry', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!pantryResponse.ok) {
+      setError(`Error fetching pantry items: ${pantryResponse.statusText}`);
+      return;
+    }
+
+    const pantryData = await pantryResponse.json();
+    console.log("Fetched Pantry Data:", pantryData);
+    setPantryItems(pantryData.pantry_items || []);
+  } catch (err) {
+    console.error('Hiba a spájz feltöltése közben:', err);
+    setError('Something went wrong.');
+  }
+  finally {
+    setLoading(false);
+  }*/
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const ingredientsRes = await fetch('/api/data?type=pantry_ingredients');
-            const ingredients = await ingredientsRes.json();
+        const ingredients = await ingredientsRes.json();
 
-            const mappedIngredients = ingredients.map((ingredient: Ingredient) => ({
-                ingredient_id: ingredient.ingredient_id,  
-                ingredient_name: ingredient.ingredient_name,  
-                ingredient_measurement: ingredient.ingredient_measurement,  
-            }));
+        const mappedIngredients = ingredients.map((ingredient: Ingredient) => ({
+          ingredient_id: ingredient.ingredient_id,
+          ingredient_name: ingredient.ingredient_name,
+          ingredient_measurement: ingredient.ingredient_measurement,
+        }));
 
-            setIngredients(mappedIngredients);
+        setIngredients(mappedIngredients);
       } catch (error) {
         console.error('Dropdown adatok betöltése sikertelen:', error);
       }
