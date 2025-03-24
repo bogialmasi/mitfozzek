@@ -5,7 +5,7 @@ import { Ingredient } from "@/types";
 import { MyAddRecipeIngredientsModal } from "./modal_addrecipeingredient";
 import { useDisclosure } from "@heroui/modal";
 import { useEffect, useState } from "react";
-import { Spinner } from "@heroui/react";
+import { Popover, PopoverContent, PopoverTrigger, Spinner } from "@heroui/react";
 import { subtitle } from "@/components/primitives";
 import { button as buttonStyles } from "@heroui/theme";
 
@@ -15,15 +15,12 @@ interface MyAddIngredientsTableProps {
   onRemove: (ingredientId: number) => void;
 }
 
-export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
-  tableIngredients,
-  onAddItem,
-  onRemove,
-}) => {
+export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({ tableIngredients, onAddItem, onRemove }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [error, setError] = useState<string>('');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +63,8 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
     }
   };
 
-  const handleDeleteItem = (ingredientId: number) => {
+
+  const handleDelete = (ingredientId: number) => {
     onRemove(ingredientId);
   };
 
@@ -113,8 +111,10 @@ export const MyAddIngredientsTable: React.FC<MyAddIngredientsTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <Button
-                      className={buttonStyles({ variant: "light", radius: "full" })}
-                      onClick={() => handleDeleteItem(item.ingredient_id)}
+                      variant="light"
+                      radius="full"
+                      onClick={() => handleDelete(item.ingredient_id)}
+                      className="min-w-unit-8 w-unit-8 h-unit-8 p-0"
                     >
                       <HeroCancel />
                     </Button>
