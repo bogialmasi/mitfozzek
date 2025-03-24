@@ -9,10 +9,11 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export const getUserId = (req: NextRequest): number | null => {
   try {
     const token = req.cookies.get('token')?.value; // Get token from cookies
-    if (!token) {
+    if (token === null || token === undefined) {
       return null;
     }
     const decoded: any = jwt.verify(token, JWT_SECRET);
+    console.log("DECODED: ", decoded.userId)
     return decoded.userId || null;
   } catch (error) {
     console.error('Invalid token:', error);
@@ -50,9 +51,6 @@ export async function GET(req: NextRequest) {
       break;
     case 'user_pantry':
       const userId = getUserId(req);
-      if (!userId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
       query = `SELECT ingredients.ingredient_id AS "key", ingredients.ingredient_name AS "value"
              FROM ingredients 
              JOIN pantry ON ingredients.ingredient_id = pantry.ingredient_id 

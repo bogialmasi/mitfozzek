@@ -22,7 +22,7 @@ export async function PATCH(req: NextRequest) {
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Get userId from the decoded token
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
         const [userInactive] = await con.query<RowDataPacket[]>('SELECT inactive FROM users WHERE user_id = ?', [userId]);

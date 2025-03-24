@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Extract userId from the decoded token
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
     const decoded: any = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId; // Extract userId from the decoded token
 
-    if (!userId) {
+    if (userId === null || userId === undefined) {
         return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
     }
 
@@ -208,7 +208,7 @@ export async function PATCH(req: NextRequest) {
         const userId = decoded.userId; // Get userId from the decoded token
         console.log("userId:", userId);
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
@@ -262,7 +262,7 @@ export async function DELETE(req: NextRequest) {
         // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Extract userId from the decoded token
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
         const { ingredient_id } = await req.json();

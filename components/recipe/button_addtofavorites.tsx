@@ -29,7 +29,7 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
         else {
             const userId = user.userId;
 
-            if (!userId || !recipeId) {
+            if (userId === null || userId === undefined || !recipeId) {
                 console.error('Missing userId or recipeId');
                 return;
             }

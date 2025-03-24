@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId;
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId;
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
             const recipe_headcount = recipeHeadcount[0].recipe_headcount;
 
             const [recipeIngredients] = await pool.query<RowDataPacket[]>(
-                `SELECT ingredient_id, ingredient_quantity, ingredient_measurement
+                `SELECT ingredients.ingredient_id, ingredient_quantity, ingredient_measurement
                 FROM con_recipe_ingredients
                 JOIN ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
                 WHERE recipe_id = ?`,
@@ -246,7 +246,7 @@ export async function PATCH(req: NextRequest) {
         const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
         const userId = decoded.userId;
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
@@ -325,7 +325,7 @@ export async function DELETE(req: NextRequest) {
         const userId = decoded.userId; // Get userId from the decoded token
         console.log("userId:", userId);
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 

@@ -35,7 +35,7 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount:
         else {
             const userId = user.userId;
 
-            if (!userId || !recipe.recipe_id) {
+            if (userId === null || userId === undefined || !recipe.recipe_id) {
                 console.error('Missing userId or recipeId');
                 return;
             }

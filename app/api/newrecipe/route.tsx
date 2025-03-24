@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         const userId = decoded.userId; // Get userId from the decoded token
         console.log("userId:", userId);
 
-        if (!userId) {
+        if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
