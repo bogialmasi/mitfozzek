@@ -100,17 +100,50 @@ export async function GET(req: NextRequest) {
 
             return NextResponse.json(fullRecipe);
         }
+        const [allRecipes] = await con.query<RowDataPacket[]>(`
+            SELECT recipes.*, users.username, con_recipe_status.status 
+            FROM recipes 
+            LEFT JOIN users ON recipes.source_user_id = users.user_id 
+            JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id`);
+
+        if (allRecipes.length === 0) {
+            return NextResponse.json({ success: false, message: 'No recipes found' }, { status: 404 });
+        }
+
+        const fullRecipes = await Promise.all(
+            allRecipes.map(async (recipe) => {
+                const [ingredientsData] = await con.query<RowDataPacket[]>(
+                    `SELECT ingredients.ingredient_id, ingredients.ingredient_name, ingredients.ingredient_measurement,
+                            con_recipe_ingredients.ingredient_quantity
+                     FROM ingredients
+                     JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+                     WHERE con_recipe_ingredients.recipe_id = ?`,
+                    [recipe.recipe_id]
+                );
+
+                return {
+                    ...recipe,
+                    ingredients: ingredientsData.map((ingredient) => ({
+                        ingredient_id: ingredient.ingredient_id,
+                        ingredient_name: ingredient.ingredient_name,
+                        ingredient_quantity: ingredient.ingredient_quantity,
+                        ingredient_measurement: ingredient.ingredient_measurement
+                    })),
+                };
+            })
+        );
+
+        return NextResponse.json(fullRecipes);
+
     } catch (error) {
         console.error('Error fetching data:', error);
         return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
-    }
-    finally {
+    } finally {
         if (con) {
             con.release();
         }
     }
 }
-
 
 export async function PATCH(req: NextRequest) {
 
@@ -120,20 +153,6 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
-
-        }
-
-        // Verify and decode the token
-        const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
-
-        if (!userId) {
-            return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
-        }
-
         const { recipe_id, status } = await req.json();
 
         if (!recipe_id || !status) {
