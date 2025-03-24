@@ -4,6 +4,7 @@ import { Ingredient, Recipe } from "@/types";
 import { Spinner } from "@heroui/react";
 import { title } from "@/components/primitives";
 import { MyReviews } from "@/components/admin/card_reviews";
+import { MyReviewsTabs } from "@/components/admin/tabs_reviews";
 
 
 interface Review {
@@ -16,6 +17,9 @@ interface Review {
     source_user_id: number | null;
     source_username: string | null;
     status: string;
+    dishtype_name: string[];
+    cuisine_name: string[];
+    category_name: string[];
 }
 export default function AdminReviewsPage() {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -35,7 +39,13 @@ export default function AdminReviewsPage() {
             }
             const data = await response.json();
             console.log("Fetched reviews:", data);
-            setReviews(data);
+            const formattedData = data.map((review: any) => ({
+                ...review,
+                dishtype_name: Array.isArray(review.dishtype_name) ? review.dishtype_name : [],
+                cuisine_name: Array.isArray(review.cuisine_name) ? review.cuisine_name : [],
+                category_name: Array.isArray(review.category_name) ? review.category_name : [],
+            }));
+            setReviews(formattedData);
         } catch (err) {
             setError('Failed to fetch reviews. Please try again later.');
         } finally {
@@ -64,26 +74,7 @@ export default function AdminReviewsPage() {
             <div className="inline-block max-w-xl text-center justify-center">
                 <h1 className={title()}>Receptek felülvizsgálata</h1>
             </div>
-            {reviews && reviews.length > 0 ? (
-                <ul>
-                    {reviews.map((review) => (
-                        <MyReviews key={review.recipe_id} username={review.source_username}
-                        recipe={{
-                            recipe_name: review.recipe_name,
-                            recipe_description: review.recipe_description,
-                            ingredients: review.ingredients,
-                            recipe_headcount: review.recipe_headcount,
-                            recipe_id: review.recipe_id,
-                            recipe_time: review.recipe_time,
-                            source_user_id: review.source_user_id,
-                        }} />
-                    ))}
-                </ul>
-            ) : (
-                <div className="py-4">
-                    <p>Nincs elbírálandó recept</p>
-                </div>
-            )}
+            <MyReviewsTabs reviews={reviews}/>
         </div>
     );
 };
