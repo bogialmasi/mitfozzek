@@ -7,7 +7,7 @@ import { title } from "@/components/primitives";
 import { Form } from "@heroui/form";
 import { Input, Textarea } from "@heroui/input";
 import { useRouter } from "next/navigation";
-import { MyAddIngredientsTable } from "@/components/newrecipe/table_newrecipe";
+import { MyAddIngredientsTable } from "@/components/newrecipe/table_newrecipe_ingredients";
 import { Ingredient } from "@/types";
 import { MyDropdown } from "@/components/search/dropdown_searchfilters";
 import { MySearchBar } from "@/components/search/searchbar_dropdown";
