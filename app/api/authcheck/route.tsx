@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
+import { JwtPayload } from 'jsonwebtoken';
 
+const ADMIN_USER_ID = '0';
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   console.log(token);
@@ -10,9 +12,11 @@ export async function GET(req: NextRequest) {
 
   try {
     const decoded = verifyToken(token);
-    console.log("decoded:",decoded);
-    return NextResponse.json({ success: true, user: decoded }, 
-      { status: 200, headers: { "Content-Type": "application/json" }}); // there is a logged in user
+    console.log("decoded:", decoded);
+    const decodedPayload = decoded as JwtPayload
+    const isAdmin = decodedPayload.userId === parseInt(ADMIN_USER_ID, 10);
+    return NextResponse.json({ success: true, isAdmin, user: decoded },
+      { status: 200, headers: { "Content-Type": "application/json" } }); // there is a logged in user
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Invalid or expired token' }, { status: 401 });
   }
