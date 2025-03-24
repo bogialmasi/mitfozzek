@@ -22,42 +22,44 @@ export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { user, logout } = useAuthentication();
   const [loading, setLoading] = useState<boolean>(false);
-/*
-  const checkLogin = async () => {
-    try {
-      const res = await fetch('/api/authcheck', {
-        method: 'GET',
-        credentials: 'include',
-      });
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  const checkIfAdmin = async () => {
+    if (user) {
+      const res = await fetch('/api/authcheck');
       const data = await res.json();
-      if (!data.success) {
-        setIsLoggedIn(false);
-        setLoading(false);
-        return;
+      if (data.success && data.isAdmin) {
+        setIsAdmin(true);
       }
-      setIsLoggedIn(true);
-    } catch (err) {
-      setIsLoggedIn(false); // If error occurs, consider the user as logged out
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    checkLogin(); // Check login status on mount
-  }, []);*/
-
+    if (user) {
+      setIsLoggedIn(true);
+      checkIfAdmin();
+    } else {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   const navItems = user
     ? [
       { label: "Keresés", href: "/search" },
       { label: "Profilom", href: "/profile" },
       { label: "Bevásárlólistáim", href: "/shopping" },
+      ...(isAdmin ? [
+        { label: "Felhasználók kezelése", href: "/admin/users" },
+        { label: "Elbírálandó receptek", href: "/admin/reviews" }
+      ] : [])
     ]
     : [
       { label: "Főoldal", href: "/" },
       { label: "Keresés", href: "/search" },
       { label: "Rólunk", href: "/about" },
     ];
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
