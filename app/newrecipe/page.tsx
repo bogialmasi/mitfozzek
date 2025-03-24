@@ -13,6 +13,7 @@ import { MyDropdown } from "@/components/search/dropdown_searchfilters";
 import { MySearchBar } from "@/components/search/searchbar_dropdown";
 import { subtitle } from "@/components/primitives";
 import { Spinner } from "@heroui/react";
+import { MySubmittedModal } from "@/components/newrecipe/modal_submitted";
 
 export default function NewRecipePage() {
   const [recipeName, setRecipeName] = useState<string>('');
@@ -28,6 +29,7 @@ export default function NewRecipePage() {
   const [dishCuisine, setDishCuisine] = useState([]);
   const [addUserId, setAddUserId] = useState<boolean>(false);
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const checkLogin = async () => {
     try {
@@ -122,7 +124,7 @@ export default function NewRecipePage() {
     };
 
     console.log("submitted:", newRecipe, selectedFilters, acceptTerms, addUserId)
-
+    setIsModalOpen(true)
     try {
       const response = await fetch('/api/newrecipe', {
         method: 'POST',
@@ -165,8 +167,6 @@ export default function NewRecipePage() {
         <Spinner />
       </div>
     </div>);
-
-  if (error) return <div>{error}</div>;
 
   return (
     <div>
@@ -281,6 +281,13 @@ export default function NewRecipePage() {
           <Button type="button" onClick={handleCancel}><HeroCancel />Mégsem</Button>
         </div>
       </Form>
+      <MySubmittedModal isOpen={isModalOpen}
+        onOpenChange={(openState) => {
+          setIsModalOpen(openState);
+          if (!openState && !localStorage.getItem('token')) {
+            router.replace('/profile')
+          }
+        }} />
     </div>
   );
 }
