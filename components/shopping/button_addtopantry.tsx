@@ -20,16 +20,11 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
     const handleAddItem = async (ing: ShoppingIngredient) => {
         const newItem = {
             ingredient_id: ing.ingredient_id,
-            ingredient_quantity: ing.ingredient_quantity,
-            ingredient_measurement: ing.ingredient_measurement
+            ingredient_quantity: ing.ingredient_quantity
         };
 
-        console.log(newItem);
+        console.log("NEW ITEM", newItem);
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                return;
-            }
             const res = await fetch('/api/pantry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
