@@ -1,6 +1,6 @@
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
-import { connection, NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
 import { PoolConnection } from 'mysql2/promise';
 
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
         JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-        WHERE recipe_id = ? AND con_recipe_status.status = "approved"`, [recipeId]);
+        WHERE recipes.recipe_id = ? AND con_recipe_status.status = "approved"`, [recipeId]);
       const recipeResults = recipes as RowDataPacket[];
 
       if (recipeResults.length === 0) {
