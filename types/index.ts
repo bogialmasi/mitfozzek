@@ -16,9 +16,9 @@ export interface Recipe {
   recipe_id: number;
   recipe_name: string;
   recipe_description: string;
-  recipe_time: string;
+  recipe_time: number;
   recipe_headcount: number;
-  source_user_id: number;
+  source_user_id: number | null;
   ingredients: Ingredient[];
 }
 
@@ -28,6 +28,10 @@ export interface User {
   username: string;
   userDescription: string | null;
   email: string;
+}
+
+export interface ActivityUser extends User {
+  active: number;
 }
 
 export interface ShoppingIngredient extends Ingredient{
