@@ -54,6 +54,7 @@ export const siteConfig = {
     about: "/about",
     profile: "/profile",
     recipe: "/recipe",
+    shopping: "/shopping",
     github: "https://github.com/bogialmasi/mitfozzek"
   },
   profileMenuItems: {
@@ -63,5 +64,10 @@ export const siteConfig = {
     addRecipe: "/newrecipe",
     myRecipes: "/recipe/myrecipes",
     shoppingLists: "/shopping"
+  },
+  adminItems: {
+    adminPage: "/admin",
+    users: "/admin/users",
+    reviews: "/admin/reviews",
   }
 };
