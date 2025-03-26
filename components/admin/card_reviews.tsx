@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
-import { Ingredient, Recipe } from "@/types";
+import { Ingredient } from "@/types";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
 import { HeroCancel, HeroCheck } from '../icons';
