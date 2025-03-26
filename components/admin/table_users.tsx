@@ -1,9 +1,7 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { Input, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import { Button, Chip, Input, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { ActivityUser } from "@/types";
-import { MyDangerAlert } from "../alert/alert_danger";
-import { MySuccessAlert } from "../alert/alert_success";
 
 
 interface MyAdminUsersTableProps {
@@ -14,14 +12,7 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
     const [loading, setLoading] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [isChanging, setIsChanging] = useState<boolean>(false);
     const [allUsers, setAllUsers] = useState<ActivityUser[]>(users || []);
-
-    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
-    const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
-
-    const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
-    const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
 
     const filteredUsers = allUsers.filter((user) =>
         user.username.toLowerCase().includes(searchQuery.trim().toLowerCase())
@@ -47,47 +38,6 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
         fetchUsers();
     }, []);
 
-    const handleActivityChange = async (user: ActivityUser) => {
-        console.log('handleActivityChange called', user);  // Debugging line
-
-        setIsChanging(true);
-
-        // update for activity toggle
-        const updatedStatus = user.inactive === 0 ? 1 : 0;
-
-        const updatedUsers = allUsers.map(item =>
-            item.userId === user.userId ? { ...item, inactive: updatedStatus } : item
-        );
-        setAllUsers(updatedUsers);
-
-        try {
-            const res = await fetch(`/api/admin/users?id=${user.userId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.message);
-            } else {
-                setSuccessAlertContent({
-                    title: 'Sikeres módosítás',
-                    description: 'Az aktivitás módosítása mentve.',
-                });
-                setSuccessAlertVisible(true);
-            }
-        } catch (error) {
-            setDangerAlertContent({
-                title: 'Sikertelen módosítás',
-                description: 'Az aktivitás módosítása sikertelen. Próbálja újra.',
-            });
-            setDangerAlertVisible(true);
-        } finally {
-            setIsChanging(false);
-        }
-    };
 
     if (loading) {
         return (
@@ -121,37 +71,17 @@ export const MyAdminUsersTable: React.FC<MyAdminUsersTableProps> = ({ users }) =
                                 <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
-                                    <Switch
-                                        isSelected={user.inactive === 0}
-                                        onValueChange={() => {
-                                            console.log('switch clicked for user', user);
-                                            handleActivityChange(user);
-                                        }}
-                                    >
-                                        {isChanging ? (
-                                            <Spinner size="sm" />
-                                        ) : (
-                                            <p>{user.inactive === 0 ? "Aktív" : "Inaktív"}</p>
-                                        )}
-                                    </Switch>
+                                    <div>
+                                        {user.inactive === 0 ?
+                                            <Chip variant="flat" color="success" radius="full">Aktív</Chip> :
+                                            <Chip variant="flat" color="danger" radius="full">Inaktív</Chip>}
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                {successAlertVisible && (
-                    <MySuccessAlert
-                        title={successAlertContent.title}
-                        description={successAlertContent.description}
-                    />
-                )}
-                {dangerAlertVisible && (
-                    <MyDangerAlert
-                        title={dangerAlertContent.title}
-                        description={dangerAlertContent.description}
-                    />
-                )}
             </div>
-        </section>
+        </section >
     );
 };
