@@ -87,7 +87,7 @@ export default function FavoritesPage() {
         <Spinner />
       </div>
     </div>);
-
+  if (error) return <p>Hiba: {error}</p>;
   return (
     <div>
       <h1 className={title()}>Kedvenc receptjeim</h1>
