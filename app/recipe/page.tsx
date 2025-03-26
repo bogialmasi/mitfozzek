@@ -8,7 +8,6 @@ import { button as buttonStyles } from "@heroui/theme";
 import { HeroSearch } from '@/components/icons';
 import { MyIngredientsTable } from '@/components/recipe/table_ingredients';
 import { Spinner, useDisclosure } from '@heroui/react';
-import { useAuthentication } from '../context/authenticationContext';
 import { MySuccessAlert } from '@/components/alert/alert_success';
 import { MyLoginModal } from '@/components/login_check/modal_login';
 import { Recipe } from '@/types';
@@ -21,7 +20,6 @@ export default function RecipePage() {
   const [resultRecipe, setResultRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const { user } = useAuthentication();
   const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
 
   const [headcount, setHeadcount] = useState(1);
@@ -32,7 +30,6 @@ export default function RecipePage() {
 
   const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
   const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
-  const router = useRouter();
 
   useEffect(() => {
     const fetchResults = async () => {
