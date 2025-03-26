@@ -5,8 +5,22 @@ import * as jwt from 'jsonwebtoken';
 import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+async function getIngredients(con: PoolConnection, recipeId: number) {
+  const [ingredientsData] = await con.query<RowDataPacket[]>(`
+        SELECT ingredients.*,
+               con_recipe_ingredients.ingredient_quantity
+        FROM ingredients
+        JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+        WHERE con_recipe_ingredients.recipe_id = ?
+    `, [recipeId]);
 
-// TODO check that the recipes have approved status in the con_recipe_status?
+  return ingredientsData.map(ingredient => ({
+    ingredient_id: ingredient.ingredient_id,
+    ingredient_name: ingredient.ingredient_name,
+    ingredient_quantity: ingredient.ingredient_quantity,
+    ingredient_measurement: ingredient.ingredient_measurement
+  }));
+}
 
 export async function GET(req: NextRequest) {
   let con: PoolConnection | undefined;
@@ -24,6 +38,7 @@ export async function GET(req: NextRequest) {
     const selectedCuisine = searchParams.getAll('dishCuisine').map(Number);
     const pantryIngredientsOnly = searchParams.get('pantryIngredientsOnly');
     const id = searchParams.get('id');
+    const user = searchParams.get('user');
 
     /*
     //
@@ -31,38 +46,24 @@ export async function GET(req: NextRequest) {
     // */
     if (id) {
       const recipeId = Number(id);
-      const [recipes] = await con.query(
+      const [recipes] = await con.query<RowDataPacket[]>(
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
         JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
         WHERE recipes.recipe_id = ? AND con_recipe_status.status = "approved"`, [recipeId]);
-      const recipeResults = recipes as RowDataPacket[];
 
-      if (recipeResults.length === 0) {
+      if (recipes.length === 0) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
       }
 
-      // Ingredients of the recipe
-      const [ingredientsData] = await con.query<RowDataPacket[]>(
-        `SELECT ingredients.ingredient_id, ingredients.ingredient_name,
-         con_recipe_ingredients.ingredient_quantity, 
-         ingredients.ingredient_measurement
-         FROM ingredients
-         JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
-         WHERE con_recipe_ingredients.recipe_id = ?`,
-        [recipeId]
-      );
 
-      const fullRecipe = {
-        ...recipeResults[0],
-        ingredients: ingredientsData.map((ingredient) => ({
-          ingredient_id: ingredient.ingredient_id,
-          ingredient_name: ingredient.ingredient_name,
-          ingredient_quantity: ingredient.ingredient_quantity,
-          ingredient_measurement: ingredient.ingredient_measurement
-        })),
-      };
-      return NextResponse.json(fullRecipe);
+      const fullRecipe = await Promise.all(
+        recipes.map(async (recipe) => ({
+          ...recipe,
+          ingredients: await getIngredients(con, recipe.recipe_id),
+        }))
+      );
+      return NextResponse.json(fullRecipe[0]); //only one recipe is returned
     }
 
 
@@ -127,30 +128,40 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
       }
 
-      // Ingredients of the recipes
-      const recipesWithIngredients = await Promise.all(
-        recipes.map(async (recipe) => {
-          const [ingredientsData] = await con.query<RowDataPacket[]>(
-            `SELECT ingredients.ingredient_id, ingredients.ingredient_name, ingredients.ingredient_measurement
-           FROM ingredients
-           JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
-           WHERE con_recipe_ingredients.recipe_id = ?`,
-            [recipe.recipe_id]
-          );
-          return {
-            ...recipe,
-            ingredients: ingredientsData.map((ingredient) => ({
-              ingredient_id: ingredient.ingredient_id,
-              ingredient_name: ingredient.ingredient_name,
-              ingredient_measurement: ingredient.ingredient_measurement
-            })),
-          };
-        })
+      const fullRecipe = await Promise.all(
+        recipes.map(async (recipe) => ({
+          ...recipe,
+          ingredients: await getIngredients(con, recipe.recipe_id),
+        }))
       );
-
-      return NextResponse.json(recipesWithIngredients);
+      return NextResponse.json(fullRecipe);
     }
 
+    /**
+     * Recipes of a user
+     */
+
+    if (user) {
+      const userId = Number(user);
+      const [recipes] = await con.query<RowDataPacket[]>(
+        `SELECT recipes.*, users.username FROM recipes 
+        LEFT JOIN users ON recipes.source_user_id = users.user_id 
+        JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
+        WHERE recipes.source_user_id = ? AND con_recipe_status.status = "approved"`, [userId]);
+
+      if (recipes.length === 0) {
+        return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
+      }
+
+
+      const fullRecipe = await Promise.all(
+        recipes.map(async (recipe) => ({
+          ...recipe,
+          ingredients: await getIngredients(con, recipe.recipe_id),
+        }))
+      );
+      return NextResponse.json(fullRecipe);
+    }
 
 
     /*
@@ -202,28 +213,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
     }
 
-    // Ingredients of the recipes
-    const recipesWithIngredients = await Promise.all(
-      recipes.map(async (recipe) => {
-        const [ingredientsData] = await con.query<RowDataPacket[]>(
-          `SELECT ingredients.ingredient_id, ingredients.ingredient_name, ingredients.ingredient_measurement
-           FROM ingredients
-           JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
-           WHERE con_recipe_ingredients.recipe_id = ?`,
-          [recipe.recipe_id]
-        );
-        return {
-          ...recipe,
-          ingredients: ingredientsData.map((ingredient) => ({
-            ingredient_id: ingredient.ingredient_id,
-            ingredient_name: ingredient.ingredient_name,
-            ingredient_measurement: ingredient.ingredient_measurement
-          })),
-        };
-      })
+    const fullRecipe = await Promise.all(
+      recipes.map(async (recipe) => ({
+        ...recipe,
+        ingredients: await getIngredients(con, recipe.recipe_id),
+      }))
     );
+    return NextResponse.json(fullRecipe);
 
-    return NextResponse.json(recipesWithIngredients);
   } catch (error) {
     console.error('Error fetching data:', error);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
