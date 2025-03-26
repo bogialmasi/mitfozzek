@@ -13,6 +13,7 @@ export const MyUserLoginLogout = () => {
                 <Dropdown aria-label="light">
                     <DropdownTrigger>
                         <Button className={buttonStyles({
+                            color: 'primary',
                             radius: "full",
                             variant: "shadow",
                         })}>Helló, {user.username}!</Button>

@@ -23,7 +23,6 @@ export const MyBackToTopButton: React.FC = () => {
                 }`}
         >
             <Button
-                color="primary"
                 className={buttonStyles({
                     color: "primary",
                     radius: "full",
