@@ -143,6 +143,9 @@ export async function GET(req: NextRequest) {
 
     if (user) {
       const userId = Number(user);
+      if (isNaN(userId)) {
+        return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+      }
       const [recipes] = await con.query<RowDataPacket[]>(
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
@@ -153,14 +156,14 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
       }
 
-
+      const username = recipes[0]?.username
       const fullRecipe = await Promise.all(
         recipes.map(async (recipe) => ({
           ...recipe,
           ingredients: await getIngredients(con, recipe.recipe_id),
         }))
       );
-      return NextResponse.json(fullRecipe);
+      return NextResponse.json({fullRecipe, username});
     }
 
 
