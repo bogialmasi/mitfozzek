@@ -1,7 +1,6 @@
 'use client'
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/table";
 import { HeroMinus, HeroPlus } from "../icons";
-import { useState } from "react";
 import { Recipe } from "@/types";
 import { MyPantryIngredientComparator } from "./ingredient_comparator";
 
@@ -18,7 +17,6 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
   const formatNumber = (num: number): number => {
     return num % 1 === 0 ? num : parseFloat(num.toFixed(2));
   };
-
   const scaledIngredients = recipe.ingredients.map((ingredient) => ({
     ...ingredient,
     ingredient_quantity: formatNumber((ingredient.ingredient_quantity / recipe.recipe_headcount) * headcount),
@@ -46,7 +44,7 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
             <HeroPlus />
           </button>
         </div>
-        <h3>  főre</h3>
+        <h3>adaghoz</h3>
       </div>
       <Table aria-label="Recept hozzávalói">
         <TableHeader>

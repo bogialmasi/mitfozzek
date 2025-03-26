@@ -46,18 +46,17 @@ export const Navbar = () => {
 
   const navItems = user
     ? [
-      { label: "Keresés", href: "/search" },
-      { label: "Profilom", href: "/profile" },
-      { label: "Bevásárlólistáim", href: "/shopping" },
+      { label: "Keresés", href: siteConfig.links.search },
+      { label: "Profilom", href: siteConfig.links.profile },
+      { label: "Bevásárlólistáim", href: siteConfig.links.shopping },
       ...(isAdmin ? [
-        { label: "Felhasználók kezelése", href: "/admin/users" },
-        { label: "Elbírálandó receptek", href: "/admin/reviews" }
+        { label: "Admin", href: siteConfig.adminItems.adminPage}
       ] : [])
     ]
     : [
       { label: "Főoldal", href: "/" },
-      { label: "Keresés", href: "/search" },
-      { label: "Rólunk", href: "/about" },
+      { label: "Keresés", href: siteConfig.links.search },
+      { label: "Rólunk", href: siteConfig.links.about },
     ];
 
   return (
