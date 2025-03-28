@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { subtitle } from "@/components/primitives";
-import { Button, Input, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { Button, Input, ScrollShadow, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
 import { HeroPlus, HeroSettings } from "../icons";
 import { button as buttonStyles } from "@heroui/theme";
 import { MyAddPantryModal } from "./modal_addpantryitem";
@@ -129,20 +129,24 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
                     placeholder="Keresés..."
                     variant="bordered"
                 />
-                <Table aria-label="Spájzom">
-                    <TableHeader>
-                        <TableColumn>Hozzávaló</TableColumn>
-                        <TableColumn>Mennyiség</TableColumn>
-                    </TableHeader>
-                    <TableBody items={filteredPantryItems}>
-                        {(item) => (
-                            <TableRow key={item.ingredient_id}>
-                                <TableCell>{getKeyValue(item, "ingredient_name")}</TableCell>
-                                <TableCell>{getKeyValue(item, "ingredient_quantity")} {getKeyValue(item, "measurement_name")}</TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                <div className="w-full border border-collapse rounded-xl">
+                    <ScrollShadow className="max-h-[300px] overflow-y-auto" hideScrollBar>
+                        <Table aria-label="Spájzom">
+                            <TableHeader>
+                                <TableColumn>Hozzávaló</TableColumn>
+                                <TableColumn>Mennyiség</TableColumn>
+                            </TableHeader>
+                            <TableBody items={filteredPantryItems}>
+                                {(item) => (
+                                    <TableRow key={item.ingredient_id}>
+                                        <TableCell>{getKeyValue(item, "ingredient_name")}</TableCell>
+                                        <TableCell>{getKeyValue(item, "ingredient_quantity")} {getKeyValue(item, "measurement_name")}</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </ScrollShadow>
+                </div>
                 <div className="py-4 flex justify-center space-x-4">
                     <Button className={buttonStyles({ variant: "bordered", radius: "full" })}
                         onClick={onEditOpen}>
