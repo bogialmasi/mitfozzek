@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const ADMIN_USER_ID = '0';  // admin's user_id is 0
+const ADMIN_USER_ID = ['1'];  // multiple admin users possible
 
 export async function isAdmin(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
@@ -17,7 +17,7 @@ export async function isAdmin(req: NextRequest) {
     const userId = decoded.userId;
 
 
-    if (userId !== ADMIN_USER_ID) {
+    if (!ADMIN_USER_ID.includes(userId.toString())) {
       return NextResponse.json({ success: false, message: `Not admin. UserId: ${userId}` }, { status: 403 });
     }
 
