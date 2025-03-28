@@ -3,8 +3,27 @@ import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
+import { Ingredient } from '@/types';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+
+async function getIngredients(con: PoolConnection, recipeId: number) {
+    const [ingredientsData] = await con.query<RowDataPacket[]>(`
+          SELECT ingredients.*,
+                 con_recipe_ingredients.ingredient_quantity
+          FROM ingredients
+          JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
+          WHERE con_recipe_ingredients.recipe_id = ?
+      `, [recipeId]);
+
+    return ingredientsData.map(ingredient => ({
+        ingredient_id: ingredient.ingredient_id,
+        ingredient_name: ingredient.ingredient_name,
+        ingredient_quantity: ingredient.ingredient_quantity,
+        ingredient_measurement: ingredient.ingredient_measurement
+    }));
+}
+
 export async function GET(req: NextRequest) {
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
@@ -35,36 +54,21 @@ export async function GET(req: NextRequest) {
             [userId]
         );
 
-        // Iterate through each shopping list and fetch the ingredients
         const shoppingListWithIngredients = [];
 
         for (const shoppingList of shoppingLists) {
-            const shoppingId = shoppingList.shopping_id;
+            let ingredients: Ingredient[] = [];
 
-            // Get the ingredients for this shopping list
-            const [ingredients] = await con.query<RowDataPacket[]>(
-                `SELECT ingredients.ingredient_id, ingredients.ingredient_name, 
-                    con_shopping_ingredients.ingredient_quantity, ingredients.ingredient_measurement, 
-                    bought
-                FROM con_shopping_ingredients
-                JOIN ingredients ON con_shopping_ingredients.ingredient_id = ingredients.ingredient_id
-                WHERE con_shopping_ingredients.shopping_id = ?`,
-                [shoppingId]
-            );
+            if (shoppingList.recipe_id) {
+                ingredients = await getIngredients(con, shoppingList.recipe_id);
+            }
 
-            // Add the shopping list info along with its ingredients to the response
             shoppingListWithIngredients.push({
                 shopping_id: shoppingList.shopping_id,
                 shopping_name: shoppingList.shopping_name,
                 recipe_id: shoppingList.recipe_id || null,
                 recipe_name: shoppingList.recipe_name || null,
-                ingredients: ingredients.map((ingredient) => ({
-                    ingredient_id: ingredient.ingredient_id,
-                    ingredient_name: ingredient.ingredient_name,
-                    ingredient_quantity: ingredient.ingredient_quantity,
-                    ingredient_measurement: ingredient.ingredient_measurement,
-                    bought: !!ingredient.bought // check if 1 or 0
-                }))
+                ingredients
             });
         }
 
@@ -125,25 +129,17 @@ export async function POST(req: NextRequest) {
 
             const recipe_headcount = recipeHeadcount[0].recipe_headcount;
 
-            const [recipeIngredients] = await pool.query<RowDataPacket[]>(
-                `SELECT ingredients.ingredient_id, ingredient_quantity, ingredient_measurement
-                FROM con_recipe_ingredients
-                JOIN ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
-                WHERE recipe_id = ?`,
-                [recipe_id]
-            );
+            const recipeIngredients = await getIngredients(con, recipe_id);
 
             if (recipeIngredients.length === 0) {
-                return NextResponse.json({ success: false, message: "No ingredients found for this recipe, or recipe doens't exist" }, { status: 400 });
+                return NextResponse.json({ success: false, message: "No ingredients found for this recipe" }, { status: 400 });
             }
 
-
-            // Map the fetched ingredients into the required format
             ingredientsList = recipeIngredients.map((ingredient) => ({
                 ingredient_id: ingredient.ingredient_id,
-                ingredient_quantity: (ingredient.ingredient_quantity * headcount/ recipe_headcount),
+                ingredient_quantity: (ingredient.ingredient_quantity * headcount / recipe_headcount),
                 ingredient_measurement: ingredient.ingredient_measurement
-            }));
+            }));    
 
             if (add_all === "false") {
                 // filter out the ingredients already in the pantry
@@ -191,7 +187,7 @@ export async function POST(req: NextRequest) {
 
             // Insert ingredients
             for (const ingredient of ingredientsList) {
-                const { ingredient_id, ingredient_quantity} = ingredient;
+                const { ingredient_id, ingredient_quantity } = ingredient;
 
                 const [existingIngredient] = await con.query<RowDataPacket[]>(
                     `SELECT * FROM ingredients WHERE ingredient_id = ?`,
