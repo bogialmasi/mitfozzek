@@ -122,7 +122,7 @@ export default function RecipePage() {
             <p className={subtitle({ class: "mt-2" })}>{resultRecipe.recipe_description}</p>
             {username &&
               <p>
-                Feltöltötte: {username}
+                Feltöltötte: <Link href={`user/${resultRecipe.source_user_id}`}>{username}</Link>
               </p>}
           </div>
           <div className="justify-center py-8">
