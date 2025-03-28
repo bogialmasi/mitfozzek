@@ -18,7 +18,7 @@ export default function UserPage() {
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        if (params.id!==undefined) {
+        if (params.id !== undefined) {
             setLoading(true);
             const fetchRecipes = async () => {
                 try {
@@ -27,12 +27,22 @@ export default function UserPage() {
                         setError('Failed to fetch user recipes');
                     }
                     const data = await res.json();
-                    if (data.username && data.fullRecipe) {
+
+                    if (data.username) {
                         setUsername(data.username);
+                    } else {
+                        setUsername("Ismeretlen felhasználó");
+                    }
+
+                    if (data.fullRecipe && data.fullRecipe.length > 0) {
                         setRecipes(data.fullRecipe);
-                    } else { console.log("Data fetch error") }
+                    } else {
+                        setRecipes(null);
+                    }
                 } catch (error) {
-                    setError('Failed to fetch user recipes');
+                    console.error(error);
+                    setError("Hiba történt a receptek lekérése közben");
+                    setRecipes(null);
                 } finally {
                     setLoading(false);
                 }
