@@ -3,7 +3,6 @@ import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
 import { PoolConnection } from 'mysql2/promise';
-import cookie from 'cookie';
 
 interface User {
   user_id: number;
