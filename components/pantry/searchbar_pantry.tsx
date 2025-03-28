@@ -26,7 +26,7 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectio
     const filteredList = useMemo(() => {
         if (!searchQuery.trim()) return [];
         return list
-            .filter((item) => item.ingredient_name && item.ingredient_name.toLowerCase().startsWith(searchQuery.toLowerCase()))
+            .filter((item) => item.ingredient_name && item.ingredient_name.toLowerCase().includes(searchQuery.toLowerCase()))
             .slice(0, 6); 
     }, [searchQuery, list]);
     

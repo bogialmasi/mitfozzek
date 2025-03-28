@@ -44,7 +44,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
     const filteredList = useMemo(() => {
         if (!searchQuery.trim()) return [];
         return list.filter((item) =>
-            item.value.toLowerCase().startsWith(searchQuery.toLowerCase())
+            item.value.toLowerCase().includes(searchQuery.toLowerCase())
         )
             .slice(0, 6); // Limit to the first 6 items
     }, [searchQuery, list]);
