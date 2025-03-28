@@ -22,7 +22,7 @@ export async function isAdmin(req: NextRequest) {
     }
 
     // proceed if the user is the admin
-    return NextResponse.next();
+    //return NextResponse.next();
   } catch (error) {
     console.error('Error verifying token:', error);
     return NextResponse.json({ success: false, message: 'Invalid or expired token' }, { status: 401 });
