@@ -17,6 +17,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { MyUserLoginLogout } from "./user_login_logout";
 import { useAuthentication } from "@/app/context/authenticationContext";
+import { Button } from "@heroui/react";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -49,9 +50,9 @@ export const Navbar = () => {
       { label: "Keresés", href: siteConfig.links.search },
       { label: "Profilom", href: siteConfig.links.profile },
       { label: "Bevásárlólistáim", href: siteConfig.links.shopping },
-      ...(isAdmin ? [
+      /*...(isAdmin ? [
         { label: "Admin", href: siteConfig.adminItems.adminPage}
-      ] : [])
+      ] : [])*/
     ]
     : [
       { label: "Főoldal", href: "/" },
@@ -90,6 +91,13 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
+        {isAdmin && (
+          <NavbarItem>
+            <Button variant="flat" color="danger" radius="full">
+              <NextLink href={siteConfig.adminItems.adminPage}>Admin</NextLink>
+            </Button>
+          </NavbarItem>
+        )}
         <NavbarItem className="hidden sm:flex gap-2">
           <MyUserLoginLogout />
         </NavbarItem>
@@ -106,13 +114,16 @@ export const Navbar = () => {
 
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+          {[
+            ...siteConfig.navMenuItems,
+            ...(isAdmin ? [{ label: "Admin", href: siteConfig.adminItems.adminPage }] : [])
+          ].map((item, index, arr) => (
+            <NavbarMenuItem key={`${item.href}-${index}`}>
               <Link
                 color={
                   index === 2
                     ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
+                    : index === arr.length - 1 
                       ? "danger"
                       : "foreground"
                 }
@@ -125,6 +136,7 @@ export const Navbar = () => {
           ))}
         </div>
       </NavbarMenu>
+
     </NextUINavbar>
   );
 };

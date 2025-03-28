@@ -47,7 +47,13 @@ export const MyReviewsTabs: React.FC<MyReviewsTabsProps> = ({ reviews }) => {
                     <Card>
                         <CardBody>
                             {pendingReviews.length === 0 ? (
-                                <p className='py-6'>Nincsenek elbírálásra váró receptek</p>
+                                <div className='py-4 px-2'>
+                                    <Card>
+                                        <CardBody>
+                                            <p className='py-6'>Nincsenek elbírálásra váró receptek</p>
+                                        </CardBody>
+                                    </Card>
+                                </div>
                             ) : (
                                 pendingReviews.map((review) => (
                                     <MyReviews key={review.recipe_id} review={review} handleStatusChange={handleStatusChange} />
@@ -61,7 +67,13 @@ export const MyReviewsTabs: React.FC<MyReviewsTabsProps> = ({ reviews }) => {
                     <Card>
                         <CardBody>
                             {approvedReviews.length === 0 ? (
-                                <p className='py-6'>Nincsenek elfogadott receptek</p>
+                                <div className='py-4 px-2'>
+                                    <Card>
+                                        <CardBody>
+                                            <p className='py-6'>Nincsenek elfogadott receptek</p>
+                                        </CardBody>
+                                    </Card>
+                                </div>
                             ) : (
                                 approvedReviews.map((review) => (
                                     <MyReviews key={review.recipe_id} review={review} handleStatusChange={handleStatusChange} />
@@ -75,7 +87,13 @@ export const MyReviewsTabs: React.FC<MyReviewsTabsProps> = ({ reviews }) => {
                     <Card>
                         <CardBody>
                             {rejectedReviews.length === 0 ? (
-                                <p className='py-6'>Nincsenek elutasított receptek</p>
+                                <div className='py-4 px-2'>
+                                    <Card>
+                                        <CardBody>
+                                            <p className='py-6'>Nincsenek elutasított receptek</p>
+                                        </CardBody>
+                                    </Card>
+                                </div>
                             ) : (
                                 rejectedReviews.map((review) => (
                                     <MyReviews key={review.recipe_id} review={review} handleStatusChange={handleStatusChange} />
