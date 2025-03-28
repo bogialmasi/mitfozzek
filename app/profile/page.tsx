@@ -143,7 +143,7 @@ export default function ProfilePage() {
                 </Link>
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
-                  href={siteConfig.profileMenuItems.myRecipes}
+                  href={`user/${profile?.userId}`}
                 >
                   Receptjeim
                 </Link>

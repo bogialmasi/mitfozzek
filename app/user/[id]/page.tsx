@@ -18,7 +18,7 @@ export default function UserPage() {
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        if (params.id) {
+        if (params.id!==undefined) {
             setLoading(true);
             const fetchRecipes = async () => {
                 try {
