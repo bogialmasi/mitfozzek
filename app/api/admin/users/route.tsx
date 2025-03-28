@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
+import { isAdmin } from '@/middleware/admin';
+import { PoolConnection } from 'mysql2/promise';
 
-export async function GET() {
-    let con;
+export async function GET(req: NextRequest) {
+    const adminCheck = await isAdmin(req);
+    if (adminCheck) {
+        return adminCheck;  // Return 403 response if not an admin
+    }
+    let con: PoolConnection | undefined;
+    con = await pool.getConnection();
+    if (!con) {
+        return NextResponse.json({ success: false, message: 'Database connection failed' }, { status: 500 });
+    }
     try {
-        con = await pool.getConnection();
-        if (!con) {
-            return NextResponse.json({ success: false, message: 'Database connection failed' }, { status: 500 });
-        }
 
         const [users] = await con.query<RowDataPacket[]>(
             'SELECT user_id, username, email, inactive FROM users'
