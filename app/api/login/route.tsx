@@ -39,10 +39,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Felhasználó deaktiválva' }, { status: 403 });
     }
 
-    // argon2 verification
+
     const validPassword = await argon2.verify(user.password, password);
+
     if (!validPassword) {
-      return NextResponse.json({ success: false, message: 'Helytelen jelszó' }, { status: 401 });
+        return NextResponse.json({ success: false, message: 'Helytelen jelszó' }, { status: 401 });
     }
 
     if (validPassword) {
