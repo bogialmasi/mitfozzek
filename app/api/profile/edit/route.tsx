@@ -37,27 +37,41 @@ export async function PATCH(req: NextRequest) {
         const params = [];
 
         if (newPassword) {
-            const [result] = await con.query<RowDataPacket[]>(`SELECT password FROM users WHERE user_id = ?`, [userId]);
+            const [result] = await con.query<RowDataPacket[]>('SELECT password FROM users WHERE user_id = ?', [userId]);
             if (result.length === 0) {
                 return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
             }
-            const hashedOldPassword = result[0].password; // already hashed, from db
-            const verifyOldPassword = await argon2.verify(hashedOldPassword, password); // old password
+            const hashedOldPassword = result[0].password;
+            const verifyOldPassword = await argon2.verify(hashedOldPassword, password);
+
             if (!verifyOldPassword) {
                 return NextResponse.json({ success: false, message: 'Old password is incorrect' }, { status: 401 });
-            } else {
-                const hashedNewPassword = await argon2.hash(newPassword); // only happens if old password is correct
-                conditions.push('password = ?');
-                params.push(hashedNewPassword);
             }
+
+            const hashedNewPassword = await argon2.hash(newPassword);
+            await con.query('UPDATE users SET password = ? WHERE user_id = ?', [hashedNewPassword, userId]);
         }
 
         if (username) {
+            const [existingUsername] = await con.query<RowDataPacket[]>(
+                'SELECT user_id FROM users WHERE username = ? AND user_id != ?',
+                [username, userId]
+            );
+            if (existingUsername.length > 0) {
+                return NextResponse.json({ success: false, message: 'Username already taken' }, { status: 400 });
+            }
             conditions.push('username = ?');
             params.push(username);
         }
 
         if (email) {
+            const [existingEmail] = await con.query<RowDataPacket[]>(
+                'SELECT user_id FROM users WHERE email = ? AND user_id != ?',
+                [email, userId]
+            );
+            if (existingEmail.length > 0) {
+                return NextResponse.json({ success: false, message: 'Email already in use' }, { status: 400 });
+            }
             conditions.push('email = ?');
             params.push(email);
         }
