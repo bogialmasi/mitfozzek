@@ -1,9 +1,20 @@
 import { NextRequest } from 'next/server';
-import { isAdmin } from '@/middleware/admin';
+import * as jwt from 'jsonwebtoken';
 
-export async function GET(req: NextRequest) {
-  const adminCheck = await isAdmin(req);  // admin check middleware
-  if (adminCheck) {
-    return adminCheck;  
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function isAdmin(req: NextRequest): Promise<boolean> {
+  const token = req.cookies.get('token')?.value;
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    return decoded.isAdmin === true;
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return false;
   }
 }

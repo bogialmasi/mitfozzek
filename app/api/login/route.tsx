@@ -4,6 +4,8 @@ import pool from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
 import { PoolConnection } from 'mysql2/promise';
 
+const ADMIN_USER_ID = ['1'];
+
 interface User {
   user_id: number;
   username: string;
@@ -49,7 +51,9 @@ export async function POST(req: NextRequest) {
     if (validPassword) {
       // Generate a JWT and send it to the client
       // generateToken comes from /lib/jwt's function, is a 'sign'
-      const token = generateToken({ userId: user.user_id, username: user.username });
+      const isAdmin = ADMIN_USER_ID.includes(user.user_id.toString());
+
+      const token = generateToken({ userId: user.user_id, username: user.username, isAdmin: isAdmin });
 
       const response = NextResponse.json({ success: true, message: 'Sikeres bejelentkezés' });
 

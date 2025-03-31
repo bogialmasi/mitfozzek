@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+/*import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const ADMIN_USER_ID = ['1'];  // multiple admin users possible
 
 export async function isAdmin(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
@@ -15,16 +14,18 @@ export async function isAdmin(req: NextRequest) {
     // Verify and decode the token
     const decoded: any = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId;
+    const isAdmin = decoded.isAdmin;
 
 
-    if (!ADMIN_USER_ID.includes(userId.toString())) {
+    if (!isAdmin) {
       return NextResponse.json({ success: false, message: `Not admin. UserId: ${userId}` }, { status: 403 });
     }
 
     // proceed if the user is the admin
-    //return NextResponse.next();
+    return NextResponse.next();
   } catch (error) {
     console.error('Error verifying token:', error);
     return NextResponse.json({ success: false, message: 'Invalid or expired token' }, { status: 401 });
   }
 }
+*/

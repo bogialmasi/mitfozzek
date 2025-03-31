@@ -11,7 +11,7 @@ if (!JWT_SECRET) {
 }
 
 // Generate a JWT
-export function generateToken(payload: { userId: number, username: string }) {
+export function generateToken(payload: { userId: number, username: string, isAdmin: boolean}) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: EXPIRES });
 }
 

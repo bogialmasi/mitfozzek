@@ -2,7 +2,8 @@ import pool from "@/lib/db";
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";
 import * as jwt from 'jsonwebtoken';
-import { isAdmin } from "@/middleware/admin";
+import { isAdmin } from "../route";
+//import { isAdmin } from "@/middleware/admin";
 
 async function getIngredients(con: PoolConnection, recipeId: number) {
     const [ingredientsData] = await con.query<RowDataPacket[]>(`
@@ -57,8 +58,9 @@ async function getDietCategories(con: PoolConnection, recipeId: number) {
 
 export async function GET(req: NextRequest) {
     const adminCheck = await isAdmin(req);
-    if (adminCheck) {
-        return adminCheck;  // Return 403 response if not an admin
+
+    if (!adminCheck) {
+        return NextResponse.json({ success: false, message: 'Not authorized' }, { status: 403 });
     }
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
@@ -211,6 +213,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+    const adminCheck = await isAdmin(req);
+
+    if (!adminCheck) {
+        return NextResponse.json({ success: false, message: 'Not authorized' }, { status: 403 });
+    }
 
     let con: PoolConnection | undefined;
     con = await pool.getConnection();

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
-import { isAdmin } from '@/middleware/admin';
+//import { isAdmin } from '@/middleware/admin';
 import { PoolConnection } from 'mysql2/promise';
+import { isAdmin } from '../route';
 
 export async function GET(req: NextRequest) {
     const adminCheck = await isAdmin(req);
-    if (adminCheck) {
-        return adminCheck;  // Return 403 response if not an admin
+
+    if (!adminCheck) {
+        return NextResponse.json({ success: false, message: 'Not authorized' }, { status: 403 });
     }
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
