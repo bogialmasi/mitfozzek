@@ -6,6 +6,21 @@ import { title } from "@/components/primitives";
 import { Button, Form, Input } from "@heroui/react";
 import { Link } from "@heroui/link";
 import { siteConfig } from "@/config/site";
+import crypto from 'crypto';
+
+const validatePassword = (password: string) => {
+    const minlength = 8;
+    const upperCase = /[A-Z]/.test(password);
+    const lowerCase = /[a-z]/.test(password);
+    const numbers = /\d/.test(password);
+    if (password.length < minlength) {
+        return `A jelszónak legalább ${minlength} karakter hosszúnak kell lennie.`;
+    }
+    if (!upperCase || !lowerCase || !numbers) {
+        return 'A jelszónak tartalmaznia kell legalább egy nagybetűt, legalább egy kisbetűt és legalább egy számot';
+    }
+    return ''; // No error
+};
 
 export default function RegisterPage() {
     const [username, setUsername] = useState<string>('');
@@ -15,6 +30,11 @@ export default function RegisterPage() {
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
+
+    const sha256 = (password: string): string => {
+        return crypto.createHash('sha256').update(password).digest('hex');
+    };
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -22,20 +42,23 @@ export default function RegisterPage() {
             setError('A jelszavak nem egyeznek')
             return;
         }
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setError(passwordError);
+            return;
+        }
+        const hashed = sha256(password);
         const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password, email })
+            body: JSON.stringify({ username, password: hashed, email })
         });
 
-        const data = await response.json();  // Only parse the response once
-        console.log("Szerver válasza: ", data)
-
+        const data = await response.json();
         if (data.success) {
-            // Redirect to login or dashboard after successful registration
-            router.push(siteConfig.links.search);
+            router.push(siteConfig.links.login);
         } else {
             setError(data.message || 'Registration failed.');
         }
