@@ -10,6 +10,19 @@ import { useEffect, useState } from "react";
 import { MyDeactivateModal } from "@/components/profile/modal_deactivate";
 import { siteConfig } from "@/config/site";
 
+const validatePassword = (password: string) => {
+  const minlength = 8;
+  const upperCase = /[A-Z]/.test(password);
+  const lowerCase = /[a-z]/.test(password);
+  const numbers = /\d/.test(password);
+  if (password.length < minlength) {
+    return `A jelszónak legalább ${minlength} karakter hosszúnak kell lennie.`;
+  }
+  if (!upperCase || !lowerCase || !numbers) {
+    return 'A jelszónak tartalmaznia kell legalább egy nagybetűt, legalább egy kisbetűt és legalább egy számot';
+  }
+  return ''; // No error
+};
 export default function EditProfilePage() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>(''); // current
@@ -78,6 +91,13 @@ export default function EditProfilePage() {
     if (newPassword !== newPasswordAgain) {
       setError('A jelszavak nem egyeznek');
       return;
+    }
+    if (newPassword.trim()) {
+      const passwordError = validatePassword(newPassword);
+      if (passwordError) {
+        setError(passwordError);
+        return;
+      }
     }
     setLoading(true);
 
