@@ -3,6 +3,7 @@ import argon2 from 'argon2';
 import pool from '@/lib/db';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
+
 export async function POST(req: NextRequest) {
   let con: PoolConnection | undefined;
   con = await pool.getConnection();
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No database connection' }, { status: 500 });
   }
   try {
- 
+
     const { username, password, email } = await req.json();
 
     if (!username || !password) {
@@ -27,14 +28,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Username taken' }, { status: 400 });
     }
 
+    const [existingEmail] = await con.query<RowDataPacket[]>(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
+
+    if ((existingEmail as any[]).length > 0) {
+      return NextResponse.json({ success: false, message: 'Email adress taken' }, { status: 400 });
+    }
+
     const hashedPassword = await argon2.hash(password, {
-      type: argon2.argon2i, // Argon2i - provides resistance to side-channel attacks
-      memoryCost: 2 ** 16, // Memory cost: how much memory to use for hashing (higher is more secure)
-      timeCost: 4, // Time cost: number of iterations (higher is more secure)
-      parallelism: 1, // Parallelism: how many threads to use (higher increases security)
+      type: argon2.argon2i,
+      memoryCost: 2 ** 16,
+      timeCost: 4,
+      parallelism: 1,
     });
     // Insert new user into the database
-    
+
     await con.beginTransaction();
     const [result] = await con.query<ResultSetHeader>(
       'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
@@ -43,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     const resultId = result.insertId
     if (result.insertId != null) {
-      const [resultPantry] = await con.query<ResultSetHeader>(
+      await con.query<ResultSetHeader>(
         'INSERT INTO con_user_pantry (user_id, pantry_id) VALUES (?, ?)',
         [resultId, resultId] // Both user_id and pantry_id match
       )
