@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { Link } from "@heroui/link";
 import { useAuthentication } from "../context/authenticationContext";
 import { siteConfig } from "@/config/site";
-import crypto from 'crypto';
 
 export default function LoginPage() {
     const [username, setUsername] = useState<string>('');
@@ -16,8 +15,6 @@ export default function LoginPage() {
     const { login } = useAuthentication();
     const [error, setError] = useState<string>('');
     const router = useRouter();
-
-    const hashed = crypto.createHash('sha256').update(password).digest('hex');
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +25,7 @@ export default function LoginPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ username, password: hashed })
+                body: JSON.stringify({ username, password })
             });
             const data = await response.json();
             console.log("response:", data);

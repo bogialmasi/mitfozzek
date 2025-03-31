@@ -6,8 +6,6 @@ import { title } from "@/components/primitives";
 import { Button, Form, Input } from "@heroui/react";
 import { Link } from "@heroui/link";
 import { siteConfig } from "@/config/site";
-import crypto from 'crypto';
-
 const validatePassword = (password: string) => {
     const minlength = 8;
     const upperCase = /[A-Z]/.test(password);
@@ -30,11 +28,6 @@ export default function RegisterPage() {
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
-
-    const sha256 = (password: string): string => {
-        return crypto.createHash('sha256').update(password).digest('hex');
-    };
-
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -47,20 +40,19 @@ export default function RegisterPage() {
             setError(passwordError);
             return;
         }
-        const hashed = sha256(password);
         const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password: hashed, email })
+            body: JSON.stringify({ username, password, email })
         });
 
         const data = await response.json();
         if (data.success) {
             router.push(siteConfig.links.login);
         } else {
-            setError(data.message || 'Registration failed.');
+            setError(data.message || 'A regisztráció sikertelen');
         }
     };
 
