@@ -1,3 +1,4 @@
+'use server'
 import pool from "@/lib/db";
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";

@@ -1,3 +1,4 @@
+'use server'
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
@@ -6,7 +7,7 @@ import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export const getUserId = (req: NextRequest): number | null => {
+export const getUserId = async (req: NextRequest): Promise<number | null> => {
   try {
     const token = req.cookies.get('token')?.value; // Get token from cookies
     if (token === null || token === undefined) {
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
       query = 'SELECT measurement_id AS "key", measurement_name AS "value" FROM measurements;';
       break;
     case 'user_pantry':
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       query = `SELECT ingredients.ingredient_id AS "key", ingredients.ingredient_name AS "value"
              FROM ingredients 
              JOIN pantry ON ingredients.ingredient_id = pantry.ingredient_id 

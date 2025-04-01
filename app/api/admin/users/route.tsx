@@ -1,3 +1,4 @@
+'use server'
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';

@@ -1,3 +1,4 @@
+'use server'
 import pool from '@/lib/db';
 import * as jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';

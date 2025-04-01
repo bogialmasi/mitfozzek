@@ -1,3 +1,4 @@
+'use server'
 import { NextRequest, NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import pool from '@/lib/db';

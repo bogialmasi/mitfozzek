@@ -1,3 +1,4 @@
+'use server'
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
 import { JwtPayload } from 'jsonwebtoken';
