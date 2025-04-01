@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
 
   try {
     const decoded = verifyToken(token);
-    console.log("decoded:", decoded);
     const decodedPayload = decoded as JwtPayload
     const isAdmin = ADMIN_USER_ID.includes(decodedPayload.userId.toString())
     return NextResponse.json({ success: true, isAdmin, user: decoded },
