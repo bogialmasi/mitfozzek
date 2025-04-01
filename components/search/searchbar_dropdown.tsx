@@ -40,13 +40,23 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
         };
     }, []);
 
-    // Filter the list based on the search query (Ingredient)
     const filteredList = useMemo(() => {
         if (!searchQuery.trim()) return [];
-        return list.filter((item) =>
-            item.value.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-            .slice(0, 6); // Limit to the first 6 items
+        const query = searchQuery.toLowerCase();
+        const { exactMatches, partialMatches } = list.reduce<{ exactMatches: typeof list; partialMatches: typeof list }>(
+            (acc, item) => {
+                const value = item.value.toLowerCase();
+
+                if (value === query) {
+                    acc.exactMatches.push(item); // Exact matches first
+                } else if (value.includes(query)) {
+                    acc.partialMatches.push(item); // Partial matches after
+                }
+                return acc;
+            },
+            { exactMatches: [], partialMatches: [] }
+        );
+        return [...exactMatches, ...partialMatches].slice(0, 6); // Limit to first 6 items
     }, [searchQuery, list]);
 
 

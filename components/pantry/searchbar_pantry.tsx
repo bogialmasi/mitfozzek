@@ -25,11 +25,25 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectio
 
     const filteredList = useMemo(() => {
         if (!searchQuery.trim()) return [];
-        return list
-            .filter((item) => item.ingredient_name && item.ingredient_name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .slice(0, 6); 
+        const query = searchQuery.toLowerCase();
+        const { exactMatches, partialMatches } = list.reduce<{ exactMatches: typeof list; partialMatches: typeof list }>(
+            (acc, item) => {
+                const name = item.ingredient_name?.toLowerCase();
+                if (!name) return acc;
+                if (name === query) {
+                    acc.exactMatches.push(item); // Exact matches first
+                } else if (name.includes(query)) {
+                    acc.partialMatches.push(item); // Partial matches after
+                }
+                return acc;
+            },
+            { exactMatches: [], partialMatches: [] }
+        );
+        return [...exactMatches, ...partialMatches].slice(0, 6); // Limit to first 6 items
     }, [searchQuery, list]);
-    
+
+
+
 
 
     const handleSelectItem = (key: number) => {
