@@ -57,6 +57,10 @@ export default function AdminReviewsPage() {
         fetchReviews();
     }, []);
 
+    useEffect(() => {
+        console.log(reviews[0]);
+    }, [reviews])
+
     if (loading) return (
         <div>
             <div className="flex justify-center items-center h-screen">
@@ -74,7 +78,7 @@ export default function AdminReviewsPage() {
             <div className="inline-block max-w-xl text-center justify-center">
                 <h1 className={title()}>Receptek felülvizsgálata</h1>
             </div>
-            <MyReviewsTabs reviews={reviews}/>
+            <MyReviewsTabs reviews={reviews} />
         </div>
     );
 };

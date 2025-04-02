@@ -30,6 +30,11 @@ export default function NewRecipePage() {
   const [addUserId, setAddUserId] = useState<boolean>(false);
   const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+    dishType: new Set<number>(),
+    dietCategory: new Set<number>(),
+    dishCuisine: new Set<number>(),
+  });
 
   const checkLogin = async () => {
     try {
@@ -91,12 +96,6 @@ export default function NewRecipePage() {
     }));
   };
 
-  const [selectedFilters, setSelectedFilters] = useState({
-    dishType: new Set<number>(),
-    dietCategory: new Set<number>(),
-    dishCuisine: new Set<number>(),
-  });
-
   const validateForm = () => {
     if (!recipeName || !recipeDescription || tableItems.length === 0) {
       setError("A mezők kitöltése kötelező");
@@ -123,7 +122,13 @@ export default function NewRecipePage() {
       ingredients: tableItems,
     };
 
-    console.log("submitted:", newRecipe, selectedFilters, acceptTerms, addUserId)
+    const formattedFilters = {
+      dishType: Array.from(selectedFilters.dishType),
+      dietCategory: Array.from(selectedFilters.dietCategory),
+      dishCuisine: Array.from(selectedFilters.dishCuisine),
+    };
+
+    console.log("submitted:", newRecipe, formattedFilters, acceptTerms, addUserId)
     setIsModalOpen(true)
     try {
       const response = await fetch('/api/newrecipe', {
@@ -132,7 +137,7 @@ export default function NewRecipePage() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ newRecipe, selectedFilters, acceptTerms, addUserId }),
+        body: JSON.stringify({ newRecipe, formattedFilters, acceptTerms, addUserId }),
       });
       const res = await response.json();
       if (!response.ok) {

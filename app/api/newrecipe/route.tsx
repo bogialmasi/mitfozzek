@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Get itemId from the request body
-        const { newRecipe, selectedFilters, acceptTerms, addUserId } = await req.json();
+        const { newRecipe, formattedFilters, acceptTerms, addUserId } = await req.json();
 
         if (!acceptTerms) {
             return NextResponse.json({ error: 'You must accept the terms' }, { status: 400 });
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         await con.beginTransaction();
 
 
-        const recipeUserId = addUserId ? userId : null; 
+        const recipeUserId = addUserId ? userId : null;
 
         //Insert into the database
         const [result] = await con.query<ResultSetHeader>(
@@ -56,13 +56,14 @@ export async function POST(req: NextRequest) {
 
         // ingredients
         if (resultId != null) {
+            console.log('Selected filters in newrecipe:', formattedFilters)
             // first only add to pending, admin will approve of it
             await con.query(`INSERT INTO con_recipe_status (recipe_id, status, changed) VALUES (?, "pending", NOW())`, [resultId]);
 
 
             const ingredients = newRecipe.ingredients as Ingredient[]
             if (Array.isArray(ingredients) && newRecipe.ingredients.length > 0) {
-                const recipeIngredients = ingredients.map(({ ingredient_id, ingredient_quantity}) =>
+                const recipeIngredients = ingredients.map(({ ingredient_id, ingredient_quantity }) =>
                     con.query(
                         `INSERT INTO con_recipe_ingredients (recipe_id, ingredient_id, ingredient_quantity) 
                          VALUES (?, ?, ?)`,
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
             }
 
 
-            const { dishType, dishCuisine, dietCategory } = selectedFilters;
+            const { dishType, dishCuisine, dietCategory } = formattedFilters;
             const filters: Promise<any>[] = [];
 
             // dish cuisine
