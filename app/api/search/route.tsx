@@ -50,8 +50,8 @@ export async function GET(req: NextRequest) {
       const [recipes] = await con.query<RowDataPacket[]>(
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
-        JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-        WHERE recipes.recipe_id = ? AND con_recipe_status.status = "approved"`, [recipeId]);
+        JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
+        WHERE recipes.recipe_id = ? AND recipe_status.status = "approved"`, [recipeId]);
 
       if (recipes.length === 0) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
@@ -90,8 +90,8 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
       LEFT JOIN pantry ON pantry.ingredient_id = con_recipe_ingredients.ingredient_id
-      JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-      WHERE con_recipe_status.status = "approved" 
+      JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
+      WHERE recipe_status.status = "approved" 
       AND NOT EXISTS (
             SELECT 1 FROM con_recipe_ingredients
             WHERE con_recipe_ingredients.recipe_id = recipes.recipe_id
@@ -150,8 +150,8 @@ export async function GET(req: NextRequest) {
       const [recipes] = await con.query<RowDataPacket[]>(
         `SELECT recipes.*, users.username FROM recipes 
         LEFT JOIN users ON recipes.source_user_id = users.user_id 
-        JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-        WHERE recipes.source_user_id = ? AND con_recipe_status.status = "approved"`, [userId]);
+        JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
+        WHERE recipes.source_user_id = ? AND recipe_status.status = "approved"`, [userId]);
 
       if (recipes.length === 0) {
         return NextResponse.json({ success: false, message: 'No results found' }, { status: 404 });
@@ -179,8 +179,8 @@ export async function GET(req: NextRequest) {
       LEFT JOIN con_recipe_dish_type ON con_recipe_dish_type.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_diet_category ON con_recipe_diet_category.recipe_id = recipes.recipe_id
       LEFT JOIN con_recipe_cuisine ON con_recipe_cuisine.recipe_id = recipes.recipe_id
-      JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-      WHERE con_recipe_status.status = "approved"
+      JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
+      WHERE recipe_status.status = "approved"
     `;
 
     const filters = [];

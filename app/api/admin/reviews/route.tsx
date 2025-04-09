@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
         if (id) {
             const reviewId = Number(id);
             const [reviews] = await con.query<RowDataPacket[]>(
-                `SELECT DISTINCT recipes.*, users.username, con_recipe_status.status, 
+                `SELECT DISTINCT recipes.*, users.username, recipe_status.status, 
                     dish_type.dishtype_name, dish_cuisine.cuisine_name, diet_category.category_name
                     FROM recipes 
                  LEFT JOIN users ON recipes.source_user_id = users.user_id 
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
                  LEFT JOIN dish_cuisine ON dish_cuisine.cuisine_id = con_recipe_cuisine.cuisine_id
                  LEFT JOIN con_recipe_diet_category on recipes.recipe_id = con_recipe_diet_category.category_id 
                 LEFT JOIN diet_category ON diet_category.category_id = con_recipe_diet_category.category_id
-                 JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
+                 JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
                 WHERE recipes.recipe_id = ? `, [reviewId]);
 
             if (reviews.length === 0) {
@@ -123,7 +123,7 @@ export async function GET(req: NextRequest) {
         const status = searchParams.get('status');
         if (status) {
             const [reviews] = await con.query<RowDataPacket[]>(
-                `SELECT DISTINCT recipes.*, users.username, con_recipe_status.status, 
+                `SELECT DISTINCT recipes.*, users.username, recipe_status.status, 
                 dish_type.dishtype_name, dish_cuisine.cuisine_name, diet_category.category_name 
                 FROM recipes 
                 LEFT JOIN users ON recipes.source_user_id = users.user_id 
@@ -133,8 +133,8 @@ export async function GET(req: NextRequest) {
                 LEFT JOIN dish_cuisine ON dish_cuisine.cuisine_id = con_recipe_cuisine.cuisine_id 
                 LEFT JOIN con_recipe_diet_category on recipes.recipe_id = con_recipe_diet_category.category_id 
                 LEFT JOIN diet_category ON diet_category.category_id = con_recipe_diet_category.category_id 
-                JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id
-                 WHERE con_recipe_status.status = ?`,
+                JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id
+                 WHERE recipe_status.status = ?`,
                 [status]
             );
 
@@ -165,7 +165,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(fullRecipe);
         }
         const [allRecipes] = await con.query<RowDataPacket[]>(`
-            SELECT DISTINCT recipes.*, users.username, con_recipe_status.status, 
+            SELECT DISTINCT recipes.*, users.username, recipe_status.status, 
                 dish_type.dishtype_name, dish_cuisine.cuisine_name, diet_category.category_name 
                 FROM recipes 
                 LEFT JOIN users ON recipes.source_user_id = users.user_id 
@@ -175,7 +175,7 @@ export async function GET(req: NextRequest) {
                 LEFT JOIN dish_cuisine ON dish_cuisine.cuisine_id = con_recipe_cuisine.cuisine_id 
                 LEFT JOIN con_recipe_diet_category on recipes.recipe_id = con_recipe_diet_category.category_id 
                 LEFT JOIN diet_category ON diet_category.category_id = con_recipe_diet_category.category_id 
-                JOIN con_recipe_status ON recipes.recipe_id = con_recipe_status.recipe_id`);
+                JOIN recipe_status ON recipes.recipe_id = recipe_status.recipe_id`);
 
         if (allRecipes.length === 0) {
             return NextResponse.json({ success: false, message: 'No recipes found' }, { status: 404 });
@@ -234,7 +234,7 @@ export async function PATCH(req: NextRequest) {
 
         con.beginTransaction();
 
-        const [result] = await con.query<ResultSetHeader[]>(`UPDATE con_recipe_status SET status = ? WHERE recipe_id = ?`,
+        const [result] = await con.query<ResultSetHeader[]>(`UPDATE recipe_status SET status = ? WHERE recipe_id = ?`,
             [status, review_id]
         );
         await con.commit();
