@@ -108,12 +108,6 @@ export default function ProfilePage() {
     checkLogin();
   }, [])
 
-  useEffect(() => {
-    console.log("Pantry item:", pantryItems[0]);
-    console.log("Ingredient:", ingredients[0]);
-  }, [pantryItems, ingredients])
-
-
   if (loading) return (
     <div>
       <div className="flex justify-center items-center h-screen">

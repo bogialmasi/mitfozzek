@@ -11,7 +11,6 @@ import { useParams } from "next/navigation";
 
 export default function UserPage() {
     const params = useParams<{ id: string }>()
-    console.log("params:", params)
     const [username, setUsername] = useState<string>('');
     const [recipes, setRecipes] = useState<Recipe[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -50,11 +49,6 @@ export default function UserPage() {
             fetchRecipes();
         }
     }, []);
-
-    useEffect(() => {
-        console.log('Recipes:', recipes?.length);
-        console.log('Username:', username);
-    }, [username, recipes])
 
     if (loading) return (
         <div>

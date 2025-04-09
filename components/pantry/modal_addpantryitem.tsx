@@ -31,7 +31,6 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // handle input <= 0 value
         const newValue = Number(e.target.value);
         if (newValue <= 0) {
-            console.log('invalid value input')
             setError("A mennyiségnek 0-tól nagyobbnak kell lennie");
         } else {
             setError("");
@@ -94,7 +93,6 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                             list={ingredients}
                             onSelectionChange={(key: number) => {
                                 const selectedIng = ingredients.find(ing => ing.ingredient_id === key) || null;
-                                console.log('Selected:', selectedIng);
                                 setIngredient(selectedIng);
                             }}
                             isOpen={ingredientSearchOpen}

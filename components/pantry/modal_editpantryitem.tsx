@@ -77,7 +77,6 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // handle input <= 0 value
         const newValue = Number(e.target.value);
         if (newValue <= 0) {
-            console.log('invalid value input')
             setError("A mennyiségnek 0-tól nagyobbnak kell lennie");
         } else {
             setError("");

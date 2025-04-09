@@ -28,7 +28,6 @@ export default function LoginPage() {
                 body: JSON.stringify({ username, password })
             });
             const data = await response.json();
-            console.log("response:", data);
             if (data.success) {
                 // Redirect to /search after successful login
                 setLoading(false);

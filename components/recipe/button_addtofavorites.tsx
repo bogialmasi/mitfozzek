@@ -44,7 +44,6 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
                 });
 
                 const result = await response.json();
-                console.log(result);
                 if (response.ok) {
                     setSuccessAlertContent({
                         title: "Sikeres mentés",

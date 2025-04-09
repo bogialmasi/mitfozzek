@@ -48,7 +48,6 @@ export default function SearchPage() {
   const [error, setError] = useState<string>('');
 
   const checkLogin = async () => {
-    console.log('checkLogin')
     try {
       const res = await fetch('/api/authcheck', {
         method: 'GET',
@@ -56,13 +55,11 @@ export default function SearchPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        console.log('User is not logged in')
         setLoading(false);
         return false;
       }
       return true;
     } catch (err) {
-      console.log('Err')
       setError('Bejelentkezés szükséges');
       setLoading(false);
       return false;

@@ -44,7 +44,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
                 try {
                     setPantryItems((prev) => [...prev, newItem]);
                     setError('');
-                    console.log('Add successful')
                 } catch (error) {
                     console.log('Add failed')
                 }
@@ -65,7 +64,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
 
                 );
                 setError('');
-                console.log('Edit successful')
             }
         } catch (error) {
             console.log('Edit failed')
@@ -79,7 +77,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
             if (ingredient) {
                 setPantryItems((prevItems) => prevItems.filter((item) => item.ingredient_id !== ingredientId));
                 setError('');
-                console.log('Delete successful')
             }
         } catch (error) {
             console.log('Delete failed')
@@ -101,8 +98,6 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
     };
 
     useEffect(() => {
-        console.log("Updated pantryIngredients:", pantryIngredients[0]);
-        console.log("Updated allIngredients:", allIngredients[0]);
         setPantryItems(pantryIngredients);
         setIngredients(allIngredients);
     }, [pantryIngredients, allIngredients]);

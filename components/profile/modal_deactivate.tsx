@@ -37,7 +37,6 @@ export const MyDeactivateModal: React.FC<MyDeactivateModalProps> = ({ isOpen, on
 
         } else {
             setError(data.message || 'Deaktiválás nem sikerült');
-            console.log(data.message);
         }
     };
 

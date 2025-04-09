@@ -38,7 +38,6 @@ export default function AdminReviewsPage() {
                 setError('Failed to fetch reviews');
             }
             const data = await response.json();
-            console.log("Fetched reviews:", data);
             const formattedData = data.map((review: any) => ({
                 ...review,
                 dishtype_name: Array.isArray(review.dishtype_name) ? review.dishtype_name : [],
@@ -57,9 +56,6 @@ export default function AdminReviewsPage() {
         fetchReviews();
     }, []);
 
-    useEffect(() => {
-        console.log(reviews[0]);
-    }, [reviews])
 
     if (loading) return (
         <div>

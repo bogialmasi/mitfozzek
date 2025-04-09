@@ -6,7 +6,6 @@ import { JwtPayload } from 'jsonwebtoken';
 const ADMIN_USER_ID = ['1']; // multiple possible
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
-  console.log(token);
   if (!token) {
     return NextResponse.json({ success: false, message: 'Not logged in' }, { status: 401 });
   }

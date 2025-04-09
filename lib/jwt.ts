@@ -19,7 +19,6 @@ export function generateToken(payload: { userId: number, username: string, isAdm
 export function verifyToken(token: string) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Decoded JWT Payload:", decoded);
     return decoded;
   } catch (error: unknown) {
     if (error instanceof jwt.TokenExpiredError) {

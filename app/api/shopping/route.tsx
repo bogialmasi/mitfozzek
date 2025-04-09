@@ -319,7 +319,6 @@ export async function DELETE(req: NextRequest) {
         // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId; // Get userId from the decoded token
-        console.log("userId:", userId);
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }

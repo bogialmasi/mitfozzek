@@ -23,7 +23,6 @@ export const MyAddToPantryButton: React.FC<MyAddToPantryProps> = ({ ingredients 
             ingredient_quantity: ing.ingredient_quantity
         };
 
-        console.log("NEW ITEM", newItem);
         try {
             const res = await fetch('/api/pantry', {
                 method: 'POST',

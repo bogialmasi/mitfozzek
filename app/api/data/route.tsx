@@ -14,7 +14,6 @@ export const getUserId = async (req: NextRequest): Promise<number | null> => {
       return null;
     }
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    console.log("DECODED: ", decoded.userId, ", ",decoded.isAdmin)
     return decoded.userId || null;
   } catch (error) {
     console.error('Invalid token:', error);

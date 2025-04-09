@@ -28,7 +28,6 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount:
     const [shoppingName, setShoppingName] = useState(recipe.recipe_name);
 
     const handleAddShopping = async (addValue: string) => {
-        console.log("handleAddShopping addAll:", addValue);
         if (!user) {
             onOpen();
         }
@@ -56,7 +55,6 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount:
                 });
 
                 const result = await response.json();
-                console.log(result);
                 if (response.ok) {
                     setSuccessAlertContent({
                         title: "Sikeres mentés",

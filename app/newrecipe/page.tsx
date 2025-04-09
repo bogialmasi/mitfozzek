@@ -128,7 +128,6 @@ export default function NewRecipePage() {
       dishCuisine: Array.from(selectedFilters.dishCuisine),
     };
 
-    console.log("submitted:", newRecipe, formattedFilters, acceptTerms, addUserId)
     setIsModalOpen(true)
     try {
       const response = await fetch('/api/newrecipe', {
