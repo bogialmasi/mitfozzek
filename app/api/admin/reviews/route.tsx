@@ -3,8 +3,7 @@ import pool from "@/lib/db";
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";
 import * as jwt from 'jsonwebtoken';
-import { isAdmin } from "../route";
-//import { isAdmin } from "@/middleware/admin";
+import { isAdmin } from "@/lib/helper";
 
 async function getIngredients(con: PoolConnection, recipeId: number) {
     const [ingredientsData] = await con.query<RowDataPacket[]>(`

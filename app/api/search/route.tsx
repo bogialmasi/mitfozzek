@@ -4,24 +4,9 @@ import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 import * as jwt from 'jsonwebtoken';
 import { PoolConnection } from 'mysql2/promise';
+import { getIngredients } from '@/lib/helper';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-async function getIngredients(con: PoolConnection, recipeId: number) {
-  const [ingredientsData] = await con.query<RowDataPacket[]>(`
-        SELECT ingredients.*,
-               con_recipe_ingredients.ingredient_quantity
-        FROM ingredients
-        JOIN con_recipe_ingredients ON con_recipe_ingredients.ingredient_id = ingredients.ingredient_id
-        WHERE con_recipe_ingredients.recipe_id = ?
-    `, [recipeId]);
-
-  return ingredientsData.map(ingredient => ({
-    ingredient_id: ingredient.ingredient_id,
-    ingredient_name: ingredient.ingredient_name,
-    ingredient_quantity: ingredient.ingredient_quantity,
-    ingredient_measurement: ingredient.ingredient_measurement
-  }));
-}
 
 export async function GET(req: NextRequest) {
   let con: PoolConnection | undefined;

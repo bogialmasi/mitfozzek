@@ -93,9 +93,7 @@ export const Navbar = () => {
       >
         {isAdmin && (
           <NavbarItem>
-            <Button variant="flat" color="danger" radius="full">
-              <NextLink href={siteConfig.adminItems.adminPage}>Admin</NextLink>
-            </Button>
+            <NextLink href={siteConfig.adminItems.adminPage} color="danger" className="font-bold">Admin</NextLink>
           </NavbarItem>
         )}
         <NavbarItem className="hidden sm:flex gap-2">
@@ -123,7 +121,7 @@ export const Navbar = () => {
                 color={
                   index === 2
                     ? "primary"
-                    : index === arr.length - 1 
+                    : index === arr.length - 1
                       ? "danger"
                       : "foreground"
                 }

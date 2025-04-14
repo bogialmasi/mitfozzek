@@ -133,7 +133,7 @@ export default function ProfilePage() {
                   className={buttonStyles({ variant: "bordered", radius: "full" })}
                   href={siteConfig.profileMenuItems.addRecipe}
                 >
-                  <HeroPlus /> Recept hozzáadása
+                  <HeroPlus /> Recept feltöltése
                 </Link>
                 <Link
                   className={buttonStyles({ variant: "bordered", radius: "full" })}

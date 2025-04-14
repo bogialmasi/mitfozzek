@@ -2,24 +2,8 @@
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
-import * as jwt from 'jsonwebtoken';
 import { PoolConnection } from 'mysql2/promise';
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-export const getUserId = async (req: NextRequest): Promise<number | null> => {
-  try {
-    const token = req.cookies.get('token')?.value; // Get token from cookies
-    if (token === null || token === undefined) {
-      return null;
-    }
-    const decoded: any = jwt.verify(token, JWT_SECRET);
-    return decoded.userId || null;
-  } catch (error) {
-    console.error('Invalid token:', error);
-    return null;
-  }
-};
+import { getUserId } from '@/lib/helper';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;

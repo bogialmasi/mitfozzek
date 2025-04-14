@@ -4,7 +4,7 @@ import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 //import { isAdmin } from '@/middleware/admin';
 import { PoolConnection } from 'mysql2/promise';
-import { isAdmin } from '../route';
+import { isAdmin } from '@/lib/helper';
 
 export async function GET(req: NextRequest) {
     const adminCheck = await isAdmin(req);
