@@ -60,11 +60,12 @@ export async function POST(req: NextRequest) {
 
       response.cookies.set('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60, // 24 hours
         path: '/',
         sameSite: 'lax', // Ensures it works across subdomains
       });
+      console.log("Setting token cookie:", token);
+
       return response;
     } else {
       return NextResponse.json({ success: false, message: 'Sikertelen bejelentkezés' }, { status: 401 });
