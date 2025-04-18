@@ -1,5 +1,6 @@
 'use client'
 import { Ingredient } from "@/types";
+import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { useState, useMemo, useEffect } from "react";
 
@@ -69,12 +70,13 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectio
                 {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-50 border rounded shadow-md max-w-md w-full overflow-y-auto">
                         {filteredList.map((item) => (
-                            <li
-                                key={item.ingredient_id}
-                                onClick={() => handleSelectItem(item.ingredient_id)}
-                                className="p-2 cursor-pointer bg-white dark:bg-black"
-                            >
-                                {item.ingredient_name}
+                            <li key={item.ingredient_id}>
+                                <Button
+                                    onClick={() => handleSelectItem(item.ingredient_id)}
+                                    className="p-2 cursor-pointer bg-white dark:bg-black"
+                                >
+                                    {item.ingredient_name}
+                                </Button>
                             </li>
                         ))}
                     </ul>

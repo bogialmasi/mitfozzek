@@ -89,12 +89,14 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                 {isOpen && filteredList.length > 0 && (
                     <ul className="absolute z-10 border rounded overflow-y-auto">
                         {filteredList.map((item) => (
-                            <li
-                                key={item.key}
-                                onClick={(e) => handleSelectItem(item.key, e)}
-                                className="p-2 cursor-pointer bg-white dark:bg-black"
-                            >
-                                {item.value}
+                            <li key={item.key}>
+                                <Button
+                                    
+                                    onClick={(e) => handleSelectItem(item.key, e)}
+                                    className="p-2 cursor-pointer bg-white dark:bg-black"
+                                >
+                                    {item.value}
+                                </Button>
                             </li>
                         ))}
                     </ul>
