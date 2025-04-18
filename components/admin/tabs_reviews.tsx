@@ -1,23 +1,9 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tabs, Tab, Card, CardBody } from "@heroui/react";
 import { MyReviews } from './card_reviews';
-import { Ingredient } from '@/types';
+import { Review } from '@/types';
 
-interface Review {
-    ingredients: Ingredient[];
-    recipe_description: string;
-    recipe_headcount: number;
-    recipe_id: number;
-    recipe_time: number;
-    recipe_name: string;
-    source_user_id: number | null;
-    source_username: string | null;
-    status: string;
-    dishtype_name: string[];
-    cuisine_name: string[];
-    category_name: string[];
-}
 
 interface MyReviewsTabsProps {
     reviews: Review[];

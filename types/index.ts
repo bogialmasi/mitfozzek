@@ -45,3 +45,18 @@ export interface Shopping {
   recipe_name: string | null;
   ingredients: ShoppingIngredient[]
 }
+
+export interface Review {
+    ingredients: Ingredient[];
+    recipe_description: string;
+    recipe_headcount: number;
+    recipe_id: number;
+    recipe_time: number;
+    recipe_name: string;
+    source_user_id: number | null;
+    source_username: string | null;
+    status: string;
+    dishtype_name: string[];
+    cuisine_name: string[];
+    category_name: string[];
+}

@@ -1,25 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Divider, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
-import { Ingredient } from "@/types";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
 import { HeroCancel, HeroCheck } from '../icons';
+import { Review } from '@/types';
 
-interface Review {
-    ingredients: Ingredient[];
-    recipe_description: string;
-    recipe_headcount: number;
-    recipe_id: number;
-    recipe_time: number;
-    recipe_name: string;
-    source_user_id: number | null;
-    source_username: string | null;
-    status: string;
-    dishtype_name: string[];
-    cuisine_name: string[];
-    category_name: string[];
-}
 
 interface MyReviewsProps {
     review: Review;
