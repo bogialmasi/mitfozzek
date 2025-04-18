@@ -73,7 +73,7 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectio
                             <li key={item.ingredient_id}>
                                 <Button
                                     onClick={() => handleSelectItem(item.ingredient_id)}
-                                    className="p-2 cursor-pointer bg-white dark:bg-black"
+                                    className="p-2 cursor-pointer bg-white dark:bg-black w-full"
                                 >
                                     {item.ingredient_name}
                                 </Button>

@@ -93,7 +93,7 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                                 <Button
                                     
                                     onClick={(e) => handleSelectItem(item.key, e)}
-                                    className="p-2 cursor-pointer bg-white dark:bg-black"
+                                    className="p-2 cursor-pointer bg-white dark:bg-black w-full"
                                 >
                                     {item.value}
                                 </Button>
