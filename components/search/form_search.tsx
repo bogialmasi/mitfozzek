@@ -25,7 +25,6 @@ interface MySearchProps {
 }
 
 export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishType, dietCategory, dishCuisine, pantryIngredients }) => {
-    const [isOpen, setIsOpen] = useState(false);
     const { user } = useAuthentication();
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [pantryIngredientsOnly, setPantryIngredientsOnly] = useState(false);
