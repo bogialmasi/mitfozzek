@@ -5,7 +5,7 @@ import { useAuthentication } from '@/app/context/authenticationContext';
 import { button as buttonStyles } from "@heroui/theme";
 import { useDisclosure } from '@heroui/modal';
 import { Button } from '@heroui/button';
-import { HeroCheck, HeroShoppingCart } from '../icons';
+import { HeroShoppingCart } from '../icons';
 import { MyLoginModal } from '../login_check/modal_login';
 import { Input } from '@heroui/input';
 import { Popover, PopoverTrigger, PopoverContent } from '@heroui/popover';

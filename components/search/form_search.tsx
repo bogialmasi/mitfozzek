@@ -124,7 +124,7 @@ export const MySearch: React.FC<MySearchProps> = ({ onSearch, ingredients, dishT
                 </div>
                 <div>
                     <div className='flex flex-col space-y-1 w-md'>
-                        <p className="text-sm py-2">Reggeli, ebéd, vacsora, vagy valami különleges?</p>
+                        <p className="text-sm py-2">Étel típusa?</p>
                         <MyDropdown
                             list={dishType}
                             selectedKeys={selectedFilters.dishType}
