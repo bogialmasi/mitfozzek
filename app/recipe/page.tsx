@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { subtitle, title } from '@/components/primitives';
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
@@ -15,7 +15,7 @@ import { MyDangerAlert } from '@/components/alert/alert_danger';
 import { MyAddToFavoritesButton } from '@/components/recipe/button_addtofavorites';
 import { MyAddToShoppingButton } from '@/components/recipe/button_addtoshoppinglist';
 
-export default function RecipePage() {
+const RecipePageContent = () => {
   const searchParams = useSearchParams();
   const [resultRecipe, setResultRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,11 +44,11 @@ export default function RecipePage() {
       }
 
       try {
-        const response = await fetch(`/api/search?id=${id}`); // Fetch using the query parameter
-        if (!response.ok) {
-          throw new Error('Recept lekérése sikertelen');
+        const res = await fetch(`/api/search?id=${id}`); // Fetch using the query parameter
+        if (!res.ok) {
+          setError('Recept lekérése sikertelen');
         }
-        const data = await response.json();
+        const data = await res.json();
         setResultRecipe(data);
         setHeadcount(data.recipe_headcount);
         setUsername(data.username);
@@ -139,3 +139,11 @@ export default function RecipePage() {
     </div>
   )
 };
+
+export default function RecipePage() {
+    return (
+        <Suspense fallback={<div>Betöltés...</div>}>
+            <RecipePageContent />
+        </Suspense>
+    );
+}
