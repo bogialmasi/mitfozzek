@@ -16,6 +16,7 @@ export default function ShoppingPage() {
 
   const fetchShopping = async () => {
     try {
+      console.log(document.cookie);
       setLoading(true)
       const response = await fetch('/api/shopping', {
         method: 'GET',

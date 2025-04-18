@@ -2,20 +2,21 @@
 import { useAuthentication } from '@/app/context/authenticationContext';
 import { useEffect, useState } from 'react';
 import { Alert, Button } from '@heroui/react';
-import cookie from 'cookie';
 import { siteConfig } from '@/config/site';
+import * as cookie from 'cookie';
 
 export const MyLogoutAlert = () => {
   const { user, logout } = useAuthentication();
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    const cookies = document.cookie ? cookie.parse(document.cookie) : {};
-    const token = cookies.token; // Get token from cookie
-    
+    const parsedCookies = cookie.parse(document.cookie || '');
+    const token = parsedCookies.token;
+
     // If there's no token and user is logged out, show the alert
     if (!token && user === null) {
       console.log('User got logged out');
+      console.log(cookie)
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 5000); // Alert shown for 5 sec
       logout(); // Logout the user by clearing the cookie and user state

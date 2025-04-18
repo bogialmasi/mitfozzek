@@ -1,7 +1,7 @@
 'use client'
 import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useEffect, useState } from "react";
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 
 type User = {
   userId: number;
@@ -34,8 +34,8 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
 
   useEffect(() => {
     setLoading(true);
-    const cookies = document.cookie ? cookie.parse(document.cookie) : {};
-    const token = cookies.token;
+    const parsedCookies = cookie.parse(document.cookie || '');
+    const token = parsedCookies.token;
   
     if (token) {
       if (isTokenExpired(token)) {
@@ -69,6 +69,8 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
         });
 
       setUser(null);
+      console.log('Logout successful')
+      console.log("Cookies after logout:", document.cookie);
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -77,7 +79,9 @@ export const UserAuthenticationProvider: React.FC<UserAuthenticationProviderProp
 
   const login = async () => {
     try {
-      const res = await fetch('/api/authcheck', { credentials: 'include' });
+      const res = await fetch('/api/authcheck', { 
+        method: 'GET',
+        credentials: 'include' });
       const data = await res.json();
 
       if (data.success) {

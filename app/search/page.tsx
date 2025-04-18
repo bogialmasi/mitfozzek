@@ -68,6 +68,7 @@ export default function SearchPage() {
 
   // Fetch filters 
   useEffect(() => {
+    console.log(document.cookie);
     const fetchFilters = async () => {
       setLoading(true);
       setError('');
