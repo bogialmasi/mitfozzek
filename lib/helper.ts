@@ -52,3 +52,17 @@ export async function getIngredients(con: PoolConnection, recipeId: number) {
         ingredient_measurement: ingredient.ingredient_measurement
     }));
 }
+
+export const validatePassword = (password: string) => {
+    const minlength = 8;
+    const upperCase = /[A-Z]/.test(password);
+    const lowerCase = /[a-z]/.test(password);
+    const numbers = /\d/.test(password);
+    if (password.length < minlength) {
+        return `A jelszónak legalább ${minlength} karakter hosszúnak kell lennie.`;
+    }
+    if (!upperCase || !lowerCase || !numbers) {
+        return 'A jelszónak tartalmaznia kell legalább egy nagybetűt, legalább egy kisbetűt és legalább egy számot';
+    }
+    return ''; // No error
+};

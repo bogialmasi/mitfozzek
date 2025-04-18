@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
-//import { isAdmin } from '@/middleware/admin';
 import { PoolConnection } from 'mysql2/promise';
 import { isAdmin } from '@/lib/helper';
 
