@@ -27,7 +27,10 @@ export const Navbar = () => {
 
   const checkIfAdmin = async () => {
     if (user) {
-      const res = await fetch('/api/authcheck');
+      const res = await fetch('/api/authcheck', {
+        method: 'GET',
+        credentials: 'include', // Use cookies
+    });
       const data = await res.json();
       if (data.success && data.isAdmin) {
         setIsAdmin(true);
@@ -93,7 +96,7 @@ export const Navbar = () => {
       >
         {isAdmin && (
           <NavbarItem>
-            <NextLink href={siteConfig.adminItems.adminPage} color="danger" className="font-bold">Admin</NextLink>
+            <Link href={siteConfig.adminItems.adminPage} color="danger" className="font-bold">Admin</Link>
           </NavbarItem>
         )}
         <NavbarItem className="hidden sm:flex gap-2">

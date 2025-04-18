@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import { Button } from "@heroui/button";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { button as buttonStyles } from "@heroui/theme";
+import Link from "next/link";
 
 export const MyUserLoginLogout = () => {
     const { user, logout } = useAuthentication();
@@ -29,7 +30,7 @@ export const MyUserLoginLogout = () => {
                             Bevásárlólistáim
                         </DropdownItem>
                         <DropdownItem key="logout" onPress={logout} textValue="Kijelentkezés">
-                            <a href="/">Kijelentkezés</a>
+                            <Link href="/">Kijelentkezés</Link>
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
