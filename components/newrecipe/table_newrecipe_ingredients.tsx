@@ -5,7 +5,7 @@ import { Ingredient } from "@/types";
 import { MyAddRecipeIngredientsModal } from "./modal_addrecipeingredient";
 import { useDisclosure } from "@heroui/modal";
 import { useEffect, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger, Spinner } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { subtitle } from "@/components/primitives";
 import { button as buttonStyles } from "@heroui/theme";
 

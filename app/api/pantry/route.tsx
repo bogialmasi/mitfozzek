@@ -166,14 +166,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Item already exists in pantry' }, { status: 400 });
         }
 
-        await con.beginTransaction();
 
         await con.query<ResultSetHeader[]>(
             "INSERT INTO pantry (pantry_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)",
             [userId, ingredient_id, ingredient_quantity]
         );
 
-        await con.commit();
         return NextResponse.json({ success: true });
     } catch (error) {
         if (con) {

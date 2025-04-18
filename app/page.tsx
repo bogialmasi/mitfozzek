@@ -9,7 +9,6 @@ export default function Home() {
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="inline-block max-w-xl text-center justify-center">
         <span className={title({ color: "violet" })}>Mit főzzek?&nbsp;</span>
-        <br />
         <span className={title()}>
           Alkoss listát az otthoni összetevőidből, és
           keress recepteket ezek alapján!

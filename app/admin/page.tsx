@@ -1,5 +1,5 @@
 'use client'
-import { HeroSearch, HeroSettings, HeroUser } from "@/components/icons";
+import { HeroSettings } from "@/components/icons";
 import { title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
 import { Spinner } from "@heroui/react";

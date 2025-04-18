@@ -1,26 +1,12 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { Ingredient, Recipe } from "@/types";
+import { Review } from "@/types";
 import { Spinner } from "@heroui/react";
 import { title } from "@/components/primitives";
-import { MyReviews } from "@/components/admin/card_reviews";
 import { MyReviewsTabs } from "@/components/admin/tabs_reviews";
 
 
-interface Review {
-    ingredients: Ingredient[];
-    recipe_description: string;
-    recipe_headcount: number;
-    recipe_id: number;
-    recipe_time: number;
-    recipe_name: string;
-    source_user_id: number | null;
-    source_username: string | null;
-    status: string;
-    dishtype_name: string[];
-    cuisine_name: string[];
-    category_name: string[];
-}
+
 export default function AdminReviewsPage() {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
