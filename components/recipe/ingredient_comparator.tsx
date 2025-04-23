@@ -1,10 +1,9 @@
 'use client'
-import { Ingredient, Recipe } from "@/types";
+import { Ingredient } from "@/types";
 import { HeroCancel, HeroCheck } from "../icons";
 import { useState, useEffect } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 
-// compares one recipe ingredient to items in pantry
 interface MyPantryIngredientComparatorProps {
     ingredient: Ingredient;
 }
@@ -56,13 +55,10 @@ export const MyPantryIngredientComparator: React.FC<MyPantryIngredientComparator
         fetchPantry();
     }, []);
 
-    // check if both recipe and pantry store the same ingredient id
     const pantryItem = pantryItems?.find(
         (item) =>
             item.ingredient_id === ingredient.ingredient_id
     );
-
-    // compare quantity values
     const enoughQuantity = pantryItem ? pantryItem.ingredient_quantity >= ingredient.ingredient_quantity : false;
 
     return (

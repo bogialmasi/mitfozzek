@@ -14,7 +14,6 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  // get data from /api/favrecipes
   const fetchFavorites = async () => {
     try {
       setLoading(true)
@@ -27,7 +26,6 @@ export default function FavoritesPage() {
       }
       const data = await response.json();
       if (data) {
-        // format response to fit into MyFavRecipe
         const formattedRecipe = data.map((recipe: Recipe) => ({
           ...recipe,
           ingredients: (recipe.ingredients as Ingredient[])?.map((ingredient: Ingredient) => ({
@@ -46,23 +44,21 @@ export default function FavoritesPage() {
     }
   };
 
-  // Remove the deleted recipe from the list
   const handleDelete = async (recipeId: number) => {
     setFavorites((prevFavorites) => {
-      if (!prevFavorites) return []; // Ensure the return of an empty array if prevFavorites is null
+      if (!prevFavorites) return []; 
       const newFavorites = prevFavorites.filter((recipe) => recipe.recipe_id !== recipeId);
       return newFavorites;
     });
     await fetchFavorites();
   };
 
-  // Fetch the favorite recipes data whenever the list changes
   useEffect(() => {
     const checkLogin = async () => {
       try {
         const res = await fetch('/api/authcheck', {
           method: 'GET',
-          credentials: 'include', // Use cookies
+          credentials: 'include', 
         });
         const data = await res.json();
         if (!data.success) {

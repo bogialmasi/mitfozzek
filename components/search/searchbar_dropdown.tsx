@@ -48,15 +48,15 @@ export const MySearchBar: React.FC<MySearchBarProps> = ({ isDisabled, list, sele
                 const value = item.value.toLowerCase();
 
                 if (value === query) {
-                    acc.exactMatches.push(item); // Exact matches first
+                    acc.exactMatches.push(item); 
                 } else if (value.includes(query)) {
-                    acc.partialMatches.push(item); // Partial matches after
+                    acc.partialMatches.push(item); 
                 }
                 return acc;
             },
             { exactMatches: [], partialMatches: [] }
         );
-        return [...exactMatches, ...partialMatches].slice(0, 6); // Limit to first 6 items
+        return [...exactMatches, ...partialMatches].slice(0, 6); 
     }, [searchQuery, list]);
 
 

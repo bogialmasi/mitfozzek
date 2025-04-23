@@ -4,21 +4,18 @@ import { Checkbox, useDisclosure } from "@heroui/react";
 import { useAuthentication } from "@/app/context/authenticationContext";
 import { MyLoginModal } from "../login_check/modal_login";
 
-/* This Checkbox is only for logged in users */
 
 export const MyPantryCheckBox: React.FC = () => {
     const [isSelected, setIsSelected] = useState<boolean>(false);
     const { user } = useAuthentication();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();  
 
 
     const handleCheckboxChange = (isSelected: boolean): void => {
         if (!user) {
-            // If user is not logged in, show the modal
             setIsSelected(false);
             onOpen();
         } else {
-            // If logged in, update checkbox state
             setIsSelected(isSelected);
         }
     };

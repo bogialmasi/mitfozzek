@@ -27,7 +27,6 @@ export default function ShoppingPage() {
       }
       const data = await response.json();
       if (data) {
-        // format response to fit into MyShoppingList
         const formattedShopping = data.map((shopping: Shopping) => ({
           ...shopping,
           ingredients: (shopping.ingredients as ShoppingIngredient[])?.map((ingredient: ShoppingIngredient) => ({
@@ -54,7 +53,7 @@ export default function ShoppingPage() {
       try {
         const res = await fetch('/api/authcheck', {
           method: 'GET',
-          credentials: 'include', // Use cookies
+          credentials: 'include', 
         });
         const data = await res.json();
         if (!data.success) {
@@ -73,10 +72,10 @@ export default function ShoppingPage() {
   }, []);
 
 
-  // Remove the deleted shoppinglist
+
   const handleDelete = async (shoppingId: number) => {
     setShopping((prevLists) => {
-      if (!prevLists) return []; // Ensure the return of an empty array if prevLists is null
+      if (!prevLists) return [];
       const newLists = prevLists.filter((shopping) => shopping.shopping_id !== shoppingId);
       return newLists;
     });

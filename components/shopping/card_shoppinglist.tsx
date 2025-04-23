@@ -23,7 +23,6 @@ export const MyShoppingList: React.FC<MyShoppingListProps> = ({ shoppingList, on
     const [isDeleting, setIsDeleting] = useState(false);
     const [isChanging, setIsChanging] = useState(false);
 
-    // for the checkbox group
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
         shoppingList.ingredients.filter((ingredient) => ingredient.bought).map((ingredient) => String(ingredient.ingredient_id))
     );

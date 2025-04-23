@@ -13,7 +13,7 @@ interface MyFavRecipeProps {
 export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) => {
 
     const [showFullDescription, setShowFullDescription] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false); // Track if the delete operation is in progress
+    const [isDeleting, setIsDeleting] = useState(false); 
 
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
@@ -50,12 +50,12 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
     };
 
     const handleDelete = async () => {
-        setIsDeleting(true); // Disable the button during the delete process
+        setIsDeleting(true); 
         const success = await deleteFromFavorites(recipe.recipe_id);
         if (success) {
-            onDelete(recipe.recipe_id); // Call the parent callback to remove the recipe from the list
+            onDelete(recipe.recipe_id); 
         }
-        setIsDeleting(false); // Re-enable the button after the delete operation
+        setIsDeleting(false);
     };
     return (
         <div className='py-4'>
@@ -99,7 +99,7 @@ export const MyFavRecipe: React.FC<MyFavRecipeProps> = ({ recipe, onDelete }) =>
                 <CardFooter>
                     <Button
                         onClick={handleDelete}
-                        disabled={isDeleting} // Disable the button while deleting
+                        disabled={isDeleting} 
                         className={buttonStyles({ variant: "ghost", radius: "full", color: "danger" })}
                     >
                         {isDeleting ? 'Törlés folyamatban' : 'Törlés'}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@heroui/react";
-import { Recipe, Ingredient } from '@/types';
+import { Card, CardHeader, CardBody, CardFooter, Divider, Link } from "@heroui/react";
+import { Recipe } from '@/types';
 
 interface MyListItemProps {
   recipe: Recipe;

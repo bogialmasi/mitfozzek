@@ -91,7 +91,7 @@ export default function ProfilePage() {
       try {
         const res = await fetch('/api/authcheck', {
           method: 'GET',
-          credentials: 'include', // Use cookies for authentication
+          credentials: 'include', 
         });
         const data = await res.json();
         if (!data.success) {
@@ -99,7 +99,7 @@ export default function ProfilePage() {
           setLoading(false);
           return;
         }
-        fetchProfile(); // Fetch favorites if the user is logged in
+        fetchProfile(); 
       } catch (err) {
         setError('Bejelentkezés szükséges');
         setLoading(false);

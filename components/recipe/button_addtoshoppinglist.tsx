@@ -18,8 +18,8 @@ interface MyAddToShoppingProps {
 
 export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount: number }> = ({ recipe, headcount }) => {
     const { user } = useAuthentication();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
-    const [isAdding, setIsAdding] = useState<boolean>(false); // To manage loading state
+    const { isOpen, onOpen, onOpenChange } = useDisclosure(); 
+    const [isAdding, setIsAdding] = useState<boolean>(false);  
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
 
@@ -33,12 +33,10 @@ export const MyAddToShoppingButton: React.FC<MyAddToShoppingProps & { headcount:
         }
         else {
             const userId = user.userId;
-
             if (userId === null || userId === undefined || !recipe.recipe_id) {
                 console.error('Missing userId or recipeId');
                 return;
             }
-
             try {
                 setIsAdding(true);
 

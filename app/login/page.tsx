@@ -29,7 +29,6 @@ export default function LoginPage() {
             });
             const data = await response.json();
             if (data.success) {
-                // Redirect to /search after successful login
                 setLoading(false);
                 login(data.token);
                 router.push(siteConfig.links.search);

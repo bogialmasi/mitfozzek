@@ -1,8 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
-// import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroPlus } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
@@ -53,7 +52,7 @@ export const MyAddPantryModal: React.FC<MyAddPantryModalProps> = ({ isOpen, onOp
                     body: JSON.stringify(newItem),
                 });
                 const response = await res.json();
-                onAddItem(ingredient.ingredient_id, quantity); // updating pantry table
+                onAddItem(ingredient.ingredient_id, quantity);
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({

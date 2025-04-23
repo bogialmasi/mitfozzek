@@ -12,7 +12,7 @@ export const MyDropdown: React.FC<MyDropdownProps> = ({ list, selectedKeys, onSe
   const selectedValue = useMemo(() => {
     const selectedValues = Array.from(selectedKeys)
       .map((key) => list.find((d) => d.key === key)?.value)
-      .filter((v) => v);  // Filter undefined values
+      .filter((v) => v);  
     return selectedValues.length > 0 ? selectedValues.join(', ') : 'Nincs kiválasztva';
   }, [selectedKeys, list]);
 

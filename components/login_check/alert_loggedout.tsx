@@ -23,7 +23,6 @@ export const MyLogoutAlert = () => {
     }
   }, [user, logout]);
 
-  // Apply the opacity transition to fade in/out
   const alertClasses = showAlert
     ? 'opacity-100 transition-opacity duration-500'
     : 'opacity-0 transition-opacity duration-500';

@@ -25,12 +25,6 @@ const RecipePageContent = () => {
   const [headcount, setHeadcount] = useState(1);
   const [username, setUsername] = useState<string | null>(null);
 
-  const [successAlertVisible, setSuccessAlertVisible] = useState(false);
-  const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
-
-  const [dangerAlertVisible, setDangerAlertVisible] = useState(false);
-  const [dangerAlertContent, setDangerAlertContent] = useState({ title: "", description: "" });
-
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
@@ -44,7 +38,7 @@ const RecipePageContent = () => {
       }
 
       try {
-        const res = await fetch(`/api/search?id=${id}`); // Fetch using the query parameter
+        const res = await fetch(`/api/search?id=${id}`); 
         if (!res.ok) {
           setError('Recept lekérése sikertelen');
         }
@@ -104,18 +98,6 @@ const RecipePageContent = () => {
 
             <MyAddToFavoritesButton recipeId={resultRecipe.recipe_id} />
             <MyAddToShoppingButton recipe={resultRecipe} headcount={headcount} />
-            {successAlertVisible && (
-              <MySuccessAlert
-                title={successAlertContent.title}
-                description={successAlertContent.description}
-              />
-            )}
-            {dangerAlertVisible && (
-              <MyDangerAlert
-                title={dangerAlertContent.title}
-                description={dangerAlertContent.description}
-              />
-            )}
           </div>
           <div className="justify-center py-8">
             <p className='text-md'>Elkészítési idő: {resultRecipe.recipe_time} perc</p>

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 import { MyPantrySearchBar } from './searchbar_pantry';
-//import { MyPantryDropdown } from './dropdown_measurements';
 import { HeroCancel, HeroSettings, HeroTrash } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
@@ -99,7 +98,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     body: JSON.stringify(editItem),
                 });
                 const response = await res.json();
-                onEditItem(ingredient.ingredient_id, quantity); // updating pantry table
+                onEditItem(ingredient.ingredient_id, quantity); 
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({
@@ -147,7 +146,7 @@ export const MyEditPantryModal: React.FC<MyEditPantryModalProps> = ({ isOpen, on
                     credentials: 'include',
                     body: JSON.stringify(deleteItem),
                 });
-                onDeleteItem(ingredient.ingredient_id); // deleting from pantry table
+                onDeleteItem(ingredient.ingredient_id);
                 onOpenChange(false);
                 if (res.ok) {
                     setSuccessAlertContent({

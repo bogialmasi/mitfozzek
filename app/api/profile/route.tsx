@@ -19,16 +19,15 @@ export async function GET(req: NextRequest) {
 
         }
 
-        //Verify and decode the token
+
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
 
         }
 
-        // Use the userId to query the database for user-specific data, not including the password
         const [result] = await con.query<RowDataPacket[]>(
             'SELECT user_id, username, user_desc, email FROM users WHERE user_id = ?',
             [userId]
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        const user = result[0]; // The first row
+        const user = result[0]; 
         if (user.inactive === 1) {
             return NextResponse.json({ success: false, message: 'Felhasználó deaktiválva' }, { status: 403 });
         }

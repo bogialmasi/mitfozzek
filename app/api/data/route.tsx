@@ -7,11 +7,10 @@ import { getUserId } from '@/lib/helper';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const type = searchParams.get('type'); // the value of the type parameter from the URL
+  const type = searchParams.get('type');
   if (!type) {
     return NextResponse.json({ error: 'Hiányzó type paraméter' }, { status: 400 });
   }
-  // SQL query based on the type parameter
   let query = '';
   let params: any[] = [];
   switch (type) {

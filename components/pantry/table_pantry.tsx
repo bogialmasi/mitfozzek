@@ -17,8 +17,8 @@ interface MyPantryTableProps {
 
 export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients, allIngredients }) => {
     const [loading, setLoading] = useState<boolean>(false);
-    const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); // add modal form
-    const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); // edit modal form
+    const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddOpenChange } = useDisclosure(); 
+    const { isOpen: isEditOpen, onOpen: onEditOpen, onOpenChange: onEditOpenChange } = useDisclosure(); 
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [pantryItems, setPantryItems] = useState<Ingredient[]>(pantryIngredients);
     const [ingredients, setIngredients] = useState<Ingredient[]>(allIngredients);
@@ -33,7 +33,7 @@ export const MyPantryTable: React.FC<MyPantryTableProps> = ({ pantryIngredients,
         const selectedIngredient = ingredients.find((ing) => ing.ingredient_id === ingredientId);
 
         if (selectedIngredient) {
-            const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); // item is already in the list
+            const alreadyExistingItem = pantryItems.find(item => item.ingredient_id === ingredientId); 
             if (!alreadyExistingItem) {
                 const newItem: Ingredient = {
                     ingredient_id: selectedIngredient.ingredient_id,

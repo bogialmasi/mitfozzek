@@ -7,16 +7,14 @@ import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-// GET method gives back the FULL favorite recipe of the user including ingredients
 export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     if (!token) {
         return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
     }
 
-    //Verify and decode the token
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId; // Extract userId from the decoded token
+    const userId = decoded.userId; 
 
     if (userId === null || userId === undefined) {
         return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -28,34 +26,30 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        // Get the user's favorite recipes (user_fav_recipes)
         const [user_fav_recipes] = await con.query<RowDataPacket[]>(
             'SELECT * FROM user_fav_recipes WHERE user_id = ?',
             [userId]
         );
 
         const fullRecipePromises = user_fav_recipes.map(async (fav) => {
-            // Get the recipe details for each favorite recipe
             const [recipes] = await con.query<RowDataPacket[]>(
                 'SELECT * FROM recipes WHERE recipe_id = ?',
                 [fav.recipe_id]
             );
-            const recipe = recipes[0];  // Assuming one recipe per query
+            const recipe = recipes[0]; 
 
-            // Get the ingredients for the recipe (con_recipe_ingredients)
             const [con_recipe_ingredients] = await con.query<RowDataPacket[]>(
                 'SELECT * FROM con_recipe_ingredients WHERE recipe_id = ?',
                 [recipe.recipe_id]
             );
 
-            // Get the ingredient details for each ingredient in the recipe
             const ingredients = await Promise.all(
                 con_recipe_ingredients.map(async (c) => {
                     const [ingredient] = await con.query<RowDataPacket[]>(
                         'SELECT * FROM ingredients WHERE ingredient_id = ?',
                         [c.ingredient_id]
                     );
-                    return ingredient[0] as RowDataPacket;  // Assuming one ingredient per query
+                    return ingredient[0] as RowDataPacket; 
                 })
             );
 
@@ -99,21 +93,18 @@ export async function POST(req: NextRequest) {
 
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        // Get itemId from the request body
         const { recipeId } = await req.json();
         if (!recipeId) {
             return NextResponse.json({ success: false, message: 'No recipeId' }, { status: 401 });
         }
 
-        // check if recipe is already favorited
         const duplicate = await con.query<RowDataPacket[]>(
             'SELECT recipe_id from user_fav_recipes WHERE user_id = ? and recipe_id = ?',
             [userId, recipeId],
@@ -123,7 +114,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Item already in favorites' }, { status: 400 });
         }
         await con.beginTransaction();
-        //Insert into the database
         const result = await con.query<ResultSetHeader[]>(
             'INSERT INTO user_fav_recipes (user_id, recipe_id) VALUES (?, ?)',
             [userId, recipeId]
@@ -163,15 +153,13 @@ export async function DELETE(req: NextRequest) {
 
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        //Get recipeId from the request URL
         const { searchParams } = req.nextUrl;
         const id = searchParams.get('recipeId') || null;
         if (!id) {
@@ -188,7 +176,6 @@ export async function DELETE(req: NextRequest) {
             'DELETE FROM user_fav_recipes WHERE user_id = ? AND recipe_id = ?',
             [userId, recipeId]
         );
-        // If no rows were affected
         if (result.length === 0) {
             return NextResponse.json({ success: false, message: 'Recipe not found in favorites' }, { status: 404 });
         }

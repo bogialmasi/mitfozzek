@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MyDangerAlert } from '@/components/alert/alert_danger';
 import { MySuccessAlert } from '@/components/alert/alert_success';
 import { useAuthentication } from '@/app/context/authenticationContext';
@@ -14,8 +14,8 @@ interface MyAddToFavoritesProps {
 
 export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipeId }) => {
     const { user } = useAuthentication();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal control
-    const [isAdding, setIsAdding] = useState<boolean>(false); // To manage loading state
+    const { isOpen, onOpen, onOpenChange } = useDisclosure(); 
+    const [isAdding, setIsAdding] = useState<boolean>(false); 
     const [successAlertVisible, setSuccessAlertVisible] = useState<boolean>(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: "", description: "" });
 
@@ -24,7 +24,7 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
 
     const handleFavorites = async () => {
         if (!user) {
-            onOpen(); // Open login modal if the user is not logged in
+            onOpen();
         }
         else {
             const userId = user.userId;
@@ -86,7 +86,6 @@ export const MyAddToFavoritesButton: React.FC<MyAddToFavoritesProps> = ({ recipe
                 disabled={isAdding}
             >
                 <HeroEmptyHeart />Recept elmentése a kedvencek közé
-                {/* If succesful save -> HeroFilledHeart*/}
             </Button>
             {successAlertVisible && (
                 <MySuccessAlert

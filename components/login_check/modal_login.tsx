@@ -13,9 +13,6 @@ interface MyLoginModalProps {
     onOpenChange: (isOpen: boolean) => void;
 }
 
-/* This modal will be used for any and all login checks. All features are visible to all users wether logged in or not, but only logged in users can actually use the features.
-If logged out, this modal pops up to redirect to /login and /register, or cancel and keep using the current page without the login-requiring functions */
-
 export const MyLoginModal: React.FC<MyLoginModalProps> = ({ isOpen, onOpenChange }) => {
     return (
         <div>

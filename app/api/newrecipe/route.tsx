@@ -21,15 +21,13 @@ export async function POST(req: NextRequest) {
 
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        // Get itemId from the request body
         const { newRecipe, formattedFilters, acceptTerms, addUserId } = await req.json();
 
         if (!acceptTerms) {
@@ -45,7 +43,6 @@ export async function POST(req: NextRequest) {
 
         const recipeUserId = addUserId ? userId : null;
 
-        //Insert into the database
         const [result] = await con.query<ResultSetHeader>(
             'INSERT INTO recipes (recipe_name, recipe_description, recipe_time, recipe_headcount, source_user_id) VALUES (?, ?, ?, ?, ?)',
             [newRecipe.recipe_name, newRecipe.recipe_description, newRecipe.recipe_time, newRecipe.recipe_headcount, recipeUserId]
@@ -55,7 +52,6 @@ export async function POST(req: NextRequest) {
 
         // ingredients
         if (resultId != null) {
-            // first only add to pending, admin will approve of it
             await con.query(`INSERT INTO recipe_status (recipe_id, status, changed) VALUES (?, "pending", NOW())`, [resultId]);
 
 

@@ -39,7 +39,6 @@ export default function EditProfilePage() {
           return;
         }
 
-        // If logged in, fetch user profile
         fetchProfile();
       } catch (err) {
         setError('Bejelentkezés szükséges');
@@ -104,7 +103,7 @@ export default function EditProfilePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Ensure cookies are sent
+        credentials: 'include', 
         body: JSON.stringify(updatedData),
       });
       const res = await response.json();

@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
 
-    // Check if user already exists
     const [existingUser] = await con.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE username = ?',
       [username]
@@ -44,7 +43,6 @@ export async function POST(req: NextRequest) {
       timeCost: 4,
       parallelism: 1,
     });
-    // Insert new user into the database
 
     await con.beginTransaction();
     const [result] = await con.query<ResultSetHeader>(
@@ -56,7 +54,7 @@ export async function POST(req: NextRequest) {
     if (result.insertId != null) {
       await con.query<ResultSetHeader>(
         'INSERT INTO con_user_pantry (user_id, pantry_id) VALUES (?, ?)',
-        [resultId, resultId] // Both user_id and pantry_id match
+        [resultId, resultId] 
       )
     }
 

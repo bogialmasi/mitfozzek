@@ -1,12 +1,10 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
-
 import { HeroCancel, HeroPlus } from '../icons';
 import { button as buttonStyles } from "@heroui/theme";
 import { MySuccessAlert } from '../alert/alert_success';
 import { MyDangerAlert } from '../alert/alert_danger';
-// import { MyPantryDropdown } from '../pantry/dropdown_measurements';
 import { MyPantrySearchBar } from '../pantry/searchbar_pantry';
 import { Ingredient } from '@/types';
 

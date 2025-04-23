@@ -7,7 +7,6 @@ import { PoolConnection } from 'mysql2/promise';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-// Gives back a list of pantry items based on the user token
 export async function GET(req: NextRequest) {
     let con: PoolConnection | undefined;
     con = await pool.getConnection();
@@ -20,21 +19,18 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
 
-        //Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Extract userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        // Check if the user has a pantry
         const [pantry] = await con.query<RowDataPacket[]>(
             'SELECT pantry_id FROM con_user_pantry WHERE user_id = ?',
             [userId]
         );
 
-        // If user doesn't have a pantry, return an empty response
         if (pantry.length === 0) {
             return NextResponse.json({ success: true, pantry_items: [] });
         }
@@ -64,12 +60,10 @@ export async function GET(req: NextRequest) {
             );
 
 
-            // If no pantry items found, return an empty array
             if (ingredient.length === 0) {
                 return NextResponse.json({ success: false, message: 'Ingredient not found in pantry' }, { status: 404 });
             }
 
-            // Format and return pantry items
             const formattedIngredient = ingredient.map((item) => ({
                 ingredient_id: item.ingredient_id,
                 ingredient_name: item.ingredient_name,
@@ -77,7 +71,7 @@ export async function GET(req: NextRequest) {
                 ingredient_measurement: item.ingredient_measurement
             }));
 
-            return NextResponse.json(formattedIngredient[0]); // only one ingredient
+            return NextResponse.json(formattedIngredient[0]);
         }
 
         /*
@@ -99,12 +93,10 @@ export async function GET(req: NextRequest) {
             [pantryId]
         );
 
-        // If no pantry items found, return an empty array
         if (pantryItems.length === 0) {
             return NextResponse.json({ success: true, pantry_items: [] });
         }
 
-        // Format and return pantry items
         const formattedPantryItems = pantryItems.map((item) => ({
             ingredient_id: item.ingredient_id,
             ingredient_name: item.ingredient_name,
@@ -136,9 +128,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
     }
 
-    //Verify and decode the token
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId; // Extract userId from the decoded token
+    const userId = decoded.userId; 
 
     if (userId === null || userId === undefined) {
         return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -152,7 +143,6 @@ export async function POST(req: NextRequest) {
     try {
 
         const { ingredient_id, ingredient_quantity } = await req.json();
-        // cannot insert without all three fields being filled in
         if (!ingredient_id || !ingredient_quantity) {
             return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
         }
@@ -202,9 +192,8 @@ export async function PATCH(req: NextRequest) {
 
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -257,9 +246,8 @@ export async function DELETE(req: NextRequest) {
         if (!token) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 401 });
         }
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Extract userId from the decoded token
+        const userId = decoded.userId; 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }

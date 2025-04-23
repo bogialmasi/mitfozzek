@@ -25,7 +25,6 @@ export const MyIngredientsTable: React.FC<MyIngredientsTableProps> = ({ recipe, 
   return (
     <div className="max-w-full">
       <div className="py-4 flex items-center justify-center">
-        {/* Control the headcount changes */}
         <h3>Összetevők</h3>
         <div className="py-4 flex items-center justify-between w-32 h-10 border rounded-md py-6">
           <button

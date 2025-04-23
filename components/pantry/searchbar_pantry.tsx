@@ -2,7 +2,7 @@
 import { Ingredient } from "@/types";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 interface MySearchBarProps {
     list: Ingredient[];
@@ -32,9 +32,9 @@ export const MyPantrySearchBar: React.FC<MySearchBarProps> = ({ list, onSelectio
                 const name = item.ingredient_name?.toLowerCase();
                 if (!name) return acc;
                 if (name === query) {
-                    acc.exactMatches.push(item); // Exact matches first
+                    acc.exactMatches.push(item); 
                 } else if (name.includes(query)) {
-                    acc.partialMatches.push(item); // Partial matches after
+                    acc.partialMatches.push(item);
                 }
                 return acc;
             },

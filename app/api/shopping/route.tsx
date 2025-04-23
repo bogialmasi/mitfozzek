@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId;
         if (userId === null || userId === undefined) {
@@ -92,7 +91,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'No database connection' }, { status: 500 });
     }
     try {
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
         const userId = decoded.userId;
         if (userId === null || userId === undefined) {
@@ -101,7 +99,6 @@ export async function POST(req: NextRequest) {
 
         const { recipe_id, shopping_name, add_all, headcount } = await req.json();
 
-        // Validate required fields
         if (!shopping_name || !headcount) {
             return NextResponse.json({ success: false, message: 'Missing shopping name or head conut' }, { status: 400 });
         }
@@ -150,31 +147,26 @@ export async function POST(req: NextRequest) {
                 for (const ingredient of recipeIngredients) {
                     const { ingredient_id } = ingredient;
 
-                    // check if the ingredient is already in the pantry
                     const [pantryItem] = await con.query<RowDataPacket[]>(`
                         SELECT * FROM pantry 
                         WHERE pantry_id = ? AND ingredient_id = ?`,
                         [userId, ingredient_id]
                     );
 
-                    // if the ingredient is not in pantry
                     if (pantryItem.length === 0) {
                         missingIngredients.push(ingredient);
                     }
                 }
 
-                // all ingredients are in pantry
                 if (missingIngredients.length === 0) {
                     return NextResponse.json({ success: false, message: 'All ingredients are already in the pantry' }, { status: 400 });
                 }
 
-                // ingredientsList stores only the missing ings
                 ingredientsList = missingIngredients;
             }
 
 
             con.beginTransaction();
-            // Insert into shopping table
             const [shoppingResult] = await con.query<ResultSetHeader>(
                 `INSERT INTO shopping (shopping_name, recipe_id) VALUES (?, ?)`,
                 [shopping_name, recipe_id || null]
@@ -182,13 +174,11 @@ export async function POST(req: NextRequest) {
 
             const shoppingId = shoppingResult.insertId;
 
-            // Insert into con_user_shopping table
             await con.query(
                 `INSERT INTO con_user_shopping (user_id, shopping_id) VALUES (?, ?)`,
                 [userId, shoppingId]
             );
 
-            // Insert ingredients
             for (const ingredient of ingredientsList) {
                 const { ingredient_id, ingredient_quantity } = ingredient;
 
@@ -202,7 +192,6 @@ export async function POST(req: NextRequest) {
                     return NextResponse.json({ success: false, message: 'Invalid ingredient' }, { status: 400 });
                 }
 
-                // Insert the ingredients
                 await con.query(
                     `INSERT INTO con_shopping_ingredients (shopping_id, ingredient_id, ingredient_quantity) 
                 VALUES (?, ?, ?)`,
@@ -240,7 +229,6 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Authorization token missing' }, { status: 404 });
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
         const userId = decoded.userId; if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
@@ -316,14 +304,12 @@ export async function DELETE(req: NextRequest) {
 
         }
 
-        // Verify and decode the token
         const decoded: any = jwt.verify(token, JWT_SECRET);
-        const userId = decoded.userId; // Get userId from the decoded token
+        const userId = decoded.userId; 
         if (userId === null || userId === undefined) {
             return NextResponse.json({ success: false, message: 'No userId' }, { status: 401 });
         }
 
-        //Get shoppingId from the request URL
         const { searchParams } = req.nextUrl;
         const id = searchParams.get('shoppingId') || null;
         if (!id) {
@@ -335,7 +321,6 @@ export async function DELETE(req: NextRequest) {
         }
 
         con.beginTransaction();
-        // TODO delete from all with one constraint
         const [conUserShopping] = await con.query<ResultSetHeader[]>(
             'DELETE FROM con_user_shopping WHERE user_id = ? AND shopping_id = ?',
             [userId, shoppingId]

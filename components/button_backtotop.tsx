@@ -1,5 +1,4 @@
-"use client";
-
+'use client'
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
 import { HeroArrowUp } from "./icons";

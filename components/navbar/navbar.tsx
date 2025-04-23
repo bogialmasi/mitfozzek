@@ -29,7 +29,7 @@ export const Navbar = () => {
     if (user) {
       const res = await fetch('/api/authcheck', {
         method: 'GET',
-        credentials: 'include', // Use cookies
+        credentials: 'include',
     });
       const data = await res.json();
       if (data.success && data.isAdmin) {
@@ -53,9 +53,6 @@ export const Navbar = () => {
       { label: "Keresés", href: siteConfig.links.search },
       { label: "Profilom", href: siteConfig.links.profile },
       { label: "Bevásárlólistáim", href: siteConfig.links.shopping },
-      /*...(isAdmin ? [
-        { label: "Admin", href: siteConfig.adminItems.adminPage}
-      ] : [])*/
     ]
     : [
       { label: "Főoldal", href: "/" },
