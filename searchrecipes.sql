@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 23. 15:24
+-- Létrehozás ideje: 2025. Ápr 23. 20:00
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -358,7 +358,9 @@ INSERT INTO `con_user_pantry` (`user_id`, `pantry_id`) VALUES
 (10, 10),
 (103, 103),
 (335, 335),
-(336, 336);
+(336, 336),
+(337, 337),
+(338, 338);
 
 -- --------------------------------------------------------
 
@@ -2094,7 +2096,9 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`, `i
 (10, 'bogi', '$argon2i$v=19$m=65536,t=4,p=1$mFypDNnTCX/1x5Y5JLegyg$qf5cve1DpuJGFom4IXcAqQ9pYdrC2kV8TjmPS36pP90', NULL, 'bogi@bogi.com', 0),
 (103, 'hello', '$argon2i$v=19$m=65536,t=4,p=1$lIH7rW0e81nEwqtMM/e9jw$w+U7ChhNDEbAv76gK3gw8iHBvlqPyjp5eTahVdx8YtI', NULL, 'hello@hello.com', 0),
 (335, 'envagyok', '$argon2id$v=19$m=65536,t=4,p=1$VS6EBeZma/hvgyGya6Segg$3IIjVh8sGujGfYQljCBYxi72uzoSI8H0AHdKZecyVzc', NULL, 'en@vagyok.en', 0),
-(336, 'bogibogi', '$argon2id$v=19$m=65536,t=4,p=1$N7l/p+YybJ4/pfcEoFLlyQ$W16FAMmrRgVfn581k82zqh6kpLL02EOTKoLUOSaDwGE', 'Helló Világ, ez itt a bemutatkozó szövegem!', 'bogi@bogi1.com', 0);
+(336, 'bogibogi', '$argon2id$v=19$m=65536,t=4,p=1$N7l/p+YybJ4/pfcEoFLlyQ$W16FAMmrRgVfn581k82zqh6kpLL02EOTKoLUOSaDwGE', 'Helló Világ, ez itt a bemutatkozó szövegem!', 'bogi@bogi1.com', 0),
+(337, 'hali', '$argon2id$v=19$m=65536,t=4,p=1$5ehDNJkgrl0ilGYOSGaycg$E8JnIRienCKZ3uJ6NMYfVjyoPuktuzdESilr3xpWsys', NULL, 'hali@hali.com', 0),
+(338, 'sziaszia', '$argon2id$v=19$m=65536,t=4,p=1$guS9lwJJGaPNPe2V/oF1NA$rmQtDC1rT73ilZ6uzsA9ehLrKGD8zv8HSZjjR2FqDz8', ' Hello Hello Szia Szia!!!!!', 'szia@szia1.hu', 0);
 
 -- --------------------------------------------------------
 
@@ -2316,7 +2320,7 @@ ALTER TABLE `shopping`
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=337;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=339;
 
 --
 -- Megkötések a kiírt táblákhoz
