@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 25. 12:15
+-- Létrehozás ideje: 2025. Ápr 23. 15:24
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -37,7 +37,13 @@ CREATE TABLE `con_recipe_cuisine` (
 --
 
 INSERT INTO `con_recipe_cuisine` (`recipe_id`, `cuisine_id`) VALUES
-(2, 14);
+(2, 14),
+(16, 8),
+(18, 14),
+(20, 14),
+(21, 11),
+(22, 14),
+(23, 1);
 
 -- --------------------------------------------------------
 
@@ -56,8 +62,12 @@ CREATE TABLE `con_recipe_diet_category` (
 
 INSERT INTO `con_recipe_diet_category` (`recipe_id`, `category_id`) VALUES
 (2, 5),
-(3, 1),
-(3, 7);
+(17, 3),
+(18, 7),
+(20, 1),
+(21, 2),
+(21, 7),
+(23, 2);
 
 -- --------------------------------------------------------
 
@@ -76,8 +86,17 @@ CREATE TABLE `con_recipe_dish_type` (
 
 INSERT INTO `con_recipe_dish_type` (`recipe_id`, `dishtype_id`) VALUES
 (2, 4),
-(3, 5),
-(3, 7);
+(16, 7),
+(17, 3),
+(18, 4),
+(18, 7),
+(20, 7),
+(21, 4),
+(21, 7),
+(22, 2),
+(22, 3),
+(23, 4),
+(23, 7);
 
 -- --------------------------------------------------------
 
@@ -98,28 +117,139 @@ CREATE TABLE `con_recipe_ingredients` (
 INSERT INTO `con_recipe_ingredients` (`recipe_id`, `ingredient_id`, `ingredient_quantity`) VALUES
 (2, 1, 1000),
 (2, 2, 2),
-(3, 1, 500),
-(3, 231, 250);
-
--- --------------------------------------------------------
-
---
--- Tábla szerkezet ehhez a táblához `con_recipe_status`
---
-
-CREATE TABLE `con_recipe_status` (
-  `status_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `status` enum('pending','approved','rejected','') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- A tábla adatainak kiíratása `con_recipe_status`
---
-
-INSERT INTO `con_recipe_status` (`status_id`, `recipe_id`, `status`) VALUES
-(1, 2, 'approved'),
-(2, 3, 'pending');
+(5, 417, 290),
+(5, 740, 150),
+(5, 770, 4),
+(5, 1198, 4),
+(5, 1258, 2),
+(5, 1371, 65),
+(6, 45, 2),
+(6, 121, 300),
+(6, 290, 6),
+(6, 548, 2),
+(6, 570, 5),
+(6, 710, 6),
+(6, 897, 50),
+(6, 1000, 100),
+(6, 1015, 300),
+(6, 1079, 2),
+(6, 1087, 1),
+(7, 45, 4),
+(7, 292, 2),
+(7, 295, 2),
+(7, 296, 100),
+(7, 310, 100),
+(7, 321, 4),
+(7, 564, 100),
+(7, 671, 400),
+(7, 1071, 200),
+(7, 1079, 4),
+(7, 1370, 50),
+(8, 575, 1000),
+(8, 1261, 1000),
+(9, 45, 5),
+(9, 292, 3),
+(9, 572, 8),
+(9, 747, 5),
+(9, 780, 60),
+(9, 897, 5),
+(9, 954, 8),
+(9, 1079, 5),
+(9, 1258, 3),
+(9, 1370, 100),
+(9, 1371, 150),
+(10, 295, 50),
+(10, 324, 2),
+(10, 330, 200),
+(10, 385, 150),
+(10, 692, 50),
+(10, 1079, 2),
+(10, 1261, 200),
+(10, 1277, 10),
+(10, 1389, 100),
+(11, 52, 2),
+(11, 292, 2),
+(11, 473, 90),
+(11, 758, 100),
+(11, 861, 15),
+(11, 1002, 125),
+(11, 1014, 2),
+(11, 1071, 300),
+(11, 1079, 5),
+(11, 1370, 100),
+(11, 1374, 1000),
+(11, 1387, 400),
+(11, 1418, 50),
+(11, 1449, 2),
+(12, 44, 50),
+(12, 49, 100),
+(12, 144, 2),
+(12, 190, 1000),
+(12, 296, 100),
+(12, 330, 20),
+(12, 333, 2),
+(12, 557, 50),
+(12, 861, 10),
+(12, 926, 10),
+(12, 1072, 500),
+(12, 1079, 2),
+(12, 1192, 2),
+(12, 1270, 10),
+(12, 1370, 50),
+(12, 1418, 25),
+(13, 137, 10),
+(13, 417, 185),
+(13, 1079, 2),
+(13, 1198, 1),
+(13, 1374, 1185),
+(14, 2, 1),
+(16, 18, 1),
+(17, 11, 500),
+(17, 45, 5),
+(17, 705, 5),
+(17, 769, 120),
+(17, 1079, 5),
+(17, 1258, 2),
+(18, 45, 1),
+(18, 292, 2),
+(18, 295, 5),
+(18, 926, 10),
+(18, 1079, 3),
+(18, 1082, 5),
+(18, 1261, 300),
+(18, 1416, 500),
+(19, 25, 1),
+(20, 1088, 1),
+(21, 44, 1000),
+(21, 45, 1),
+(21, 118, 700),
+(21, 186, 200),
+(21, 297, 1),
+(21, 330, 200),
+(21, 897, 100),
+(21, 930, 500),
+(21, 1002, 50),
+(21, 1073, 300),
+(21, 1079, 1),
+(21, 1192, 1),
+(21, 1428, 200),
+(22, 141, 100),
+(22, 175, 1000),
+(22, 296, 400),
+(22, 557, 200),
+(22, 1071, 400),
+(22, 1370, 200),
+(22, 1418, 200),
+(23, 118, 500),
+(23, 143, 50),
+(23, 190, 200),
+(23, 292, 1),
+(23, 861, 100),
+(23, 927, 50),
+(23, 1015, 200),
+(23, 1079, 2),
+(23, 1370, 200),
+(23, 1371, 5);
 
 -- --------------------------------------------------------
 
@@ -139,14 +269,71 @@ CREATE TABLE `con_shopping_ingredients` (
 --
 
 INSERT INTO `con_shopping_ingredients` (`shopping_id`, `ingredient_id`, `ingredient_quantity`, `bought`) VALUES
-(6, 1, 1000, 1),
-(6, 2, 2, 1),
-(7, 30, 2, 1),
-(7, 500, 3, 0),
-(10, 30, 2, 0),
-(10, 500, 3, 0),
-(12, 1, 1000, 0),
-(12, 2, 2, 1);
+(13, 45, 1, 1),
+(13, 121, 200, 0),
+(13, 290, 4, 0),
+(13, 548, 1, 0),
+(13, 570, 3, 1),
+(13, 710, 4, 0),
+(13, 897, 33, 0),
+(13, 1000, 67, 0),
+(13, 1015, 200, 0),
+(13, 1079, 1, 0),
+(13, 1087, 1, 0),
+(22, 417, 290, 0),
+(22, 740, 150, 0),
+(22, 770, 4, 0),
+(22, 1198, 4, 0),
+(22, 1258, 2, 0),
+(22, 1371, 65, 0),
+(23, 417, 290, 0),
+(23, 740, 150, 0),
+(23, 770, 4, 0),
+(23, 1198, 4, 0),
+(23, 1371, 65, 0),
+(26, 417, 290, 0),
+(26, 740, 150, 0),
+(26, 770, 4, 0),
+(26, 1198, 4, 0),
+(26, 1258, 2, 1),
+(26, 1371, 65, 0),
+(27, 417, 290, 0),
+(27, 740, 150, 0),
+(27, 770, 4, 1),
+(27, 1198, 4, 1),
+(27, 1258, 2, 0),
+(27, 1371, 65, 0),
+(28, 45, 4, 1),
+(28, 292, 2, 1),
+(28, 295, 2, 0),
+(28, 296, 100, 1),
+(28, 310, 100, 0),
+(28, 321, 4, 1),
+(28, 564, 100, 0),
+(28, 671, 400, 0),
+(28, 1071, 200, 0),
+(28, 1079, 4, 1),
+(28, 1370, 50, 0),
+(30, 417, 290, 0),
+(30, 740, 150, 0),
+(30, 770, 4, 0),
+(30, 1198, 4, 0),
+(30, 1258, 2, 1),
+(30, 1371, 65, 0),
+(31, 52, 2, 0),
+(31, 292, 2, 1),
+(31, 473, 90, 1),
+(31, 758, 100, 0),
+(31, 861, 15, 1),
+(31, 1002, 125, 1),
+(31, 1014, 2, 0),
+(31, 1071, 300, 0),
+(31, 1079, 5, 0),
+(31, 1370, 100, 0),
+(31, 1374, 1000, 0),
+(31, 1387, 400, 0),
+(31, 1418, 50, 0),
+(31, 1449, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -164,12 +351,14 @@ CREATE TABLE `con_user_pantry` (
 --
 
 INSERT INTO `con_user_pantry` (`user_id`, `pantry_id`) VALUES
-(0, 0),
-(2, 2),
-(5, 5),
+(1, 1),
 (6, 6),
 (7, 7),
-(8, 8);
+(8, 8),
+(10, 10),
+(103, 103),
+(335, 335),
+(336, 336);
 
 -- --------------------------------------------------------
 
@@ -187,10 +376,14 @@ CREATE TABLE `con_user_shopping` (
 --
 
 INSERT INTO `con_user_shopping` (`user_id`, `shopping_id`) VALUES
-(0, 12),
-(6, 6),
-(6, 7),
-(6, 10);
+(1, 26),
+(6, 13),
+(6, 30),
+(6, 31),
+(103, 22),
+(103, 23),
+(336, 27),
+(336, 28);
 
 -- --------------------------------------------------------
 
@@ -214,8 +407,7 @@ INSERT INTO `diet_category` (`category_id`, `category_name`) VALUES
 (4, 'Halal'),
 (5, 'Laktózmentes'),
 (6, 'Gluténmentes'),
-(7, 'Diabetikus'),
-(8, 'FODMAP Diéta');
+(7, 'Diabetikus');
 
 -- --------------------------------------------------------
 
@@ -264,7 +456,6 @@ CREATE TABLE `dish_type` (
 --
 
 INSERT INTO `dish_type` (`dishtype_id`, `dishtype_name`) VALUES
-(1, 'Hors d\'oeuvre'),
 (2, 'Előétel'),
 (3, 'Leves'),
 (4, 'Főétel'),
@@ -1716,26 +1907,6 @@ INSERT INTO `ingredients` (`ingredient_id`, `ingredient_name`, `ingredient_measu
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `measurements`
---
-
-CREATE TABLE `measurements` (
-  `measurement_id` int(11) NOT NULL,
-  `measurement_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- A tábla adatainak kiíratása `measurements`
---
-
-INSERT INTO `measurements` (`measurement_id`, `measurement_name`) VALUES
-(1, 'g'),
-(2, 'ml'),
-(5, 'db');
-
--- --------------------------------------------------------
-
---
 -- Tábla szerkezet ehhez a táblához `pantry`
 --
 
@@ -1751,8 +1922,6 @@ CREATE TABLE `pantry` (
 --
 
 INSERT INTO `pantry` (`pantry_item_id`, `pantry_id`, `ingredient_id`, `ingredient_quantity`) VALUES
-(1, 2, 1, 2000),
-(2, 2, 2, 5),
 (6, 6, 65, 250),
 (28, 6, 857, 1000),
 (29, 6, 295, 1000),
@@ -1761,8 +1930,38 @@ INSERT INTO `pantry` (`pantry_item_id`, `pantry_id`, `ingredient_id`, `ingredien
 (33, 6, 1, 1500),
 (34, 6, 1371, 100),
 (35, 6, 2, 1),
-(36, 0, 43, 10),
-(37, 0, 2, 100);
+(36, 1, 43, 100),
+(37, 1, 2, 100),
+(38, 103, 757, 100),
+(39, 103, 572, 500),
+(40, 103, 1258, 10),
+(41, 6, 1258, 10),
+(42, 1, 1079, 1000),
+(43, 1, 1261, 150),
+(44, 6, 1261, 150),
+(45, 1, 1371, 100),
+(46, 6, 741, 100),
+(47, 336, 417, 290),
+(48, 336, 740, 150),
+(49, 336, 770, 4),
+(50, 336, 1198, 4),
+(51, 336, 1258, 2),
+(52, 336, 1371, 65),
+(53, 1, 44, 1000),
+(54, 1, 45, 1),
+(55, 1, 118, 700),
+(56, 1, 186, 200),
+(57, 1, 297, 1),
+(58, 1, 330, 200),
+(59, 1, 897, 100),
+(60, 1, 930, 500),
+(61, 1, 1002, 50),
+(62, 1, 1073, 300),
+(63, 1, 1192, 1),
+(64, 1, 1428, 200),
+(65, 6, 417, 290),
+(66, 6, 770, 4),
+(67, 6, 1198, 4);
 
 -- --------------------------------------------------------
 
@@ -1776,7 +1975,7 @@ CREATE TABLE `recipes` (
   `recipe_description` text NOT NULL,
   `recipe_time` int(11) NOT NULL,
   `recipe_headcount` int(11) NOT NULL,
-  `source_user_id` int(11) NOT NULL
+  `source_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1784,8 +1983,63 @@ CREATE TABLE `recipes` (
 --
 
 INSERT INTO `recipes` (`recipe_id`, `recipe_name`, `recipe_description`, `recipe_time`, `recipe_headcount`, `source_user_id`) VALUES
-(2, 'MY TEST RECIPE', 'This is a test recipe used for testing. - \r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 5, 2, 2),
-(3, 'Another Test Recipe!', 'This is another test recipe for testing\r\náÁéÉóÓöÖúÚüÜűŰ@@@@????', 15, 1, 2);
+(2, 'MY TEST RECIPE', 'This is a test recipe used for testing. - \r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 5, 2, NULL),
+(5, 'Glutén- és laktózmentes mézeskalács', 'Keverjük össze a puha vajat a mézzel és a tojásokkal, a lisztet pedig a fűszerrel és a szódabikarbónával, majd elegyítsük a nedves és a száraz összetevőket. Gyúrjuk össze, és tegyük egy órára hűtőbe.\nNyújtsuk ki a tésztát. Én két sütőpapír között tettem meg ezt, mert a gluténmentes liszttől könnyebben repedhet és törhet a tészta, érdemes vele óvatosabban bánni.\nAlakítsuk a kívánt formára, majd 190 fokon süssük 10-12 percig, míg aranybarna nem lesz.', 40, 4, NULL),
+(6, 'Vegán céklás fasírt', 'A főtt rizsre ráreszeljük a hámozott, tisztított céklát, hozzákeverjük a többi alapanyagot és egy kanál olívaolajat, fűszerezzük, és kis golyókba gyúrjuk.\nEgy nagy olajozott, vagy sütőpapírral borított tepsire helyezzük a golyókat. Meglocsoljuk vagy lepermetezzük olívaolajjal, és mehet az előmelegített sütőbe úgy 30-40 percre sülni.\nFőzelékek mellé, meleg paradicsomszósszal, avagy mártogatóssal tálaljuk. ', 50, 6, NULL),
+(7, 'Bableves', 'Az apró kockára vágott szalonnát elkezdjük pirítani. Pár perc után mehet rá a karikákra vágott kolbász, azt is zsírjára pirítjuk.\nA finomra vágott vöröshagymát öntsük rá, majd kevergessük pár percig. Adjuk hozzá a felaprított fokhagymát is.\nTegyük bele a felkarikázott répákat is és pirítsuk tovább az egészet.\nHintsük meg egy evőkanál liszttel és fűszerezzük a pirospaprikával, sóval és borssal.\nÖntsünk rá vizet, hogy elfedjen mindent, és a pirospaprika ne keseredjen meg.\nÖntsük hozzá a konzerves babot, mikor még a zöldségek nem puhultak meg teljesen.\nFőzzük össze az egészet, ízesíteni és sűríteni lehet még ízlés szerint tejföllel.', 60, 4, NULL),
+(8, 'keksz', 'jhjh', 100, 10, 6),
+(9, 'Tatárbifsztek', 'A húst ujjnyi szeletekre vágjuk, megsózzuk, megborsozzuk, megkenjük mustárral, tálba tesszük, és soronként, hogy mindenhol érje, meglocsoljuk olívaolajjal (a végén lepje el az olaj). A hűtőben érleljük pár napig.\nA készítés reggelén kivesszük a húst a hűtőből, aprítógéppel pépesre daráljuk a hagymával, fokhagymával együtt, majd ízlés szerint fűszerezzük a tatárbifszteket sóval, borssal, piros arannyal, mustárral, ketchuppal. Végül hozzákeverjük a tojást és a vajat is. Kenhető masszává dolgozzuk, majd tálalásig behűtjük.\nFrissen pirított kenyérrel tálaljuk.', 120, 4, 6),
+(10, 'Sajttekercs', 'A sonkatekercs elkészítéséhez 8 dkg vajból (100g), a lisztből, a tejből és a tejszínből sűrű besamelt főzünk, majd megsózzuk, megborsozzuk, és hozzáadjuk a lereszelt tormát. Levesszük a tűzről, és hagyjuk szobahőmérsékletűre hűlni. Ha kihűlt, a maradék vajat (60g) kihabosítjuk és fellazítjuk vele a besamelt, majd habzsák segítségével betöltjük vele a sonkákat.A sajttekercs elkészítéséhez a lila hagymát megpucoljuk és apróra vágjuk, az újhagymát megmossuk és összevágjuk, majd a vajkrémmel és a szobahőmérsékletű vajjal kikeverjük.\nEgy sütőtepsit kifolpackozunk, ráhelyezzük a szeletelt sajtot, arra a sonkát, majd 40 fokos sütőben meglangyosítjuk 1-2 perc alatt.\nHa meglágyult a sajt, megkenjük a krémmel, felcsavarjuk a folpackkal szorosan, és kihűtjük legalább 2 órát, hogy szeletelhető legyen.\nA sonkatekercseket kínálótálra rendezzük, a sajttekercseket szeletekre vágjuk, és azokat is elrendezzük a tálon. Csemegeuborkával, friss zöldségekkel és bagettel szuper ünnepi hidegtál lesz belőle.', 30, 8, 6),
+(11, 'Minestrone leves', 'Egy fazékban felhevítjük az olajat, majd hozzáadjuk a zúzott fokhagymát, a finomra vágott zsályát, a finomra vágott rozmaringot és a babérlevelet, kb. 2 percig főzzük.\nEzután beletesszük az apróra vágott vöröshagymát, a kockára vágott répát és a zellert, majd pár percig dinszteljük, amíg a hagyma átlátszó lesz.\nHozzáadjuk a babot, és a paradicsomszószt, alaposan összekeverjük, és felöntjük annyi vízzel vagy alaplével, amennyi ellepi. Lefedjük, és 15 percig főzzük.\nVégül hozzáadjuk a mángoldot és a hajdinát is, hozzáöntünk még annyi folyadékot, hogy 5 cm-re ellepje, és félig lefedve addig főzzük, amíg a hozzávalók megpuhulnak.', 50, 4, NULL),
+(12, 'Gluténmentes sütőtökkrémleves', 'A gluténmentes sütőtökkrémleve elkészítéséhez a sütőtököt feldaraboljuk, sütőpapírral bélelt tepsibe tesszük, és 180 fokra előmelegített sütőben kb. 40 perc alatt puhára sütjük.\nA bacont vékony csíkokra vágjuk, és ropogósra pirítjuk. Ha szükséges, tegyünk hozzá pár csepp olajat. A ropogós baconcsipszet kiszedjük az olajból, és félretesszük a tálalásig.\nA zöldségeket alaposan megtisztítjuk. A hagymát apró kockákra vágjuk, a sárgarépát felkarikázzuk és megfuttatjuk a baconből kisült zsíron. A többi zöldséget (krumpli, karalábé, fehérrépa) felkockázzuk, és a lábosba tesszük.\nFelöntjük az alaplével, megszórjuk a durvára vágott petrezselyemmel, és puhára főzzük fedő alatt.\nAz előre megsütött sütőtökszeleteket a levesbe tesszük a tejszínnel együtt, és botmixer segítségével krémesre turmixoljuk. A levest alaposan felforraljuk, közben ízlés szerint fűszerezzük sóval, borssal, szerecsendióval és csilivel.\nA tökmagot egy serpenyőben zsiradék nélkül megpirítjuk. A levest a baconcsipsszel és a pirított tökmaggal tálaljuk, és meglocsolhatjuk tökmagolajjal és ízlés szerint tejszínnel. Forrás: https://glutenmentesizlik.com/', 80, 4, 6),
+(13, 'Szénhidrátcsökkentett, gluténmentes bagel', 'A receptből 4 db bagel készül. A keverőtálba tegyünk 185ml vizet, sót, citromlevet és keverjük össze. Adjuk hozzá a liszkeveréket és keverjünk egynemű tésztát, majd pihentessük 10 percig. Forraljuk fel a maradék 1L vizet és adjuk hozzá a szódabikarbónát. A tésztát gyúrjuk át 4 egyenlő részre, majd a megformázott bageleket tegyük a forrásban lévő vízbe, mindkét oldalukat főzzük 30-30 másodpercig. Vegyük ki őket és tegyük egy sütőpapírral bélelt tepsibe. Ízlés szerint díszítsük különféle magokkal. 180 fokos sötőben 35-10 percig süssük. Forrás: https://glutenmentesizlik.com/', 150, 4, 6),
+(14, 'jajj', 'jajj', 1, 1, NULL),
+(16, 'o', 'o', 1, 1, 1),
+(17, 'Maceszgombóc', 'A maceszt vagy pászkát robotgép segítségével összezúzzuk. Ha nincs gépünk, akkor törjük apróra.\nAz apróra zúzott pászkát egy keverőtálba szórjuk, amire ráöntünk két, kissé felvert tojást.\nHozzáadunk két evőkanál libazsírt a pászkához, és 1-2 evőkanál alaplevet.\nSózzuk-borsozzuk ízlésünknek megfelelően, és keverjük jól össze az egészet. Majd helyezzük hűtőbe fél órára.\nA hűtőből kivéve formáljunk kézzel vagy kanállal diónyi gombócokat, és jól megsózott, lobogó vízbe dobjuk bele. Fedjük le, és főzzük a maceszgombócokat 40 percig, aztán levesbe téve fogyaszthatjuk is!', 45, 4, NULL),
+(18, 'Zöldborsófőzelék', 'A zsírt felolvasztjuk, beletesszük a kifejtett borsót, sót, őrölt borsot, az apróra vágott fokhagymát, petrezselyem zöldet, összekeverjük.\nFedő alatt puhára pároljuk.\nMegszórjuk liszttel, megkeverjük, felöntjük tejjel, hogy ellepje, összefőzzük.', 50, 2, NULL),
+(19, '0', '0', 0, 0, NULL),
+(20, 'Sonka', 'Egye meg a sonkát!', 10, 1, 6),
+(21, 'Vegetariánus moussaka', 'A padlizsánokat felszeleteljük, besózzuk, majd állni hagyjuk. Az összes többi zöldséget megtisztútjuk és vékony szeletekre vágjuk. Egy sütő tepsit megolajozunk, és kezdjük a rétegezést. Alulról felfelé: Burgonya, Padlizsán (papírtörlővel megszárítjuk előtte), Zöldpaprika, Gomba, Paradicsomszósz, Cukkini, Burgonya, és végül Olívaolaj, só és bors. A tepsit befedjük és 2 óráig sütjük. 2 óra elteltével a levesszük a fedelet, a fogás tetejét megcsorgatjuk tejszínnel, és ráhintjük a Fajéhat és Szerecsendiót, Sót, Borsot, és Sajtot reszelünk a tetejére. Fél órára visszatesszük a sütőbe, amíg készre sül. Jó étvágyat!! :)', 200, 6, 1),
+(22, 'Húsleves', 'A húsleves elkészítéséhez a sárgarépát, a fehérrépát, a zellert, a karalábét, valamint a vöröshagymát meghámozzuk. A répákat hasábokra vágjuk. A konyhakész csirkét megmossuk, és darabokra vágjuk. Mindent egy lábasba teszünk és felöntünk annyi vízzel, hogy ellepje. Felforraljuk, majd mérsékeljük a hőt, és félig lefedve 1,5-2 óra alatt készre főzzük a levest. Ha nagyon elfövi a levét, vízzel pótoljuk, és megkóstoljuk, hogy elég sós-e.\nA cérnametéltet forrásban lévő, sós vízben, a csomagoláson található útmutatás szerint kifőzzük.', 135, 4, 6),
+(23, 'Cukkinis rizottó', 'A felaprított vöröshagymát és fokhagymát némi olajon, közepes hőfokon egy serpenyőben megdinszteljük, majd hozzáadjuk a rizst és kicsit lepirítjuk. Felöntjük az alaplével, és alacsony hőfokon, kb.15-20 percig lefedve, időnként megkevergetve puhára főzzük.\nHozzáadjuk a lereszelt cukkinit, a sajtokat, a vajat és a sót. Összeforgatjuk, és addig keverjük, amíg a sajt teljesen el nem olvad.', 50, 6, 6);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `recipe_status`
+--
+
+CREATE TABLE `recipe_status` (
+  `status_id` int(11) NOT NULL,
+  `recipe_id` int(11) NOT NULL,
+  `status` enum('pending','approved','rejected','') NOT NULL,
+  `changed` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `recipe_status`
+--
+
+INSERT INTO `recipe_status` (`status_id`, `recipe_id`, `status`, `changed`) VALUES
+(1, 2, 'rejected', '2025-04-01 12:58:03'),
+(3, 5, 'approved', '2025-03-26 12:08:34'),
+(4, 6, 'approved', '2025-03-26 16:22:51'),
+(5, 7, 'approved', '2025-03-28 11:04:57'),
+(6, 8, 'rejected', '2025-04-04 08:12:41'),
+(7, 9, 'approved', '2025-04-02 09:01:45'),
+(8, 10, 'approved', '2025-04-02 09:01:57'),
+(9, 11, 'approved', '2025-04-02 09:02:00'),
+(10, 12, 'approved', '2025-04-02 09:02:02'),
+(11, 13, 'approved', '2025-04-02 09:02:05'),
+(12, 14, 'rejected', '2025-04-02 09:25:33'),
+(14, 16, 'rejected', '2025-04-02 09:25:31'),
+(15, 17, 'approved', '2025-04-04 08:11:51'),
+(16, 18, 'approved', '2025-04-04 08:12:20'),
+(17, 19, 'rejected', '2025-04-16 07:52:26'),
+(18, 20, 'rejected', '2025-04-16 07:52:29'),
+(19, 21, 'approved', '2025-04-16 07:52:52'),
+(20, 22, 'approved', '2025-04-18 12:32:23'),
+(21, 23, 'pending', '2025-04-18 12:30:45');
 
 -- --------------------------------------------------------
 
@@ -1804,10 +2058,14 @@ CREATE TABLE `shopping` (
 --
 
 INSERT INTO `shopping` (`shopping_id`, `shopping_name`, `recipe_id`) VALUES
-(6, 'Postman test shopping list with recipe id', 2),
-(7, 'Postman test shopping list ingredient list', NULL),
-(10, 'Postman test shopping list ingredient list', NULL),
-(12, 'alma ananász 2 fő', 2);
+(13, 'Vegán céklás fasírt', 6),
+(22, 'Glutén- és laktózmentes mézeskalács', 5),
+(23, 'Glutén- és laktózmentes mézeskalács', 5),
+(26, 'Glutén- és laktózmentes mézeskalács', 5),
+(27, 'Első bevásárlólistám', 5),
+(28, 'Második bevásárlólistám', 7),
+(30, 'Pénteken ezt akarom megsütni!', 5),
+(31, 'Leves', 11);
 
 -- --------------------------------------------------------
 
@@ -1829,31 +2087,31 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `user_desc`, `email`, `inactive`) VALUES
-(0, 'adminb', '$argon2i$v=19$m=65536,t=4,p=1$2yPWz/h9jO0NI1Boe6AUfw$YSydykIZBhes+UugqJJE4xvbOeOfST3CdIGo+higBD4', NULL, 'bogi@admin.mitfozzek', 0),
-(2, '', '', '', 'updated@email.com', 0),
-(3, 'test1', '$argon2id$v=19$m=65536,t=3,p=4$r63wxYyuhTzsiCn/eMrYJA$e0t9/tA5QqCTYnTiLs5uhSlnO3PWcB49/Ph/EqZQHss', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor i', 'test1email@email.com', 0),
-(4, 'test2', '$argon2id$v=19$m=65536,t=3,p=4$hfMfFDD3L4JB0yui+Cuhzg$wdszDTveDIPQCZ/4FnzvGdDl3vphD/x9RA9NkmFWSmg', ' This is test1 user\'s description. Hello hello. ABC. Cats Dogs Cats Dogs', 'test2@email.com', 1),
-(5, '3test', '$argon2id$v=19$m=65536,t=3,p=4$8uiLJi14tlrHYPoH/qqQfQ$fsMiUiIe9U1kjAMVpi3raQuEDmysIbCopXCdNje9cao', 'This is where i test deactivation', '3test@emailcom', 1),
-(6, 'test', '$argon2id$v=19$m=65536,t=3,p=4$1jU97p3bUbP945mcn0yL1A$dA9xyHEvhOI/5J2XHvtIgohPLEfdvM39MGqCZjUM57Y', ' Ez itt a leírásom. Itt tesztelek heló beló....', 'test@test.hu', 0),
+(1, 'admin', '$argon2i$v=19$m=65536,t=4,p=1$ULbKU3e7vlotzllU9QrcBQ$kqoxPn8zry5YaTuRy/OTVKIN9fjyLkaCEBdpdwqypLg', NULL, 'bogi@mitfozzek.hu', 0),
+(6, 'test', '$argon2i$v=19$m=65536,t=4,p=1$JP98F+q5QWmkXKNW256/iA$Hic/raSgS7roLldU/Kw07lRWonwajdjWTdpVxjrS100', ' Hello Világ, ez itt a bemutatkozó szövegem! Itt vagyok!', 'test1@test.hu', 0),
 (7, 'sanyi', '$argon2i$v=19$m=65536,t=4,p=1$AuIhlb14FAU3hI0s3V1lJQ$nLoIV/1gF8sbqkaHbtK8CI0AnUEzp+qOw42y9d6kJUM', NULL, 'sanyi@email.hu', 0),
-(8, 'postman', '$argon2i$v=19$m=65536,t=4,p=1$hG0jM+FXvHyF313JKTzX9w$/Qatx0i03ATW+3D5QJTt5NqbvrrvsHHh5gX6Dn2nR4c', NULL, 'post@man.com', 0);
+(8, 'postman', '$argon2i$v=19$m=65536,t=4,p=1$hG0jM+FXvHyF313JKTzX9w$/Qatx0i03ATW+3D5QJTt5NqbvrrvsHHh5gX6Dn2nR4c', NULL, 'post@man.com', 0),
+(10, 'bogi', '$argon2i$v=19$m=65536,t=4,p=1$mFypDNnTCX/1x5Y5JLegyg$qf5cve1DpuJGFom4IXcAqQ9pYdrC2kV8TjmPS36pP90', NULL, 'bogi@bogi.com', 0),
+(103, 'hello', '$argon2i$v=19$m=65536,t=4,p=1$lIH7rW0e81nEwqtMM/e9jw$w+U7ChhNDEbAv76gK3gw8iHBvlqPyjp5eTahVdx8YtI', NULL, 'hello@hello.com', 0),
+(335, 'envagyok', '$argon2id$v=19$m=65536,t=4,p=1$VS6EBeZma/hvgyGya6Segg$3IIjVh8sGujGfYQljCBYxi72uzoSI8H0AHdKZecyVzc', NULL, 'en@vagyok.en', 0),
+(336, 'bogibogi', '$argon2id$v=19$m=65536,t=4,p=1$N7l/p+YybJ4/pfcEoFLlyQ$W16FAMmrRgVfn581k82zqh6kpLL02EOTKoLUOSaDwGE', 'Helló Világ, ez itt a bemutatkozó szövegem!', 'bogi@bogi1.com', 0);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `user_dish_category`
+-- Tábla szerkezet ehhez a táblához `user_diet_category`
 --
 
-CREATE TABLE `user_dish_category` (
+CREATE TABLE `user_diet_category` (
   `user_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `user_dish_category`
+-- A tábla adatainak kiíratása `user_diet_category`
 --
 
-INSERT INTO `user_dish_category` (`user_id`, `category_id`) VALUES
+INSERT INTO `user_diet_category` (`user_id`, `category_id`) VALUES
 (6, 1);
 
 -- --------------------------------------------------------
@@ -1872,8 +2130,8 @@ CREATE TABLE `user_fav_recipes` (
 --
 
 INSERT INTO `user_fav_recipes` (`user_id`, `recipe_id`) VALUES
-(0, 2),
-(6, 3);
+(1, 2),
+(1, 5);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -1883,6 +2141,7 @@ INSERT INTO `user_fav_recipes` (`user_id`, `recipe_id`) VALUES
 -- A tábla indexei `con_recipe_cuisine`
 --
 ALTER TABLE `con_recipe_cuisine`
+  ADD PRIMARY KEY (`recipe_id`,`cuisine_id`),
   ADD KEY `recipe_id` (`recipe_id`),
   ADD KEY `cuisine_id` (`cuisine_id`) USING BTREE;
 
@@ -1898,7 +2157,7 @@ ALTER TABLE `con_recipe_diet_category`
 --
 ALTER TABLE `con_recipe_dish_type`
   ADD PRIMARY KEY (`recipe_id`,`dishtype_id`),
-  ADD KEY `dishtype_id` (`dishtype_id`);
+  ADD KEY `dishtype` (`dishtype_id`);
 
 --
 -- A tábla indexei `con_recipe_ingredients`
@@ -1906,12 +2165,6 @@ ALTER TABLE `con_recipe_dish_type`
 ALTER TABLE `con_recipe_ingredients`
   ADD PRIMARY KEY (`recipe_id`,`ingredient_id`),
   ADD KEY `ingredient_id` (`ingredient_id`);
-
---
--- A tábla indexei `con_recipe_status`
---
-ALTER TABLE `con_recipe_status`
-  ADD PRIMARY KEY (`status_id`);
 
 --
 -- A tábla indexei `con_shopping_ingredients`
@@ -1959,16 +2212,12 @@ ALTER TABLE `ingredients`
   ADD PRIMARY KEY (`ingredient_id`);
 
 --
--- A tábla indexei `measurements`
---
-ALTER TABLE `measurements`
-  ADD PRIMARY KEY (`measurement_id`);
-
---
 -- A tábla indexei `pantry`
 --
 ALTER TABLE `pantry`
-  ADD PRIMARY KEY (`pantry_item_id`);
+  ADD PRIMARY KEY (`pantry_item_id`),
+  ADD KEY `ingredient_id` (`ingredient_id`),
+  ADD KEY `pantry_id` (`pantry_id`);
 
 --
 -- A tábla indexei `recipes`
@@ -1976,6 +2225,13 @@ ALTER TABLE `pantry`
 ALTER TABLE `recipes`
   ADD PRIMARY KEY (`recipe_id`),
   ADD KEY `source_user_id` (`source_user_id`);
+
+--
+-- A tábla indexei `recipe_status`
+--
+ALTER TABLE `recipe_status`
+  ADD PRIMARY KEY (`status_id`),
+  ADD KEY `con_recipe_status_ibfk_1` (`recipe_id`);
 
 --
 -- A tábla indexei `shopping`
@@ -1991,9 +2247,9 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- A tábla indexei `user_dish_category`
+-- A tábla indexei `user_diet_category`
 --
-ALTER TABLE `user_dish_category`
+ALTER TABLE `user_diet_category`
   ADD PRIMARY KEY (`user_id`,`category_id`),
   ADD KEY `category_id` (`category_id`);
 
@@ -2002,17 +2258,11 @@ ALTER TABLE `user_dish_category`
 --
 ALTER TABLE `user_fav_recipes`
   ADD PRIMARY KEY (`user_id`,`recipe_id`),
-  ADD KEY `user_fav_recipes_ibfk_4` (`recipe_id`);
+  ADD KEY `recipe_id` (`recipe_id`);
 
 --
 -- A kiírt táblák AUTO_INCREMENT értéke
 --
-
---
--- AUTO_INCREMENT a táblához `con_recipe_status`
---
-ALTER TABLE `con_recipe_status`
-  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT a táblához `diet_category`
@@ -2039,34 +2289,34 @@ ALTER TABLE `ingredients`
   MODIFY `ingredient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1457;
 
 --
--- AUTO_INCREMENT a táblához `measurements`
---
-ALTER TABLE `measurements`
-  MODIFY `measurement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT a táblához `pantry`
 --
 ALTER TABLE `pantry`
-  MODIFY `pantry_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `pantry_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT a táblához `recipes`
 --
 ALTER TABLE `recipes`
-  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT a táblához `recipe_status`
+--
+ALTER TABLE `recipe_status`
+  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT a táblához `shopping`
 --
 ALTER TABLE `shopping`
-  MODIFY `shopping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `shopping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=337;
 
 --
 -- Megkötések a kiírt táblákhoz
@@ -2076,44 +2326,71 @@ ALTER TABLE `users`
 -- Megkötések a táblához `con_recipe_cuisine`
 --
 ALTER TABLE `con_recipe_cuisine`
-  ADD CONSTRAINT `con_recipe_cuisine_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
-  ADD CONSTRAINT `con_recipe_cuisine_ibfk_2` FOREIGN KEY (`cuisine_id`) REFERENCES `dish_cuisine` (`cuisine_id`);
+  ADD CONSTRAINT `cuisine` FOREIGN KEY (`cuisine_id`) REFERENCES `dish_cuisine` (`cuisine_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Megkötések a táblához `con_recipe_diet_category`
 --
 ALTER TABLE `con_recipe_diet_category`
-  ADD CONSTRAINT `con_recipe_diet_category_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`),
-  ADD CONSTRAINT `con_recipe_diet_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`),
-  ADD CONSTRAINT `con_recipe_diet_category_ibfk_3` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+  ADD CONSTRAINT `category` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `con_recipe_diet_category_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Megkötések a táblához `con_recipe_dish_type`
 --
 ALTER TABLE `con_recipe_dish_type`
-  ADD CONSTRAINT `con_recipe_dish_type_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
-  ADD CONSTRAINT `con_recipe_dish_type_ibfk_2` FOREIGN KEY (`dishtype_id`) REFERENCES `dish_type` (`dishtype_id`),
-  ADD CONSTRAINT `con_recipe_dish_type_ibfk_3` FOREIGN KEY (`dishtype_id`) REFERENCES `dish_type` (`dishtype_id`),
-  ADD CONSTRAINT `con_recipe_dish_type_ibfk_4` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+  ADD CONSTRAINT `con_recipe_dish_type_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `dishtype` FOREIGN KEY (`dishtype_id`) REFERENCES `dish_type` (`dishtype_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Megkötések a táblához `con_recipe_ingredients`
 --
 ALTER TABLE `con_recipe_ingredients`
-  ADD CONSTRAINT `con_recipe_ingredients_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`);
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_3` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`),
+  ADD CONSTRAINT `con_recipe_ingredients_ibfk_4` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`);
 
 --
 -- Megkötések a táblához `con_shopping_ingredients`
 --
 ALTER TABLE `con_shopping_ingredients`
-  ADD CONSTRAINT `con_shopping_ingredients_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`),
-  ADD CONSTRAINT `con_shopping_ingredients_ibfk_2` FOREIGN KEY (`shopping_id`) REFERENCES `shopping` (`shopping_id`);
+  ADD CONSTRAINT `con_shopping_ingredients_ibfk_1` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `con_shopping_ingredients_ibfk_2` FOREIGN KEY (`shopping_id`) REFERENCES `shopping` (`shopping_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `con_shopping_ingredients_ibfk_3` FOREIGN KEY (`shopping_id`) REFERENCES `shopping` (`shopping_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Megkötések a táblához `con_user_pantry`
+--
+ALTER TABLE `con_user_pantry`
+  ADD CONSTRAINT `con_user_pantry_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Megkötések a táblához `con_user_shopping`
+--
+ALTER TABLE `con_user_shopping`
+  ADD CONSTRAINT `con_user_shopping_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `con_user_shopping_ibfk_2` FOREIGN KEY (`shopping_id`) REFERENCES `shopping` (`shopping_id`);
+
+--
+-- Megkötések a táblához `pantry`
+--
+ALTER TABLE `pantry`
+  ADD CONSTRAINT `ingredient_id` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`ingredient_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `pantry_ibfk_1` FOREIGN KEY (`pantry_id`) REFERENCES `con_user_pantry` (`pantry_id`);
 
 --
 -- Megkötések a táblához `recipes`
 --
 ALTER TABLE `recipes`
-  ADD CONSTRAINT `recipes_ibfk_3` FOREIGN KEY (`source_user_id`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `recipes_ibfk_3` FOREIGN KEY (`source_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `recipe_status`
+--
+ALTER TABLE `recipe_status`
+  ADD CONSTRAINT `recipe_status_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Megkötések a táblához `shopping`
@@ -2122,20 +2399,19 @@ ALTER TABLE `shopping`
   ADD CONSTRAINT `shopping_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
 
 --
--- Megkötések a táblához `user_dish_category`
+-- Megkötések a táblához `user_diet_category`
 --
-ALTER TABLE `user_dish_category`
-  ADD CONSTRAINT `user_dish_category_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `user_dish_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`);
+ALTER TABLE `user_diet_category`
+  ADD CONSTRAINT `user_diet_category_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`),
+  ADD CONSTRAINT `user_diet_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `diet_category` (`category_id`),
+  ADD CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `user_fav_recipes`
 --
 ALTER TABLE `user_fav_recipes`
-  ADD CONSTRAINT `user_fav_recipes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `user_fav_recipes_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
-  ADD CONSTRAINT `user_fav_recipes_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `user_fav_recipes_ibfk_4` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`);
+  ADD CONSTRAINT `user_fav_recipes_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`recipe_id`),
+  ADD CONSTRAINT `user_fav_recipes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
