@@ -66,3 +66,36 @@ export const validatePassword = (password: string) => {
     }
     return ''; // No error
 };
+
+export async function getDishTypes(con: PoolConnection, recipeId: number) {
+    const [dishTypesData] = await con.query<RowDataPacket[]>(`
+        SELECT dish_type.dishtype_name
+        FROM con_recipe_dish_type
+        JOIN dish_type ON con_recipe_dish_type.dishtype_id = dish_type.dishtype_id
+        WHERE con_recipe_dish_type.recipe_id = ?
+    `, [recipeId]);
+
+    return dishTypesData.map(dish => dish.dishtype_name);
+}
+
+export async function getCuisines(con: PoolConnection, recipeId: number) {
+    const [cuisineData] = await con.query<RowDataPacket[]>(`
+        SELECT dish_cuisine.cuisine_name
+        FROM con_recipe_cuisine
+        JOIN dish_cuisine ON con_recipe_cuisine.cuisine_id = dish_cuisine.cuisine_id
+        WHERE con_recipe_cuisine.recipe_id = ?
+    `, [recipeId]);
+
+    return cuisineData.map(cuisine => cuisine.cuisine_name);
+}
+
+export async function getDietCategories(con: PoolConnection, recipeId: number) {
+    const [dietCategoryData] = await con.query<RowDataPacket[]>(`
+        SELECT diet_category.category_name
+        FROM con_recipe_diet_category
+        JOIN diet_category ON con_recipe_diet_category.category_id = diet_category.category_id
+        WHERE con_recipe_diet_category.recipe_id = ?
+    `, [recipeId]);
+
+    return dietCategoryData.map(category => category.category_name);
+}
